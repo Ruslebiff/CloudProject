@@ -10,6 +10,13 @@ import (
 
 func main() {
 
+	err := cravings.DBInit()
+	if err != nil {
+		fmt.Println("Failed to initialise database")
+	} else {
+		fmt.Println("Database init OK")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
