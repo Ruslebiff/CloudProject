@@ -27,34 +27,60 @@ func DBInit() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
 }
 
 //  Func creates document which is to store a webhook
 func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(RecipeCollection).NewDoc()
-	r.ID = r.ID                          //  Asserts the webhooks id to be the one given by firebase
+	r.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
 	_, err := ref.Set(FireBaseDB.Ctx, r) //  Set the context of the document to the one of the webhook
 	if err != nil {
-		fmt.Println("ERROR saving recipe to Firestore DB: ", err)
+		fmt.Println("ERROR saving recipe to recipe collection: ", err)
 	}
 	return nil
 }
 
-//  Func deletes a webhook by an id
-func DBDeleteRecipe(id string) error {
-	_, err := FireBaseDB.Client.Collection(RecipeCollection).Doc(id).Delete(FireBaseDB.Ctx)
+//  Func creates document which is to store a webhook
+func DBSaveIngredient(i *Ingredient) error { //  Creates a new document in firebase
+	ref := FireBaseDB.Client.Collection(IngredientCollection).NewDoc()
+	i.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
+	_, err := ref.Set(FireBaseDB.Ctx, i) //  Set the context of the document to the one of the webhook
 	if err != nil {
-		fmt.Printf("ERROR deleting student from Firestore DB: %v\n", err)
+		fmt.Println("ERROR saving ingredient to ingredients collection: ", err)
+	}
+	return nil
+}
+
+//  Func deletes either ingredient or recipe based on parametres
+func DBDelete(id string, collection string) error {
+	_, err := FireBaseDB.Client.Collection(collection).Doc(id).Delete(FireBaseDB.Ctx)
+	if err != nil {
+		fmt.Printf("ERROR deleting from collection: %v\n", err)
 		return errors.Wrap(err, "Error in FirebaseDatabase.Delete()")
 	}
 	return nil
 }
 
-//  Retrieves a document to read
+//  Function reads a single recipe
 func DBReadRecipeByID(id string) (Recipe, error) {
-	res := Recipe{} // Gets a webhook by a specific id
+	res := Recipe{} //  Creates an empty struct for the recipe
+	//  Collects that document with given id from collection from firestore
 	ref, err := FireBaseDB.Client.Collection(RecipeCollection).Doc(id).Get(FireBaseDB.Ctx)
+	if err != nil {
+		return res, err
+	}
+	err = ref.DataTo(&res)
+	if err != nil {
+		return res, err
+	}
+	return res, nil
+}
+
+//  Function reads a single recipe
+func DBReadIngredientByID(id string) (Ingredient, error) {
+	res := Ingredient{} //  Creates empty struct
+	//  Collects that document with given id from collection from firestore
+	ref, err := FireBaseDB.Client.Collection(IngredientCollection).Doc(id).Get(FireBaseDB.Ctx)
 	if err != nil {
 		return res, err
 	}
