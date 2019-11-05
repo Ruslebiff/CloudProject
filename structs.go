@@ -7,7 +7,7 @@ import (
 )
 
 //  Struct for a recipe containting ingredients
-type Recpie struct {
+type Recipe struct {
 	RecipeID    string       `json:"id"`
 	Ingredients []Ingredient `json:"ingredients"`
 }
