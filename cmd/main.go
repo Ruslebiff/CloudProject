@@ -6,9 +6,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
+var StartTime = time.Now() // sets start time
+
 func main() {
+
+	cravings.StartTime = StartTime // sends start time to ctavins.StartTime
 
 	port := os.Getenv("PORT")
 	if port == "" {
