@@ -1,4 +1,4 @@
-package CloudProject
+package cravings
 
 import "net/http"
 

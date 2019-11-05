@@ -12,7 +12,7 @@ import (
 
 var FireBaseDB = FirestoreDatabase{}
 
-func InitDB() {
+func DBInit() {
 	// Firebase initialisation
 	FireBaseDB.Ctx = context.Background()
 	// We use a service account, load credentials file that you downloaded from your project's settings menu.
@@ -31,7 +31,7 @@ func InitDB() {
 }
 
 //  Func creates document which is to store a webhook
-func SaveRecipe(r *Recipe) error { //  Creates a new document in firebase
+func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(RecipeCollection).NewDoc()
 	r.ID = r.ID                          //  Asserts the webhooks id to be the one given by firebase
 	_, err := ref.Set(FireBaseDB.Ctx, r) //  Set the context of the document to the one of the webhook
@@ -42,7 +42,7 @@ func SaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 }
 
 //  Func deletes a webhook by an id
-func DeleteRecipe(id string) error {
+func DBDeleteRecipe(id string) error {
 	_, err := FireBaseDB.Client.Collection(RecipeCollection).Doc(id).Delete(FireBaseDB.Ctx)
 	if err != nil {
 		fmt.Printf("ERROR deleting student from Firestore DB: %v\n", err)
@@ -52,7 +52,7 @@ func DeleteRecipe(id string) error {
 }
 
 //  Retrieves a document to read
-func ReadRecipeByID(id string) (Recipe, error) {
+func DBReadRecipeByID(id string) (Recipe, error) {
 	res := Recipe{} // Gets a webhook by a specific id
 	ref, err := FireBaseDB.Client.Collection(RecipeCollection).Doc(id).Get(FireBaseDB.Ctx)
 	if err != nil {
