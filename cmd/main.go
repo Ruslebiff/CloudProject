@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cravings"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,10 +15,10 @@ func main() {
 		port = "8080"
 	}
 
-	http.HandleFunc("/", HandlerNil)
-	http.HandleFunc("/register") // runs handler function
-	http.HandleFunc("/meal")     // runs handler function
-	http.HandleFunc("/status")   // runs handler function
+	http.HandleFunc("/", cravings.HandlerNil)
+	http.HandleFunc("/register", cravings.HandlerRegister) // runs handler function
+	http.HandleFunc("/meal", cravings.HandlerMeal)         // runs handler function
+	http.HandleFunc("/status", cravings.HandlerStatus)     // runs handler function
 	fmt.Println("Listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

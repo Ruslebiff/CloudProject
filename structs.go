@@ -2,14 +2,13 @@ package cravings
 
 import (
 	"context"
-	"fmt"
-	"log"
-	firebase "firebase.google.com/go"
+
+	"cloud.google.com/go/firestore"
 )
 
 //  Struct for a recipe containting ingredients
 type Recpie struct {
-	RecipeID string `json:"id"`
+	RecipeID    string       `json:"id"`
 	Ingredients []Ingredient `json:"ingredients"`
 }
 
