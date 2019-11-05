@@ -8,7 +8,7 @@ import (
 
 //  Struct for a recipe containting ingredients
 type Recipe struct {
-	RecipeID    string       `json:"id"`
+	ID          string       `json:"id"`
 	Ingredients []Ingredient `json:"ingredients"`
 }
 
