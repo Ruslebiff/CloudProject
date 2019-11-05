@@ -1,7 +1,7 @@
 package main
 
 import (
-	"assignment2-cloud/assignment2"
+	"CloudProject"
 	"fmt"
 	"log"
 	"net/http"
@@ -16,9 +16,9 @@ func main() {
 	}
 
 	http.HandleFunc("/", assignment2.HandlerNil)
-	http.HandleFunc("/register") // runs handler function
-	http.HandleFunc("/meal")     // runs handler function
-	http.HandleFunc("/status")   // runs handler function
+	http.HandleFunc("/register", CloudProject.HandlerRegister) // runs handler function
+	http.HandleFunc("/meal", CloudProject.HandlerMeal)         // runs handler function
+	http.HandleFunc("/status", CloudProject.HandlerStatus)     // runs handler function
 	fmt.Println("Listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
