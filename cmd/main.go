@@ -1,7 +1,6 @@
 package main
 
 import (
-	"assignment2-cloud/assignment2"
 	"fmt"
 	"log"
 	"net/http"
@@ -15,7 +14,7 @@ func main() {
 		port = "8080"
 	}
 
-	http.HandleFunc("/", assignment2.HandlerNil)
+	http.HandleFunc("/", HandlerNil)
 	http.HandleFunc("/register") // runs handler function
 	http.HandleFunc("/meal")     // runs handler function
 	http.HandleFunc("/status")   // runs handler function
