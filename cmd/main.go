@@ -1,7 +1,6 @@
 package main
 
 import (
-	"CloudProject"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,6 +18,7 @@ func main() {
 	http.HandleFunc("/register", CloudProject.HandlerRegister) // runs handler function
 	http.HandleFunc("/meal", CloudProject.HandlerMeal)         // runs handler function
 	http.HandleFunc("/status", CloudProject.HandlerStatus)     // runs handler function
+	http.HandleFunc("/webhooks", CloudProject.HandlerWebhooks) // list registered webhooks
 	fmt.Println("Listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
