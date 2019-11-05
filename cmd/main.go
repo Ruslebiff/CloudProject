@@ -14,6 +14,12 @@ var StartTime = time.Now() // sets start time
 func main() {
 
 	cravings.StartTime = StartTime // sends start time to ctavins.StartTime
+	err := cravings.DBInit()
+	if err != nil {
+		fmt.Println("Failed to initialise database")
+	} else {
+		fmt.Println("Database init OK")
+	}
 
 	port := os.Getenv("PORT")
 	if port == "" {
