@@ -29,7 +29,19 @@ type Nutrient struct {
 }
 
 type TotalNutrients struct {
-	AllNutrients []Nutrient `json:"totalNutrients"`
+	AllNutrients struct{
+		Fat Nutrient `json:"FAT"`
+		Protein Nutrient `json:"PROCNT"`
+		Sugar Nutrient `json:"SUGAR"`
+	} `json:"totalNutrients"`
+}
+
+type TotalDaily struct {
+	AllNutrients struct{
+		Fat Nutrient `json:"FAT"`
+		Protein Nutrient `json:"PROCNT"`
+		Sugar Nutrient `json:"SUGAR"`
+	} `json:"totalNutrients"`
 }
 
 // FirestoreDatabase implements our Database access through Firestore
