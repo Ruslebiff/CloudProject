@@ -3,6 +3,7 @@ package cravings
 import (
 	"context"
 	"fmt"
+	"log"
 
 	firebase "firebase.google.com/go"
 	"github.com/pkg/errors"
@@ -93,9 +94,47 @@ func DBReadIngredientByID(id string) (Ingredient, error) {
 }
 
 func DBReadAllRecipes() ([]Recipe, error) {
+	var temprecipes []Recipe
+	recipe := Recipe{}
+	iter := fb.Client.Collection(RecipeCollection).Documents(fb.Ctx)
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate: %v", err)
+		}
+		err = doc.DataTo(&recipe) // put data into temp struct
+		if err != nil {
+			fmt.Println("Error when converting retrieved document to struct: ", err)
+		}
 
+		temprecipes = append(temprecipes, recipe) // add to temp array
+
+	}
+	return temprecipes, nil
 }
 
 func DBReadAllIngredients() ([]Recipe, error) {
+	var tempingredients []Ingredient
+	ingredient := Ingredient{}
+	iter := fb.Client.Collection(IngredientCollection).Documents(fb.Ctx)
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate: %v", err)
+		}
+		err = doc.DataTo(&ingredient) // put data into temp struct
+		if err != nil {
+			fmt.Println("Error when converting retrieved document to struct: ", err)
+		}
 
+		temprecipes = append(tempingredients, ingredient) // add to temp array
+
+	}
+	return tempingredients, nil
 }
