@@ -119,7 +119,7 @@ func DBReadAllRecipes() ([]Recipe, error) {
 }
 
 // DBReadAllIngredients reads all ingredients from database
-func DBReadAllIngredients() ([]Recipe, error) {
+func DBReadAllIngredients() ([]IngredientCollection, error) {
 	var tempingredients []Ingredient
 	ingredient := Ingredient{}
 	iter := FireBaseDB.Client.Collection(IngredientCollection).Documents(FireBaseDB.Ctx)
