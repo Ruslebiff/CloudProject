@@ -21,13 +21,13 @@ type Ingredient struct {
 	Calories int    `json:"kcal"`
 	Weight   int    `json:"weight"`
 }
-
+//Nutrient Struct for nutrient from Edamam
 type Nutrient struct {
 	Label    string `json:"label"`
 	Quantity string `json:"quantity"`
 	Unit     string `json:"unit"`
 }
-
+//TotalNutrients Struct that stores the different nutrients from Edamam
 type TotalNutrients struct {
 	AllNutrients struct{
 		Fat Nutrient `json:"FAT"`
@@ -36,7 +36,7 @@ type TotalNutrients struct {
 		Energy Nutrient `json:"ENERC_KCAL"`
 	} `json:"totalNutrients"`
 }
-
+//TotalDaily Struct that stores the % of the daily nutrition the recipe contains (?-)
 type TotalDaily struct {
 	AllNutrients struct{
 		Fat Nutrient `json:"FAT"`
