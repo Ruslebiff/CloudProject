@@ -14,9 +14,29 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	for r := range recipeList {
-		for i := range ingredientsList {
-			fmt.Fprintln(w, r, i)
+	recipeCount := []RecipePrint{}
+
+	for _, r := range recipeList { //Goes through all recipes
+		recipeTemp := RecipePrint{}
+		recipeTemp.RecipeName = r.RecipeName
+		recipeTemp.Ingredients.DontHave = r.Ingredients
+
+		for i := range r.Ingredients { //All indexes of ingredients needed for the recipe
+			for _, j := range ingredientsList { //Name of ingredients from query
+				have := false
+				if r.Ingredients[i].Name == j { //if it matches ingredient from recipe
+					recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, r.Ingredients[i])
+					fmt.Println("have " + j)
+					have = true
+					break
+				}
+				if have {
+					fmt.Println("dont " + r.Ingredients[i].Name)
+					recipeTemp.Ingredients.DontHave = append(recipeTemp.Ingredients.DontHave, r.Ingredients[i])
+				}
+			}
 		}
+		recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 	}
+	fmt.Fprintln(w, recipeCount)
 }

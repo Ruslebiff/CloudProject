@@ -14,6 +14,14 @@ type Recipe struct {
 	Ingredients []Ingredient `json:"ingredients"`
 }
 
+type RecipePrint struct {
+	RecipeName  string `json:"recipeName"`
+	Ingredients struct {
+		Have     []Ingredient `json:"have"`
+		DontHave []Ingredient `json:"missing"`
+	} `json:"ingredients"`
+}
+
 // Ingredient Struct for an ingredient used in firebase.go and register.go
 type Ingredient struct {
 	ID       string `json:"id"`
