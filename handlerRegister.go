@@ -16,8 +16,9 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		switch endpoint {
 		case "Ingredient":
-
+			GetIngredient(w, r)
 		case "Recipe":
+			GetRecipe(w, r)
 		}
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
@@ -64,7 +65,7 @@ func RegisterRecipe(w http.ResponseWriter, r *http.Request) {
 
 func GetRecipe(w http.ResponseWriter, r *http.Request) {
 	var allRecipes []Recipe
-	allRecipes, err := DBReadAllRecipes
+	allRecipes, err := DBReadAllRecipes()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
@@ -72,7 +73,7 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) {
 
 func GetIngredient(w http.ResponseWriter, r *http.Request) {
 	var allIngredients []Ingredient
-	allIngredients, err := DBReadAllIngredients
+	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
