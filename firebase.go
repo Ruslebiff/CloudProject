@@ -137,7 +137,7 @@ func DBReadAllIngredients() ([]Ingredient, error) {
 			fmt.Println("Error when converting retrieved document to struct: ", err)
 		}
 
-		temprecipes = append(tempingredients, ingredient) // add to temp array
+		tempingredients = append(tempingredients, ingredient) // add to temp array
 
 	}
 	return tempingredients, nil
