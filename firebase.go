@@ -7,6 +7,7 @@ import (
 
 	firebase "firebase.google.com/go"
 	"github.com/pkg/errors"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
@@ -119,7 +120,7 @@ func DBReadAllRecipes() ([]Recipe, error) {
 }
 
 // DBReadAllIngredients reads all ingredients from database
-func DBReadAllIngredients() ([]IngredientCollection, error) {
+func DBReadAllIngredients() ([]Ingredient, error) {
 	var tempingredients []Ingredient
 	ingredient := Ingredient{}
 	iter := FireBaseDB.Client.Collection(IngredientCollection).Documents(FireBaseDB.Ctx)
@@ -136,7 +137,7 @@ func DBReadAllIngredients() ([]IngredientCollection, error) {
 			fmt.Println("Error when converting retrieved document to struct: ", err)
 		}
 
-		temprecipes = append(tempingredients, ingredient) // add to temp array
+		tempingredients = append(tempingredients, ingredient) // add to temp array
 
 	}
 	return tempingredients, nil
