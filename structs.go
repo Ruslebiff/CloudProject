@@ -45,6 +45,11 @@ type TotalDaily struct {
 	} `json:"totalDaily"`
 }
 
+type RecipeAnalysisPost struct {
+	Title       string   `json:"title"`
+	Ingredients []string `json:"ingr"`
+}
+
 // FirestoreDatabase implements our Database access through Firestore
 type FirestoreDatabase struct {
 	Ctx    context.Context
