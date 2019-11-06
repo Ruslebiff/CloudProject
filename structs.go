@@ -2,11 +2,12 @@ package cravings
 
 import (
 	"context"
+	"time"
 
 	"cloud.google.com/go/firestore"
 )
 
-//  Struct for a recipe containting ingredients used in firebase.go and register.go
+// Recipe Struct for a recipe containting ingredients used in firebase.go and register.go
 type Recipe struct {
 	ID          string       `json:"id"`
 	RecipeName  string       `json:"recipeName"`
@@ -21,7 +22,7 @@ type RecipePrint struct {
 	} `json:"ingredients"`
 }
 
-//  Struct for an ingredient used in firebase.go and register.go
+// Ingredient Struct for an ingredient used in firebase.go and register.go
 type Ingredient struct {
 	ID       string `json:"id"`
 	Quantity int    `json:"quantity"`
@@ -29,6 +30,14 @@ type Ingredient struct {
 	Name     string `json:"name"`
 	Calories int    `json:"kcal"`
 	Weight   int    `json:"weight"`
+}
+
+// Webhook Struct for an webhook used in firebase.go and webhooks.go
+type Webhook struct {
+	ID    string    `json:"id"`
+	Event string    `json:"event"`
+	URL   string    `json:"url"`
+	Time  time.Time `json:"time"`
 }
 
 //Nutrient Struct for nutrient from Edamam
