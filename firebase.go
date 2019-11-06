@@ -32,7 +32,7 @@ func DBInit() error {
 	return err
 }
 
-//  DBSaveRecipe saves recipe to database
+// DBSaveRecipe saves recipe to database
 func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(RecipeCollection).NewDoc()
 	r.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
@@ -43,7 +43,7 @@ func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	return nil
 }
 
-//  DBSaveIngredients saves ingredient to database
+// DBSaveIngredients saves ingredient to database
 func DBSaveIngredient(i *Ingredient) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(IngredientCollection).NewDoc()
 	i.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
@@ -54,7 +54,7 @@ func DBSaveIngredient(i *Ingredient) error { //  Creates a new document in fireb
 	return nil
 }
 
-//  DBDelete deletes an entry from given collection in database
+// DBDelete deletes an entry from given collection in database
 func DBDelete(id string, collection string) error {
 	_, err := FireBaseDB.Client.Collection(collection).Doc(id).Delete(FireBaseDB.Ctx)
 	if err != nil {
@@ -64,7 +64,7 @@ func DBDelete(id string, collection string) error {
 	return nil
 }
 
-//  DBReadRecipeByID reads a single recipe by ID
+// DBReadRecipeByID reads a single recipe by ID
 func DBReadRecipeByID(id string) (Recipe, error) {
 	res := Recipe{} //  Creates an empty struct for the recipe
 	//  Collects that document with given id from collection from firestore
@@ -79,7 +79,7 @@ func DBReadRecipeByID(id string) (Recipe, error) {
 	return res, nil
 }
 
-//  DBReadIngredientByID reads a ingredient recipe by ID
+// DBReadIngredientByID reads a ingredient recipe by ID
 func DBReadIngredientByID(id string) (Ingredient, error) {
 	res := Ingredient{} //  Creates empty struct
 	//  Collects that document with given id from collection from firestore
