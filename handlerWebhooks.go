@@ -31,15 +31,31 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 
 	case http.MethodGet:
 		var webhooks []Webhook //Webhook DB
-		webhooks, err := DBReadAllWebhooks()
+		parts := strings.Split(r.URL.Path, "/")
+
+		http.Header.Add(w.Header(), "Content-Type", "application/json")
+
+		webhooks, err := DBReadAllWebhooks() // reads all webhooks from database
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
-		http.Header.Add(w.Header(), "Content-Type", "application/json")
 
-		err = json.NewEncoder(w).Encode(webhooks) // encode all webhooks
-		if err != nil {
-			http.Error(w, "Some thing went wrong"+err.Error(), http.StatusInternalServerError)
+		if len(parts) == 3 { //check if an id is choosen
+			for i := range webhooks { // loop true webhooks
+				if webhooks[i].ID == parts[3] { // check if choosen id is in webhooks
+					err = json.NewEncoder(w).Encode(webhooks[i]) // encode choosen webhook
+					if err != nil {
+						http.Error(w, "Something went wrong"+err.Error(), http.StatusInternalServerError)
+					}
+
+				}
+			}
+
+		} else {
+			err = json.NewEncoder(w).Encode(webhooks) // encode all webhooks
+			if err != nil {
+				http.Error(w, "Something went wrong"+err.Error(), http.StatusInternalServerError)
+			}
 		}
 
 	case http.MethodDelete:
