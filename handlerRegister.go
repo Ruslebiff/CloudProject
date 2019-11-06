@@ -22,18 +22,18 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
 		switch endpoint {
-		case "Ingredient":
+		case "Ingredient": // Posts ingredient
 			RegisterIngredient(w, r)
 
-		case "Recipe":
+		case "Recipe": // Posts recipe
 			RegisterRecipe(w, r)
 		}
 	}
 }
 
+// RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
 func RegisterIngredient(w http.ResponseWriter, r *http.Request) {
 	i := Ingredient{}
-
 	err := json.NewDecoder(r.Body).Decode(&i)
 	if err != nil {
 		http.Error(w, "Could not decode body of request"+err.Error(), http.StatusBadRequest)
@@ -47,9 +47,9 @@ func RegisterIngredient(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// RegisterRecipe func saves the recipe to its respective collection in our firestore DB
 func RegisterRecipe(w http.ResponseWriter, r *http.Request) {
 	rec := Recipe{}
-
 	err := json.NewDecoder(r.Body).Decode(&rec)
 	if err != nil {
 		http.Error(w, "Could not decode body of request"+err.Error(), http.StatusBadRequest)
@@ -62,13 +62,18 @@ func RegisterRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetRecipe() {
-
+func GetRecipe(w http.ResponseWriter, r *http.Request) {
+	var allRecipes []Recipe
+	allRecipes, err := DBReadAllRecipes
+	if err != nil {
+		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
-func GetIngredient() {
-
+func GetIngredient(w http.ResponseWriter, r *http.Request) {
+	var allIngredients []Ingredient
+	allIngredients, err := DBReadAllIngredients
+	if err != nil {
+		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+	}
 }
-
-//	parts :=  Siste part er enteen ingredient eller recipe
-// 	Kjør switch og kall på respektiv handler
