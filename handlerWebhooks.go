@@ -43,13 +43,14 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 		}
 
 	case http.MethodDelete:
+		Wh := Webhook{}
 
-		err := json.NewDecoder(r.Body).Decode(&webhook) //decode to webhook
+		err := json.NewDecoder(r.Body).Decode(&Wh) //decode to webhook
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
-		err = FBDelete(webhook.ID)
+		err = DBDelete(Wh.ID, WebhooksCollection) //Deletes webhook from id
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
