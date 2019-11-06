@@ -16,7 +16,7 @@ type Status struct {
 func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 	var S Status
 
-	resp, err := http.Get("https://")
+	resp, err := http.Get("https://api.edamam.com/api/nutrition-details")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
