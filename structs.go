@@ -9,6 +9,7 @@ import (
 //  Struct for a recipe containting ingredients used in firebase.go and register.go
 type Recipe struct {
 	ID          string       `json:"id"`
+	RecipeName  string       `json:"recipeName"`
 	Ingredients []Ingredient `json:"ingredients"`
 }
 
@@ -21,27 +22,30 @@ type Ingredient struct {
 	Calories int    `json:"kcal"`
 	Weight   int    `json:"weight"`
 }
+
 //Nutrient Struct for nutrient from Edamam
 type Nutrient struct {
 	Label    string `json:"label"`
 	Quantity string `json:"quantity"`
 	Unit     string `json:"unit"`
 }
+
 //TotalNutrients Struct that stores the different nutrients from Edamam
 type TotalNutrients struct {
-	AllNutrients struct{
-		Fat Nutrient `json:"FAT"`
+	AllNutrients struct {
+		Fat     Nutrient `json:"FAT"`
 		Protein Nutrient `json:"PROCNT"`
-		Sugar Nutrient `json:"SUGAR"`
-		Energy Nutrient `json:"ENERC_KCAL"`
+		Sugar   Nutrient `json:"SUGAR"`
+		Energy  Nutrient `json:"ENERC_KCAL"`
 	} `json:"totalNutrients"`
 }
+
 //TotalDaily Struct that stores the % of the daily nutrition the recipe contains (?-)
 type TotalDaily struct {
-	AllNutrients struct{
-		Fat Nutrient `json:"FAT"`
+	AllNutrients struct {
+		Fat     Nutrient `json:"FAT"`
 		Protein Nutrient `json:"PROCNT"`
-		Energy Nutrient `json:"ENERC_KCAL"`
+		Energy  Nutrient `json:"ENERC_KCAL"`
 	} `json:"totalDaily"`
 }
 
