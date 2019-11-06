@@ -44,9 +44,19 @@ func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	return nil
 }
 
-// DBSaveIngredients saves ingredient to database
+// DBSaveIngredient saves ingredient to database
 func DBSaveIngredient(i *Ingredient) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(IngredientCollection).NewDoc()
+	i.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
+	_, err := ref.Set(FireBaseDB.Ctx, i) //  Set the context of the document to the one of the webhook
+	if err != nil {
+		fmt.Println("ERROR saving ingredient to ingredients collection: ", err)
+	}
+	return nil
+}
+
+func DBSaveWebhook(i *Webhook) error {
+	ref := FireBaseDB.Client.Collection(WebhooksCollection).NewDoc()
 	i.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
 	_, err := ref.Set(FireBaseDB.Ctx, i) //  Set the context of the document to the one of the webhook
 	if err != nil {
@@ -141,4 +151,28 @@ func DBReadAllIngredients() ([]Ingredient, error) {
 
 	}
 	return tempingredients, nil
+}
+
+func DBReadAllWebhooks() ([]Webhook, error) {
+	var tempWebhooks []Webhook
+	Wh := Webhook{}
+	iter := FireBaseDB.Client.Collection(WebhooksCollection).Documents(FireBaseDB.Ctx)
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate: %v", err)
+		}
+		//fmt.Println(doc.Data())
+		err = doc.DataTo(&Wh) // put data into temp struct
+		if err != nil {
+			fmt.Println("Error when converting retrieved document to struct: ", err)
+		}
+
+		tempWebhooks = append(tempWebhooks, Wh)
+
+	}
+	return tempWebhooks, nil
 }
