@@ -10,9 +10,10 @@ import (
 	"google.golang.org/api/option"
 )
 
-// Flytt til globalfil senere
+// FireBaseDB is an instance of FirestoreDatabase struct ------ Flytt til globalfil senere
 var FireBaseDB = FirestoreDatabase{}
 
+// DBInit initialises the database
 func DBInit() error {
 	// Firebase initialisation
 	FireBaseDB.Ctx = context.Background()
@@ -31,7 +32,7 @@ func DBInit() error {
 	return err
 }
 
-//  Func creates document which is to store a webhook
+// DBSaveRecipe saves recipe to database
 func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(RecipeCollection).NewDoc()
 	r.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
@@ -42,7 +43,7 @@ func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	return nil
 }
 
-//  Func creates document which is to store a webhook
+// DBSaveIngredients saves ingredient to database
 func DBSaveIngredient(i *Ingredient) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(IngredientCollection).NewDoc()
 	i.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
@@ -53,7 +54,7 @@ func DBSaveIngredient(i *Ingredient) error { //  Creates a new document in fireb
 	return nil
 }
 
-//  Func deletes either ingredient or recipe based on parametres
+// DBDelete deletes an entry from given collection in database
 func DBDelete(id string, collection string) error {
 	_, err := FireBaseDB.Client.Collection(collection).Doc(id).Delete(FireBaseDB.Ctx)
 	if err != nil {
@@ -63,7 +64,7 @@ func DBDelete(id string, collection string) error {
 	return nil
 }
 
-//  Function reads a single recipe
+// DBReadRecipeByID reads a single recipe by ID
 func DBReadRecipeByID(id string) (Recipe, error) {
 	res := Recipe{} //  Creates an empty struct for the recipe
 	//  Collects that document with given id from collection from firestore
@@ -78,7 +79,7 @@ func DBReadRecipeByID(id string) (Recipe, error) {
 	return res, nil
 }
 
-//  Function reads a single recipe
+// DBReadIngredientByID reads a ingredient recipe by ID
 func DBReadIngredientByID(id string) (Ingredient, error) {
 	res := Ingredient{} //  Creates empty struct
 	//  Collects that document with given id from collection from firestore
@@ -93,6 +94,7 @@ func DBReadIngredientByID(id string) (Ingredient, error) {
 	return res, nil
 }
 
+// DBReadAllRecipes reads all recipes from database
 func DBReadAllRecipes() ([]Recipe, error) {
 	var temprecipes []Recipe
 	recipe := Recipe{}
@@ -116,7 +118,8 @@ func DBReadAllRecipes() ([]Recipe, error) {
 	return temprecipes, nil
 }
 
-func DBReadAllIngredients() ([]Recipe, error) {
+// DBReadAllIngredients reads all ingredients from database
+func DBReadAllIngredients() ([]IngredientCollection, error) {
 	var tempingredients []Ingredient
 	ingredient := Ingredient{}
 	iter := FireBaseDB.Client.Collection(IngredientCollection).Documents(FireBaseDB.Ctx)
