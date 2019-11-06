@@ -15,21 +15,25 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 	// Gets either recipes or ingredients
 	case http.MethodGet:
 		switch endpoint {
-		case "Ingredient":
-			GetIngredient(w, r)
-		case "Recipe":
-			GetRecipe(w, r)
+		case "ingredient":
+			ingredients := GetIngredient(w, r)
+			json.NewEncoder(w).Encode(&ingredients)
+
+		case "recipe":
+			recipes := GetRecipe(w, r)
+			json.NewEncoder(w).Encode(&recipes)
 		}
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
 		switch endpoint {
-		case "Ingredient": // Posts ingredient
+		case "ingredient": // Posts ingredient
 			RegisterIngredient(w, r)
 
-		case "Recipe": // Posts recipe
+		case "recipe": // Posts recipe
 			RegisterRecipe(w, r)
 		}
 	}
+	w.Header().Add("content-type", "application/json")
 }
 
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
@@ -39,13 +43,13 @@ func RegisterIngredient(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Could not decode body of request"+err.Error(), http.StatusBadRequest)
 	}
-	w.Header().Add("content-type", "application/json")
 
 	err = DBSaveIngredient(&i)
 	if err != nil {
 		http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 
+	w.Header().Add("content-type", "application/json")
 }
 
 // RegisterRecipe func saves the recipe to its respective collection in our firestore DB
@@ -55,26 +59,30 @@ func RegisterRecipe(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Could not decode body of request"+err.Error(), http.StatusBadRequest)
 	}
-	w.Header().Add("content-type", "application/json")
 
 	err = DBSaveRecipe(&rec)
 	if err != nil {
 		http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
+	w.Header().Add("content-type", "application/json")
 }
 
-func GetRecipe(w http.ResponseWriter, r *http.Request) {
+func GetRecipe(w http.ResponseWriter, r *http.Request) []Recipe {
 	var allRecipes []Recipe
 	allRecipes, err := DBReadAllRecipes()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
+
+	return allRecipes
 }
 
-func GetIngredient(w http.ResponseWriter, r *http.Request) {
+func GetIngredient(w http.ResponseWriter, r *http.Request) []Ingredient {
 	var allIngredients []Ingredient
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
+
+	return allIngredients
 }
