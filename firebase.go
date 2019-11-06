@@ -7,6 +7,7 @@ import (
 
 	firebase "firebase.google.com/go"
 	"github.com/pkg/errors"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
 
