@@ -27,10 +27,10 @@ func main() {
 	}
 
 	http.HandleFunc("/", cravings.HandlerNil)
-	http.HandleFunc("/register/", cravings.HandlerRegister) // runs handler function
-	http.HandleFunc("/status/", cravings.HandlerStatus)     // runs handler function
-	http.HandleFunc("/meal/", cravings.HandlerMeal)         // runs handler function
-	http.HandleFunc("/webhooks/", cravings.HandlerWebhooks) // runs handler function
+	http.HandleFunc("/cravings/register/", cravings.HandlerRegister) // runs handler function
+	http.HandleFunc("/cravings/status/", cravings.HandlerStatus)     // runs handler function
+	http.HandleFunc("/cravings/meal/", cravings.HandlerMeal)         // runs handler function
+	http.HandleFunc("/cravings/webhooks/", cravings.HandlerWebhooks) // runs handler function
 	fmt.Println("Listening on port " + port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
