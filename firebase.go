@@ -91,3 +91,11 @@ func DBReadIngredientByID(id string) (Ingredient, error) {
 	}
 	return res, nil
 }
+
+func DBReadAllRecipes(cname string) ([]Recipe, error) {
+
+}
+
+func DBReadAllIngredients(cname string) ([]Recipe, error) {
+
+}
