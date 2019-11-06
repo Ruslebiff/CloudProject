@@ -22,7 +22,14 @@ type Ingredient struct {
 	Weight   int    `json:"weight"`
 }
 
-type NutrionalFacts struct {
+type Nutrient struct {
+	Label    string `json:"label"`
+	Quantity string `json:"quantity"`
+	Unit     string `json:"unit"`
+}
+
+type TotalNutrients struct {
+	AllNutrients []Nutrient `json:"totalNutrients"`
 }
 
 // FirestoreDatabase implements our Database access through Firestore
