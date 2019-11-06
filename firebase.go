@@ -3,16 +3,16 @@ package cravings
 import (
 	"context"
 	"fmt"
-	"log"
 
 	firebase "firebase.google.com/go"
 	"github.com/pkg/errors"
 	"google.golang.org/api/option"
 )
 
+// Flytt til globalfil senere
 var FireBaseDB = FirestoreDatabase{}
 
-func DBInit() {
+func DBInit() error {
 	// Firebase initialisation
 	FireBaseDB.Ctx = context.Background()
 	// We use a service account, load credentials file that you downloaded from your project's settings menu.
@@ -25,8 +25,9 @@ func DBInit() {
 
 	FireBaseDB.Client, err = app.Firestore(FireBaseDB.Ctx)
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Println("Failed to create app")
 	}
+	return err
 }
 
 //  Func creates document which is to store a webhook

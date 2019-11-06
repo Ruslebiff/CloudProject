@@ -22,6 +22,9 @@ type Ingredient struct {
 	Weight   int    `json:"weight"`
 }
 
+type NutrionalFacts struct {
+}
+
 // FirestoreDatabase implements our Database access through Firestore
 type FirestoreDatabase struct {
 	Ctx    context.Context
