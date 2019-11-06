@@ -96,7 +96,7 @@ func DBReadIngredientByID(id string) (Ingredient, error) {
 func DBReadAllRecipes() ([]Recipe, error) {
 	var temprecipes []Recipe
 	recipe := Recipe{}
-	iter := FireBaseDB.Client.Collection(RecipeCollection).Documents(fb.Ctx)
+	iter := FireBaseDB.Client.Collection(RecipeCollection).Documents(FireBaseDB.Ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
@@ -119,7 +119,7 @@ func DBReadAllRecipes() ([]Recipe, error) {
 func DBReadAllIngredients() ([]Recipe, error) {
 	var tempingredients []Ingredient
 	ingredient := Ingredient{}
-	iter := FireBaseDB.Client.Collection(IngredientCollection).Documents(fb.Ctx)
+	iter := FireBaseDB.Client.Collection(IngredientCollection).Documents(FireBaseDB.Ctx)
 	for {
 		doc, err := iter.Next()
 		if err == iterator.Done {
