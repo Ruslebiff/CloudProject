@@ -75,6 +75,28 @@ func DBDelete(id string, collection string) error {
 	return nil
 }
 
+// DBReadRecipeByName reads a single recipe by Name
+// UNTESTED
+func DBReadRecipeByName(name string) (Recipe, error) {
+	allrec, err := DBReadAllRecipes()
+	temp := Recipe{}
+	if err != nil {
+		return temp, err
+	}
+
+	for _, i := range allrec {
+		if i.RecipeName == name {
+			fmt.Println(name)
+			temp.ID = i.ID
+			temp.RecipeName = i.RecipeName
+			temp.Ingredients = i.Ingredients
+
+			return temp, err
+		}
+	}
+	return temp, err
+}
+
 // DBReadRecipeByID reads a single recipe by ID
 func DBReadRecipeByID(id string) (Recipe, error) {
 	res := Recipe{} //  Creates an empty struct for the recipe
