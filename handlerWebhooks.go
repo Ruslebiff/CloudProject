@@ -40,7 +40,7 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error: ", err)
 		}
 
-		if len(parts) == 3 { //check if an id is choosen
+		if parts[3] != "" { //check if an id is choosen
 			for i := range webhooks { // loop true webhooks
 				if webhooks[i].ID == parts[3] { // check if choosen id is in webhooks
 					err = json.NewEncoder(w).Encode(webhooks[i]) // encode choosen webhook
