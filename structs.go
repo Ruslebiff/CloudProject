@@ -33,6 +33,7 @@ type TotalNutrients struct {
 		Fat Nutrient `json:"FAT"`
 		Protein Nutrient `json:"PROCNT"`
 		Sugar Nutrient `json:"SUGAR"`
+		Energy Nutrient `json:"ENERC_KCAL"`
 	} `json:"totalNutrients"`
 }
 
@@ -40,8 +41,8 @@ type TotalDaily struct {
 	AllNutrients struct{
 		Fat Nutrient `json:"FAT"`
 		Protein Nutrient `json:"PROCNT"`
-		Sugar Nutrient `json:"SUGAR"`
-	} `json:"totalNutrients"`
+		Energy Nutrient `json:"ENERC_KCAL"`
+	} `json:"totalDaily"`
 }
 
 // FirestoreDatabase implements our Database access through Firestore
