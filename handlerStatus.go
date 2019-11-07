@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// Status struct for status endpoint
 type Status struct {
 	Edemam   int     `json:"edemam"`
 	Database int     `json:"database"`
@@ -13,6 +14,7 @@ type Status struct {
 	Version  string  `json:"version"`
 }
 
+// HandlerStatus handles the status endpoint
 func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 	var S Status
 
