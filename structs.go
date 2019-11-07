@@ -76,3 +76,8 @@ type FirestoreDatabase struct {
 	Ctx    context.Context
 	Client *firestore.Client
 }
+
+type Token struct {
+	ID        string `json:"id"`
+	AuthToken string `json:"token"`
+}

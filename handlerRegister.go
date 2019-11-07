@@ -2,7 +2,9 @@ package cravings
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -10,28 +12,49 @@ import (
 func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	endpoint := parts[3]
-	//fmt.Println(endpoint)
+
 	switch r.Method {
 	// Gets either recipes or ingredients
 	case http.MethodGet:
 		switch endpoint {
 		case "ingredient":
 			ingredients := GetIngredient(w, r)
+			totalIngredients := strconv.Itoa(len(ingredients))
+			fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
 			json.NewEncoder(w).Encode(&ingredients)
 
 		case "recipe":
 			recipes := GetRecipe(w, r)
+			totalRecipes := strconv.Itoa(len(recipes))
+			fmt.Fprintln(w, "Total recipes: "+totalRecipes)
 			json.NewEncoder(w).Encode(&recipes)
 		}
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
-		switch endpoint {
-		case "ingredient": // Posts ingredient
-			RegisterIngredient(w, r)
+		var r2 *http.Request
+		r2.Body = r.Body
+		authToken := Token{}
+		json.NewDecoder(r2.Body).Decode(&authToken)
 
-		case "recipe": // Posts recipe
-			RegisterRecipe(w, r)
-		}
+		fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
+		//  Dettte funker ikke, !!!!! For at det skal funke kommenter ut DBCHECKAUTHORIZATION
+		i := Ingredient{}
+		json.NewDecoder(r.Body).Decode(&i)
+		fmt.Println(i.Name)
+		// //  To post either one, you have to post it with a POST request with a .json body i.e. Postman
+		// //  and include the authorization token given by the developers through mail inside the body
+		// //  Detailed instructions for registering is in the readme
+		// if DBCheckAuthorization(authToken.AuthToken) {
+		// 	switch endpoint {
+		// 	case "ingredient": // Posts ingredient
+		// 		RegisterIngredient(w, r)
+		// 	case "recipe": // Posts recipe
+		// 		RegisterRecipe(w, r)
+		// 	}
+		// } else {
+		// 	http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
+		// 	break
+		// }
 	}
 	w.Header().Add("content-type", "application/json")
 }
@@ -39,15 +62,17 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
 func RegisterIngredient(w http.ResponseWriter, r *http.Request) {
 	i := Ingredient{}
-	err := json.NewDecoder(r.Body).Decode(&i)
-	if err != nil {
-		http.Error(w, "Could not decode body of request"+err.Error(), http.StatusBadRequest)
-	}
+	json.NewDecoder(r.Body).Decode(&i)
+	fmt.Println(i.Name)
+	// err := json.NewDecoder(r.Body).Decode(&i)
+	// if err != nil {
+	// 	http.Error(w, "Could heiheiheihnot save document to collection  "+err.Error(), http.StatusBadRequest)
+	// }
 
-	err = DBSaveIngredient(&i)
-	if err != nil {
-		http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
-	}
+	// err = DBSaveIngredient(&i)
+	// if err != nil {
+	// 	http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+	// }
 
 	w.Header().Add("content-type", "application/json")
 }
