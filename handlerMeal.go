@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// HandlerMeal is the handler for getting which recipes you can make out of your ingredients
 func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 	ingredientsList := strings.Split(r.URL.Query().Get("ingredients"), "_") //Array of ingredients

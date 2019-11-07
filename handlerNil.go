@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+// HandlerNil is the default handler for bad URL requests
 func HandlerNil(w http.ResponseWriter, r *http.Request) { //standard default response
 	fmt.Println("Default Handler: Invalid request received.")
 	http.Error(w, "Invalid request", http.StatusBadRequest)

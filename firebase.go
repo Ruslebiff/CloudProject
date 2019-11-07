@@ -175,6 +175,7 @@ func DBReadAllIngredients() ([]Ingredient, error) {
 	return tempingredients, nil
 }
 
+// DBReadAllWebhooks returns all registered webhooks in the database
 func DBReadAllWebhooks() ([]Webhook, error) {
 	var tempWebhooks []Webhook
 	Wh := Webhook{}
