@@ -55,6 +55,7 @@ func DBSaveIngredient(i *Ingredient) error { //  Creates a new document in fireb
 	return nil
 }
 
+// DBSaveWebhook saves a new webhook to the database
 func DBSaveWebhook(i *Webhook) error {
 	ref := FireBaseDB.Client.Collection(WebhooksCollection).NewDoc()
 	i.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
