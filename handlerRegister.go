@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// Function which registers either an ingredient or a recipe
+// HandlerRegister which registers either an ingredient or a recipe
 func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	endpoint := parts[3]
@@ -92,6 +92,7 @@ func RegisterRecipe(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("content-type", "application/json")
 }
 
+// GetRecipe returns all recipes from database using the DBReadAllRecipes function
 func GetRecipe(w http.ResponseWriter, r *http.Request) []Recipe {
 	var allRecipes []Recipe
 	allRecipes, err := DBReadAllRecipes()
@@ -102,6 +103,7 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) []Recipe {
 	return allRecipes
 }
 
+// GetIngredient returns all ingredients from database using the DBReadAllIngredients function
 func GetIngredient(w http.ResponseWriter, r *http.Request) []Ingredient {
 	var allIngredients []Ingredient
 	allIngredients, err := DBReadAllIngredients()

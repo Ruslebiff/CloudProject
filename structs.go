@@ -80,4 +80,12 @@ type FirestoreDatabase struct {
 type Token struct {
 	ID        string `json:"id"`
 	AuthToken string `json:"token"`
+// Status struct for status endpoint
+type Status struct {
+	Edemam           int     `json:"edemam"`
+	Database         int     `json:"database"`
+	TotalRecipe      int     `json:"total recipes"`
+	TotalIngredients int     `json:"total ingredients"`
+	Uptime           float64 `json:"uptime"`
+	Version          string  `json:"version"`
 }
