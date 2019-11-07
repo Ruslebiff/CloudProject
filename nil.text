@@ -1,0 +1,26 @@
+
+Endpoints available:
+
+************************************************************************
+
+Register endpoint: /cravings/register/
+Here you can registrate a recipe
+
+************************************************************************
+
+Status endpoint: /cravings/status/
+Here you can see that status for the website
+
+************************************************************************
+
+Meal endpoint: /cravings/meal/
+Here you can get recipe to make, out from what ingridients you have
+
+************************************************************************
+
+Webhooks endpoint: /cravings/webhooks/
+Here you can get information about webhooks for this website
+
+************************************************************************
+
+
