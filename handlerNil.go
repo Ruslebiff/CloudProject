@@ -3,7 +3,6 @@ package cravings
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 )
@@ -14,17 +13,17 @@ func HandlerNil(w http.ResponseWriter, r *http.Request) { //standard default res
 
 	// ********** Informatian about endpoints *************
 
-	file, err := os.Open("nil.text")
+	file, err := os.Open("nil.text") // opens text file
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Can't open file: ", err)
 	}
 
-	defer file.Close()
+	defer file.Close() // close file at the end
 
 	scanner := bufio.NewScanner(file)
 
-	for scanner.Scan() {
-		fmt.Fprintln(w, scanner.Text())
+	for scanner.Scan() { // loops true file
+		fmt.Fprintln(w, scanner.Text()) // print out one and one line
 	}
 
 }
