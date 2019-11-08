@@ -3,6 +3,7 @@ package cravings
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,48 +32,48 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 		}
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
-		var r2 *http.Request
-		r2.Body = r.Body
 		authToken := Token{}
-		json.NewDecoder(r2.Body).Decode(&authToken)
+		resp, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Couldn't read request: ", http.StatusBadRequest)
+		}
 
-		fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAa")
-		//  Dettte funker ikke, !!!!! For at det skal funke kommenter ut DBCHECKAUTHORIZATION
-		i := Ingredient{}
-		json.NewDecoder(r.Body).Decode(&i)
-		fmt.Println(i.Name)
-		// //  To post either one, you have to post it with a POST request with a .json body i.e. Postman
-		// //  and include the authorization token given by the developers through mail inside the body
-		// //  Detailed instructions for registering is in the readme
-		// if DBCheckAuthorization(authToken.AuthToken) {
-		// 	switch endpoint {
-		// 	case "ingredient": // Posts ingredient
-		// 		RegisterIngredient(w, r)
-		// 	case "recipe": // Posts recipe
-		// 		RegisterRecipe(w, r)
-		// 	}
-		// } else {
-		// 	http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
-		// 	break
-		// }
+		err = json.Unmarshal(resp, &authToken)
+		if err != nil {
+			http.Error(w, "Unable to unmarshal request body: ", http.StatusBadRequest)
+		}
+
+		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
+		//  and include the authorization token given by the developers through mail inside the body
+		//  Detailed instructions for registering is in the readme
+		if DBCheckAuthorization(authToken.AuthToken) {
+			switch endpoint {
+			case "ingredient": // Posts ingredient
+				RegisterIngredient(w, resp)
+
+			case "recipe": // Posts recipe
+				RegisterRecipe(w, r)
+			}
+		} else {
+			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
+			break
+		}
 	}
 	w.Header().Add("content-type", "application/json")
 }
 
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
-func RegisterIngredient(w http.ResponseWriter, r *http.Request) {
+func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	i := Ingredient{}
-	json.NewDecoder(r.Body).Decode(&i)
-	fmt.Println(i.Name)
-	// err := json.NewDecoder(r.Body).Decode(&i)
-	// if err != nil {
-	// 	http.Error(w, "Could heiheiheihnot save document to collection  "+err.Error(), http.StatusBadRequest)
-	// }
+	err := json.Unmarshal(respo, &i)
+	if err != nil {
+		http.Error(w, "Could not save UNMARSHAL ISTEDDT document to collection  "+err.Error(), http.StatusBadRequest)
+	}
 
-	// err = DBSaveIngredient(&i)
-	// if err != nil {
-	// 	http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
-	// }
+	err = DBSaveIngredient(&i)
+	if err != nil {
+		http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+	}
 
 	w.Header().Add("content-type", "application/json")
 }
