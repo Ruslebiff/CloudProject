@@ -19,26 +19,26 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 		switch endpoint {
 		case "ingredient":
-			ingredients := GetIngredient(w, r)
-			totalIngredients := strconv.Itoa(len(ingredients))
+			ingredients := GetIngredient(w, r)                 // calls func
+			totalIngredients := strconv.Itoa(len(ingredients)) // sets total ingredients
 			fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
 			json.NewEncoder(w).Encode(&ingredients)
 
 		case "recipe":
-			recipes := GetRecipe(w, r)
-			totalRecipes := strconv.Itoa(len(recipes))
+			recipes := GetRecipe(w, r)                 //calls func
+			totalRecipes := strconv.Itoa(len(recipes)) // sets total recipes
 			fmt.Fprintln(w, "Total recipes: "+totalRecipes)
 			json.NewEncoder(w).Encode(&recipes)
 		}
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
 		authToken := Token{}
-		resp, err := ioutil.ReadAll(r.Body)
+		resp, err := ioutil.ReadAll(r.Body) // reads body from request
 		if err != nil {
 			http.Error(w, "Couldn't read request: ", http.StatusBadRequest)
 		}
 
-		err = json.Unmarshal(resp, &authToken)
+		err = json.Unmarshal(resp, &authToken) // unmarshal the requested input
 		if err != nil {
 			http.Error(w, "Unable to unmarshal request body: ", http.StatusBadRequest)
 		}
@@ -46,7 +46,7 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
 		//  and include the authorization token given by the developers through mail inside the body
 		//  Detailed instructions for registering is in the readme
-		if DBCheckAuthorization(authToken.AuthToken) {
+		if DBCheckAuthorization(authToken.AuthToken) { // check for Authorization
 			switch endpoint {
 			case "ingredient": // Posts ingredient
 				RegisterIngredient(w, resp)
@@ -54,12 +54,12 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 			case "recipe": // Posts recipe
 				RegisterRecipe(w, resp)
 			}
-		} else {
+		} else { // there is no authorization
 			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
 			break
 		}
 	}
-	w.Header().Add("content-type", "application/json")
+	w.Header().Add("content-type", "application/json") // givse json format to output on webpage
 }
 
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
@@ -70,15 +70,15 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	GetNutrients(&ing, w)
+	GetNutrients(&ing, w) // calls func
 
-	allIngredients, err := DBReadAllIngredients()
+	allIngredients, err := DBReadAllIngredients() // reads all ingredients from database
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 
-	for i := range allIngredients {
-		if ing.Name == allIngredients[i].Name {
+	for i := range allIngredients { // loops true all ingredients
+		if ing.Name == allIngredients[i].Name { // check if name exists in database
 			found = true // found ingredient in database
 			http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
 			break
@@ -91,7 +91,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 			http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 		} else {
 			// if saving didn't return error, call webhooks
-			CallURL(IngredientCollection, &ing)
+			CallURL(IngredientCollection, &ing) // post a webhook to webhooks.site with information on what has been added
 			fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.")
 		}
 	}
@@ -111,25 +111,25 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	var missingingredients []string        // name of ingredients in recipe missing in database
 	recipeNameInUse := false
 
-	allRecipes, err := DBReadAllRecipes()
+	allRecipes, err := DBReadAllRecipes() // reads all recipes from database
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
-	allIngredients, err := DBReadAllIngredients()
+	allIngredients, err := DBReadAllIngredients() // reads all ingredients from database
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 
-	for i := range allRecipes {
-		if allRecipes[i].RecipeName == rec.RecipeName {
+	for i := range allRecipes { // loops true all recipes
+		if allRecipes[i].RecipeName == rec.RecipeName { // checks if recipe name is in use
 			recipeNameInUse = true
 		}
 	}
 
-	for i := range rec.Ingredients { //
+	for i := range rec.Ingredients { // loops true all ingredients in recipe
 		found := false
-		for _, j := range allIngredients { // l
-			if rec.Ingredients[i].Name == j.Name {
+		for _, j := range allIngredients { // loops true all ingredients
+			if rec.Ingredients[i].Name == j.Name { // check if ingredients in recipe exsists in database
 				ingredientsfound = ingredientsfound + 1
 				found = true
 				break
