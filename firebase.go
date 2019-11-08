@@ -194,7 +194,7 @@ func DBReadAllWebhooks() ([]Webhook, error) {
 		if err != nil {
 			log.Fatalf("Failed to iterate: %v", err)
 		}
-		//fmt.Println(doc.Data())
+
 		err = doc.DataTo(&Wh) // put data into temp struct
 		if err != nil {
 			fmt.Println("Error when converting retrieved document to struct: ", err)
@@ -221,7 +221,6 @@ func DBCheckAuthorization(tokenParam string) bool {
 		if err != nil {
 			log.Fatalf("Failed to iterate: %v", err)
 		}
-		//fmt.Println(doc.Data())
 		err = doc.DataTo(&tempToken) // put data into temp struct
 		if err != nil {
 			fmt.Println("Error when converting retrieved document to struct: ", err)

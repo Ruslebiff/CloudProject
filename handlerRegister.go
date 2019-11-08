@@ -69,7 +69,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-
+	GetNutrients(&i, w)
 	err = DBSaveIngredient(&i)
 	if err != nil {
 		http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
@@ -113,4 +113,24 @@ func GetIngredient(w http.ResponseWriter, r *http.Request) []Ingredient {
 	}
 
 	return allIngredients
+}
+
+func GetNutrients(ing *Ingredient, w http.ResponseWriter) {
+	client := http.DefaultClient
+	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
+	APIURL += strconv.Itoa(ing.Quantity)
+	APIURL += "%20"
+	if ing.Unit != "" {
+		APIURL += ing.Unit
+		APIURL += "%20"
+	}
+	APIURL += ing.Name
+	fmt.Println(APIURL)
+	r := DoRequest(APIURL, client, w)
+
+	err := json.NewDecoder(r.Body).Decode(&ing)
+	if err != nil {
+		http.Error(w, "Could not HER BAJSER JEG PAA MEE decode response body "+err.Error(), http.StatusInternalServerError)
+	}
+
 }
