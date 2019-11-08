@@ -1,7 +1,10 @@
 package cravings
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -27,5 +30,42 @@ func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 		fmt.Fprintln(w, s+" is missing")
 	}
 	return test
+
+}
+
+// CallURL post webhooks to webhooks.site
+func CallURL(event string, s interface{}) {
+
+	webhooks, err := DBReadAllWebhooks()
+	if err != nil {
+		fmt.Println("Error: ", err)
+	}
+
+	for i := range webhooks {
+		if webhooks[i].Event == event {
+			var request = s
+
+			requestBody, err := json.Marshal(request)
+			if err != nil {
+				fmt.Println("Can not encode: " + err.Error())
+			}
+
+			fmt.Println("Attempting invoation of URL " + webhooks[i].URL + "...")
+
+			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader([]byte(requestBody)))
+			if err != nil {
+				fmt.Println("Error in HTTP request: " + err.Error())
+			}
+
+			response, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Println("Something vent wrong: " + err.Error())
+			}
+
+			fmt.Println("Webhook body: " + string(response))
+
+		}
+
+	}
 
 }
