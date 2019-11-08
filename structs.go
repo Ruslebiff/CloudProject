@@ -3,7 +3,6 @@ package cravings
 import (
 	"context"
 	"time"
-
 	"cloud.google.com/go/firestore"
 )
 
