@@ -52,7 +52,7 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 				RegisterIngredient(w, resp)
 
 			case "recipe": // Posts recipe
-				RegisterRecipe(w, r)
+				RegisterRecipe(w, resp)
 			}
 		} else {
 			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
@@ -67,7 +67,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	i := Ingredient{}
 	err := json.Unmarshal(respo, &i)
 	if err != nil {
-		http.Error(w, "Could not save UNMARSHAL ISTEDDT document to collection  "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
 
 	err = DBSaveIngredient(&i)
@@ -79,11 +79,11 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 }
 
 // RegisterRecipe func saves the recipe to its respective collection in our firestore DB
-func RegisterRecipe(w http.ResponseWriter, r *http.Request) {
+func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	rec := Recipe{}
-	err := json.NewDecoder(r.Body).Decode(&rec)
+	err := json.Unmarshal(respo, &rec)
 	if err != nil {
-		http.Error(w, "Could not decode body of request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
 
 	err = DBSaveRecipe(&rec)
