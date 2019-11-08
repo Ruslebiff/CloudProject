@@ -89,12 +89,14 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 	}
 
 	if grams > 0 {
+		ing.Unit = "g"
 		ing.Nutrients.Energy.Quantity *= grams
 		ing.Nutrients.Fat.Quantity *= grams
 		ing.Nutrients.Carbohydrate.Quantity *= grams
 		ing.Nutrients.Protein.Quantity *= grams
 		ing.Nutrients.Sugar.Quantity *= grams
 	} else if litres > 0 {
+		ing.Unit = "l"
 		ing.Nutrients.Energy.Quantity *= litres
 		ing.Nutrients.Fat.Quantity *= litres
 		ing.Nutrients.Carbohydrate.Quantity *= litres
