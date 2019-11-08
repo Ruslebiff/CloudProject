@@ -26,12 +26,13 @@ type RecipePrint struct {
 
 // Ingredient Struct for an ingredient used in firebase.go and register.go
 type Ingredient struct {
-	ID       string `json:"id"`
-	Quantity int    `json:"quantity"`
-	Unit     string `json:"unit"`
-	Name     string `json:"name"`
-	Calories int    `json:"kcal"`
-	Weight   int    `json:"weight"`
+	ID        string         `json:"id"`
+	Quantity  int            `json:"quantity"`
+	Unit      string         `json:"unit"`
+	Name      string         `json:"name"`
+	Calories  int            `json:"calories"`
+	Weight    float64        `json:"totalWeight"`
+	Nutrients TotalNutrients `json:"totalNutrients"`
 }
 
 // Webhook Struct for an webhook used in firebase.go and webhooks.go
@@ -44,29 +45,30 @@ type Webhook struct {
 
 //Nutrient Struct for nutrient from Edamam
 type Nutrient struct {
-	Label    string `json:"label"`
-	Quantity string `json:"quantity"`
-	Unit     string `json:"unit"`
+	Label    string  `json:"label"`
+	Quantity float64 `json:"quantity"`
+	Unit     string  `json:"unit"`
 }
 
 //TotalNutrients Struct that stores the different nutrients from Edamam
 type TotalNutrients struct {
-	AllNutrients struct {
-		Fat     Nutrient `json:"FAT"`
-		Protein Nutrient `json:"PROCNT"`
-		Sugar   Nutrient `json:"SUGAR"`
-		Energy  Nutrient `json:"ENERC_KCAL"`
-	} `json:"totalNutrients"`
+	Fat          Nutrient `json:"FAT"`
+	Protein      Nutrient `json:"PROCNT"`
+	Carbohydrate Nutrient `json:"CHOCDF"`
+	Sugar        Nutrient `json:"SUGAR"`
+	Energy       Nutrient `json:"ENERC_KCAL"`
 }
 
+// VI FÅR SE OM DETTE BLIR MED
 //TotalDaily Struct that stores the % of the daily nutrition the recipe contains (?-)
-type TotalDaily struct {
-	AllNutrients struct {
-		Fat     Nutrient `json:"FAT"`
-		Protein Nutrient `json:"PROCNT"`
-		Energy  Nutrient `json:"ENERC_KCAL"`
-	} `json:"totalDaily"`
-}
+// type TotalDaily struct {
+// 	AllNutrients struct {
+// 		Fat          Nutrient `json:"FAT"`
+// 		Protein      Nutrient `json:"PROCNT"`
+// 		Carbohydrate Nutrient `json:"CHOCDF"`
+// 		Energy       Nutrient `json:"ENERC_KCAL"`
+// 	} `json:"totalDaily"`
+// }
 
 type RecipeAnalysisPost struct {
 	Title       string   `json:"title"`
