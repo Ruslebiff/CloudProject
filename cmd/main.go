@@ -9,7 +9,8 @@ import (
 	"time"
 )
 
-var StartTime = time.Now() // sets start time
+// StartTime sets start time
+var StartTime = time.Now()
 
 func main() {
 
@@ -20,6 +21,8 @@ func main() {
 	} else {
 		fmt.Println("Database init OK")
 	}
+
+	defer cravings.DBClose()
 
 	port := os.Getenv("PORT")
 	if port == "" {
