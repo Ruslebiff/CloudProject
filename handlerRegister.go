@@ -144,6 +144,10 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	diff := strconv.Itoa(recingredients - ingredientsfound)
 
 	if ingredientsfound == recingredients && recipeNameInUse == false {
+		err = GetRecipeNutrients(&rec)
+		if err != nil {
+			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
+		}
 		err = DBSaveRecipe(&rec)
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
@@ -197,7 +201,7 @@ func GetIngredient(w http.ResponseWriter, r *http.Request) []Ingredient {
 	return allIngredients
 }
 
-func GetNutrients(ing *Ingredient, w http.ResponseWriter) {
+func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
 	client := http.DefaultClient
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
 	APIURL += strconv.Itoa(ing.Quantity)
@@ -215,4 +219,8 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) {
 		http.Error(w, "Could not HER BAJSER JEG PAA MEE decode response body "+err.Error(), http.StatusInternalServerError)
 	}
 
+}
+
+func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
+	// todo
 }
