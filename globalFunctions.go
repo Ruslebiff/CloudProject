@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -71,16 +70,19 @@ func ReadIngredients(ingredients []string) []Ingredient {
 	IngredientList := []Ingredient{}
 	for i := range ingredients {
 		ingredient := strings.Split(ingredients[i], "|")
-		var quantity int
-		var err error
-		if len(ingredient) < 2 { //checks if quantity is set for this ingredient
-			quantity = 1.0 //Sets quantity to 'default' if not defined
-		} else {
-			quantity, err = strconv.Atoi(ingredient[1])
-			if err != nil { //if error set to 1
-				quantity = 1.0
+		/*
+			var quantity float64
+			var err error
+			if len(ingredient) < 2 { //checks if quantity is set for this ingredient
+				quantity = 1.0 //Sets quantity to 'default' if not defined
+			} else {
+				quantity, err = strconv.Atoi(ingredient[1])
+				if err != nil { //if error set to 1
+					quantity = 1.0
+				}
 			}
-		}
+		*/
+		quantity := 1.0
 		ingredientTemp := Ingredient{}
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
 		ingredientTemp.Quantity = quantity  //quantity of the ingredient
@@ -106,4 +108,47 @@ func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
 		}
 	}
 	return list
+}
+
+// CalcNutrition calculates nutritional info for given ingredient
+func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
+	var grams float64
+	var litres float64
+
+	if unit == "l" {
+		litres += quantity
+	}
+	if unit == "dl" {
+		litres += quantity / 10
+	}
+	if unit == "cl" {
+		litres += quantity / 100
+	}
+	if unit == "ml" {
+		litres += quantity / 1000
+	}
+	if unit == "g" {
+		grams += quantity
+	}
+	if unit == "kg" {
+		grams += quantity * 1000
+	}
+
+	if grams > 0 {
+		ing.Unit = "g"
+		ing.Nutrients.Energy.Quantity *= grams
+		ing.Nutrients.Fat.Quantity *= grams
+		ing.Nutrients.Carbohydrate.Quantity *= grams
+		ing.Nutrients.Protein.Quantity *= grams
+		ing.Nutrients.Sugar.Quantity *= grams
+	} else if litres > 0 {
+		ing.Unit = "l"
+		ing.Nutrients.Energy.Quantity *= litres
+		ing.Nutrients.Fat.Quantity *= litres
+		ing.Nutrients.Carbohydrate.Quantity *= litres
+		ing.Nutrients.Protein.Quantity *= litres
+		ing.Nutrients.Sugar.Quantity *= litres
+	}
+
+	return ing
 }
