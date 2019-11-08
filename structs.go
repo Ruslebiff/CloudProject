@@ -16,6 +16,7 @@ type Recipe struct {
 	TotalWeight     float64
 }
 
+//RecipePrint struct containing the ingredients the user has, needs and what remains after using the recipe
 type RecipePrint struct {
 	RecipeName  string `json:"recipeName"`
 	Ingredients struct {
