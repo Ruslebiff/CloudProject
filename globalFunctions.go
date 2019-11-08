@@ -63,3 +63,44 @@ func CallURL(event string, s interface{}) {
 	}
 
 }
+
+// CalcNutrition calculates nutritional info for given ingredient
+func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
+	var grams float64
+	var litres float64
+
+	if unit == "l" {
+		litres += quantity
+	}
+	if unit == "dl" {
+		litres += quantity / 10
+	}
+	if unit == "cl" {
+		litres += quantity / 100
+	}
+	if unit == "ml" {
+		litres += quantity / 1000
+	}
+	if unit == "g" {
+		grams += quantity
+	}
+	if unit == "kg" {
+		grams += quantity * 1000
+	}
+
+	if grams > 0 {
+		ing.Nutrients.Energy.Quantity *= grams
+		ing.Nutrients.Fat.Quantity *= grams
+		ing.Nutrients.Carbohydrate.Quantity *= grams
+		ing.Nutrients.Protein.Quantity *= grams
+		ing.Nutrients.Sugar.Quantity *= grams
+	} else if litres > 0 {
+		ing.Nutrients.Energy.Quantity *= litres
+		ing.Nutrients.Fat.Quantity *= litres
+		ing.Nutrients.Carbohydrate.Quantity *= litres
+		ing.Nutrients.Protein.Quantity *= litres
+		ing.Nutrients.Sugar.Quantity *= litres
+	}
+
+	return ing
+}
