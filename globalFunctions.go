@@ -4,9 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"strconv"
 )
 
 func DoRequest(url string, c *http.Client, w http.ResponseWriter) *http.Response {
@@ -58,13 +56,7 @@ func CallURL(event string, s interface{}) {
 				fmt.Println("Error in HTTP request: " + err.Error())
 			}
 
-			response, err := ioutil.ReadAll(resp.Body)
-			if err != nil {
-				fmt.Println("Something vent wrong: " + err.Error())
-			}
-
-			fmt.Println("Webhook invoked. Received status code " + strconv.Itoa(resp.StatusCode) +
-				" and body: " + string(response))
+			defer resp.Body.Close() // close body
 
 		}
 
