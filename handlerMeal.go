@@ -33,21 +33,19 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 				if len(ingredient) < 2 { //checks if quantity is set for this ingredient
 					quantity = 1 //Sets quantity to 'default' if not defined
 				} else {
-					t, err := strconv.Atoi(ingredient[1])
+					quantity, err = strconv.Atoi(ingredient[1])
 					if err != nil { //if error set to 1
 						quantity = 1
-					} else { //set to given value
-						quantity = t
 					}
 				}
 
 				if i.Name == j { //if it matches ingredient from recipe
-
 					if quantity >= i.Quantity { //if there are more of an ingredient than needed
 						have = true                   //have enough ingredients
 						rest := quantity - i.Quantity //quantity remaining after using recipe
 						i.Quantity = quantity
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
+
 						if rest != 0 { //if there is a rest,add it to the remaining list
 							i.Quantity = rest
 							recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining, i)
@@ -57,15 +55,15 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 						i.Quantity -= quantity //sets quantity to the 'missing' value
 					}
 					fmt.Println("have " + j)
-					break
+					break //break out of loop since the ingredient was found
 				}
 			}
-			if !have {
+			if !have { //if ingredient was not found, put it in the missing list
 				fmt.Println("dont " + i.Name)
 				recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 			}
 		}
 		recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 	}
-	fmt.Println(w, recipeCount)
+	fmt.Fprintln(w, recipeCount)
 }
