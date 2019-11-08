@@ -65,19 +65,36 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
 func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	ing := Ingredient{}
+	found := false // ingredient found or not in database
 	err := json.Unmarshal(respo, &ing)
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
 
-	err = DBSaveIngredient(&ing)
+	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
-		http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 
-	w.Header().Add("content-type", "application/json")
+	for i := range allIngredients {
+		if ing.Name == allIngredients[i].Name {
+			found = true // found ingredient in database
+			http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
+			break
+		}
+	}
 
-	CallURL(IngredientCollection, &i)
+	if found == false { // if ingredient is not found in database
+		err = DBSaveIngredient(&ing) // save it
+		if err != nil {
+			http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+		} else {
+			// if saving didn't return error, call webhooks
+			CallURL(IngredientCollection, &ing)
+			fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.")
+		}
+	}
+
 }
 
 // RegisterRecipe func saves the recipe to its respective collection in our firestore DB
@@ -118,6 +135,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 		} else {
+			CallURL(RecipeCollection, &rec)
 			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
 		}
 	} else {
@@ -133,10 +151,6 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		fmt.Fprintf(w, "\n Register these ingredients first!")
 
 	}
-	w.Header().Add("content-type", "application/json")
-
-	CallURL(RecipeCollection, &rec)
-
 }
 
 // GetRecipe returns all recipes from database using the DBReadAllRecipes function
