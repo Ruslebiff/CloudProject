@@ -148,6 +148,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		if err != nil {
 			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
 		}
+
 		err = DBSaveRecipe(&rec)
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
@@ -224,9 +225,16 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
 
 // GetRecipeNutrients calculates total nutritients in a recipe
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
+
 	for i := range rec.Ingredients {
 		temptotalnutrients := CalcNutrition(rec.Ingredients[i], rec.Ingredients[i].Unit, rec.Ingredients[i].Quantity)
 		// assign these to rec totalnutrients or something
+
+		rec.AllNutrients.Energy.Quantity += temptotalnutrients.Nutrients.Energy.Quantity
+		rec.AllNutrients.Fat.Quantity += temptotalnutrients.Nutrients.Fat.Quantity
+		rec.AllNutrients.Carbohydrate.Quantity += temptotalnutrients.Nutrients.Carbohydrate.Quantity
+		rec.AllNutrients.Sugar.Quantity += temptotalnutrients.Nutrients.Sugar.Quantity
+		rec.AllNutrients.Protein.Quantity += temptotalnutrients.Nutrients.Protein.Quantity
 	}
 
 	return nil
