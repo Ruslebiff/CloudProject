@@ -144,7 +144,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	diff := strconv.Itoa(recingredients - ingredientsfound)
 
 	if ingredientsfound == recingredients && recipeNameInUse == false {
-		err = GetRecipeNutrients(&rec)
+		//err = GetRecipeNutrients(&rec)
 		if err != nil {
 			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
 		}
@@ -221,6 +221,8 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
 
 }
 
+/*
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 	// todo
 }
+*/

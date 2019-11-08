@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 func DoRequest(url string, c *http.Client, w http.ResponseWriter) *http.Response {
@@ -62,4 +64,46 @@ func CallURL(event string, s interface{}) {
 
 	}
 
+}
+
+//ReadIngredients splits up the ingredient name from the quantity
+func ReadIngredients(ingredients []string) []Ingredient {
+	IngredientList := []Ingredient{}
+	for i := range ingredients {
+		ingredient := strings.Split(ingredients[i], "|")
+		var quantity int
+		var err error
+		if len(ingredient) < 2 { //checks if quantity is set for this ingredient
+			quantity = 1.0 //Sets quantity to 'default' if not defined
+		} else {
+			quantity, err = strconv.Atoi(ingredient[1])
+			if err != nil { //if error set to 1
+				quantity = 1.0
+			}
+		}
+		ingredientTemp := Ingredient{}
+		ingredientTemp.Name = ingredient[0] //name of the ingredient
+		ingredientTemp.Quantity = quantity  //quantity of the ingredient
+
+		IngredientList = append(IngredientList, ingredientTemp)
+	}
+	return IngredientList
+}
+
+func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
+	for n, i := range list {
+		if i.Name == ingredient.Name {
+			fmt.Println(i.Quantity, " : ", ingredient.Quantity)
+			if i.Quantity <= ingredient.Quantity {
+				fmt.Println("Sletter: " + i.Name)
+
+				list = append(list[:n], list[n+1:]...)
+			} else {
+				fmt.Println("Tar vekk: ", ingredient.Quantity, "fra: "+i.Name)
+				i.Quantity = i.Quantity - ingredient.Quantity
+			}
+			return list
+		}
+	}
+	return list
 }
