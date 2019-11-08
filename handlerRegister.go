@@ -64,18 +64,38 @@ func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
 func RegisterIngredient(w http.ResponseWriter, respo []byte) {
-	i := Ingredient{}
-	err := json.Unmarshal(respo, &i)
+	ing := Ingredient{}
+	found := false // ingredient found or not in database
+	err := json.Unmarshal(respo, &ing)
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	GetNutrients(&i, w)
-	err = DBSaveIngredient(&i)
+	GetNutrients(&ing, w)
+
+	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
-		http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 
-	w.Header().Add("content-type", "application/json")
+	for i := range allIngredients {
+		if ing.Name == allIngredients[i].Name {
+			found = true // found ingredient in database
+			http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
+			break
+		}
+	}
+
+	if found == false { // if ingredient is not found in database
+		err = DBSaveIngredient(&ing) // save it
+		if err != nil {
+			http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+		} else {
+			// if saving didn't return error, call webhooks
+			CallURL(IngredientCollection, &ing)
+			fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.")
+		}
+	}
+
 }
 
 // RegisterRecipe func saves the recipe to its respective collection in our firestore DB
@@ -86,11 +106,73 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
 
-	err = DBSaveRecipe(&rec)
+	recingredients := len(rec.Ingredients) // number of ingredients in recipe
+	ingredientsfound := 0                  // number of ingredients in recipe found in database
+	var missingingredients []string        // name of ingredients in recipe missing in database
+	recipeNameInUse := false
+
+	allRecipes, err := DBReadAllRecipes()
 	if err != nil {
-		http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
-	w.Header().Add("content-type", "application/json")
+	allIngredients, err := DBReadAllIngredients()
+	if err != nil {
+		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+	}
+
+	for i := range allRecipes {
+		if allRecipes[i].RecipeName == rec.RecipeName {
+			recipeNameInUse = true
+		}
+	}
+
+	for i := range rec.Ingredients { //
+		found := false
+		for _, j := range allIngredients { // l
+			if rec.Ingredients[i].Name == j.Name {
+				ingredientsfound = ingredientsfound + 1
+				found = true
+				break
+			}
+		}
+		if found == false {
+			missingingredients = append(missingingredients, rec.Ingredients[i].Name)
+		}
+	}
+
+	// difference for printing
+	diff := strconv.Itoa(recingredients - ingredientsfound)
+
+	if ingredientsfound == recingredients && recipeNameInUse == false {
+		err = DBSaveRecipe(&rec)
+		if err != nil {
+			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
+		} else {
+			//CallURL(RecipeCollection, &rec)
+			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
+		}
+
+	} else if ingredientsfound != recingredients {
+		// console print:
+		fmt.Println("Registration error: Recipe with name \"" + rec.RecipeName + "\" is missing " + diff + " ingredient(s)")
+
+		// http response:
+		http.Error(w, "Cannot save recipe, missing ingredient(s) in database:", http.StatusBadRequest)
+		for i := range missingingredients {
+			// print all missing ingredients in http response
+			fmt.Fprintln(w, "- "+missingingredients[i])
+		}
+		fmt.Fprintf(w, "\n Register these ingredients first!")
+
+	} else if recipeNameInUse == true {
+		// console print:
+		fmt.Println("Registration error: Recipe with name \"" + rec.RecipeName + "\" - name already in use.")
+
+		// http response:
+		http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
+	} else {
+		http.Error(w, "Cannot save recipe, internal server error.", http.StatusInternalServerError)
+	}
 }
 
 // GetRecipe returns all recipes from database using the DBReadAllRecipes function
