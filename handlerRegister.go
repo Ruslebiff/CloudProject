@@ -144,7 +144,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	diff := strconv.Itoa(recingredients - ingredientsfound)
 
 	if ingredientsfound == recingredients && recipeNameInUse == false {
-		err = GetRecipeNutrients(&rec)
+		err = GetRecipeNutrients(&rec, w)
 		if err != nil {
 			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
 		}
@@ -204,7 +204,7 @@ func GetIngredient(w http.ResponseWriter, r *http.Request) []Ingredient {
 func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
 	client := http.DefaultClient
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
-	APIURL += strconv.Itoa(ing.Quantity)
+	//APIURL += strconv.Itoa(ing.Quantity) // temp removed due to changing Quantity to Float64 type
 	APIURL += "%20"
 	if ing.Unit != "" {
 		APIURL += ing.Unit
