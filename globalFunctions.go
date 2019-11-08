@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 func doRequest(url string, c *http.Client, w http.ResponseWriter) *http.Response {
@@ -36,13 +37,13 @@ func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 // CallURL post webhooks to webhooks.site
 func CallURL(event string, s interface{}) {
 
-	webhooks, err := DBReadAllWebhooks()
+	webhooks, err := DBReadAllWebhooks() // gets all webhooks
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
 
-	for i := range webhooks {
-		if webhooks[i].Event == event {
+	for i := range webhooks { // loops true all webhooks
+		if webhooks[i].Event == event { // see if webhooks.event is same as event
 			var request = s
 
 			requestBody, err := json.Marshal(request)
@@ -52,7 +53,7 @@ func CallURL(event string, s interface{}) {
 
 			fmt.Println("Attempting invoation of URL " + webhooks[i].URL + "...")
 
-			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader([]byte(requestBody)))
+			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader([]byte(requestBody))) // post webhook to webhooks.site
 			if err != nil {
 				fmt.Println("Error in HTTP request: " + err.Error())
 			}
@@ -62,7 +63,8 @@ func CallURL(event string, s interface{}) {
 				fmt.Println("Something vent wrong: " + err.Error())
 			}
 
-			fmt.Println("Webhook body: " + string(response))
+			fmt.Println("Webhook invoked. Received status code " + strconv.Itoa(resp.StatusCode) +
+				" and body: " + string(response))
 
 		}
 
