@@ -94,7 +94,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
-		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 
 	for i := range rec.Ingredients { //
@@ -133,13 +133,10 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		fmt.Fprintf(w, "\n Register these ingredients first!")
 
 	}
-<<<<<<< HEAD
-=======
 	w.Header().Add("content-type", "application/json")
 
 	CallURL(RecipeCollection, &rec)
 
->>>>>>> a982a422473ea5934b7b1955eb03f65008e604be
 }
 
 // GetRecipe returns all recipes from database using the DBReadAllRecipes function
