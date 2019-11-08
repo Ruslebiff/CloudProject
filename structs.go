@@ -27,7 +27,7 @@ type RecipePrint struct {
 // Ingredient Struct for an ingredient used in firebase.go and register.go
 type Ingredient struct {
 	ID        string         `json:"id"`
-	Quantity  int            `json:"quantity"`
+	Quantity  float64        `json:"quantity"`
 	Unit      string         `json:"unit"`
 	Name      string         `json:"name"`
 	Calories  int            `json:"calories"`
