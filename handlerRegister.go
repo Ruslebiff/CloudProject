@@ -70,6 +70,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
+	GetNutrients(&ing, w)
 
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
@@ -108,10 +109,21 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	recingredients := len(rec.Ingredients) // number of ingredients in recipe
 	ingredientsfound := 0                  // number of ingredients in recipe found in database
 	var missingingredients []string        // name of ingredients in recipe missing in database
+	recipeNameInUse := false
 
+	allRecipes, err := DBReadAllRecipes()
+	if err != nil {
+		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
+	}
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+	}
+
+	for i := range allRecipes {
+		if allRecipes[i].RecipeName == rec.RecipeName {
+			recipeNameInUse = true
+		}
 	}
 
 	for i := range rec.Ingredients { //
@@ -120,6 +132,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 			if rec.Ingredients[i].Name == j.Name {
 				ingredientsfound = ingredientsfound + 1
 				found = true
+				break
 			}
 		}
 		if found == false {
@@ -130,15 +143,16 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	// difference for printing
 	diff := strconv.Itoa(recingredients - ingredientsfound)
 
-	if ingredientsfound == recingredients {
+	if ingredientsfound == recingredients && recipeNameInUse == false {
 		err = DBSaveRecipe(&rec)
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 		} else {
-			CallURL(RecipeCollection, &rec)
+			//CallURL(RecipeCollection, &rec)
 			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
 		}
-	} else {
+
+	} else if ingredientsfound != recingredients {
 		// console print:
 		fmt.Println("Registration error: Recipe with name \"" + rec.RecipeName + "\" is missing " + diff + " ingredient(s)")
 
@@ -150,6 +164,14 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		}
 		fmt.Fprintf(w, "\n Register these ingredients first!")
 
+	} else if recipeNameInUse == true {
+		// console print:
+		fmt.Println("Registration error: Recipe with name \"" + rec.RecipeName + "\" - name already in use.")
+
+		// http response:
+		http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
+	} else {
+		http.Error(w, "Cannot save recipe, internal server error.", http.StatusInternalServerError)
 	}
 }
 
@@ -173,4 +195,24 @@ func GetIngredient(w http.ResponseWriter, r *http.Request) []Ingredient {
 	}
 
 	return allIngredients
+}
+
+func GetNutrients(ing *Ingredient, w http.ResponseWriter) {
+	client := http.DefaultClient
+	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
+	APIURL += strconv.Itoa(ing.Quantity)
+	APIURL += "%20"
+	if ing.Unit != "" {
+		APIURL += ing.Unit
+		APIURL += "%20"
+	}
+	APIURL += ing.Name
+	fmt.Println(APIURL)
+	r := DoRequest(APIURL, client, w)
+
+	err := json.NewDecoder(r.Body).Decode(&ing)
+	if err != nil {
+		http.Error(w, "Could not HER BAJSER JEG PAA MEE decode response body "+err.Error(), http.StatusInternalServerError)
+	}
+
 }
