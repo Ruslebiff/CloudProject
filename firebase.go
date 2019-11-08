@@ -33,6 +33,11 @@ func DBInit() error {
 	return err
 }
 
+// DBClose Close firebase connection
+func DBClose() {
+	FireBaseDB.Client.Close()
+}
+
 // DBSaveRecipe saves recipe to database
 func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(RecipeCollection).NewDoc()

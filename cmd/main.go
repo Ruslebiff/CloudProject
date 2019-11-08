@@ -21,6 +21,8 @@ func main() {
 		fmt.Println("Database init OK")
 	}
 
+	defer cravings.DBClose()
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
