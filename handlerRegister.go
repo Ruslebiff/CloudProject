@@ -70,7 +70,10 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	GetNutrients(&ing, w)
+	err = GetNutrients(&ing, w)
+	if err != nil {
+		http.Error(w, "Could not retrieve nutrients from API "+err.Error(), http.StatusBadRequest)
+	}
 
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
@@ -201,8 +204,8 @@ func GetIngredient(w http.ResponseWriter, r *http.Request) []Ingredient {
 	return allIngredients
 }
 
-func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
-	client := http.DefaultClient
+func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
+	client := http.DefaultClient // MÅ FINNE EN MÅTE Å EKSKLUDERE API ID OG KEY
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
 	APIURL += strconv.Itoa(ing.Quantity)
 	APIURL += "%20"
@@ -216,11 +219,22 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
 
 	err := json.NewDecoder(r.Body).Decode(&ing)
 	if err != nil {
-		http.Error(w, "Could not HER BAJSER JEG PAA MEE decode response body "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Could not decode response body "+err.Error(), http.StatusInternalServerError)
 	}
 
+	return err
 }
 
+//  This is meant for when each ingredient is 100g, change later
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
-	// todo
+	//  Loops through each ingredient and adds
+	for _, v := range rec.Ingredients {
+		rec.NutritionalInfo.Fat += (v.Nutrients.Fat * v.Quantity)
+		rec.NutritionalInfo.Protein += (v.Nutrients.Protein * v.Quantity)
+		rec.NutritionalInfo.Carbohydrate += (v.Nutrients.Carbohydrate * v.Quantity)
+		rec.NutritionalInfo.Sugar += (v.Nutrients.Sugar * v.Quantity)
+		rec.NutritionalInfo.Energy += (v.Nutrients.Energy * v.Quantity)
+		rec.Weight += v.Weight
+	}
+	return nil
 }
