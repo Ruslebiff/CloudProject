@@ -9,7 +9,8 @@ import (
 	"time"
 )
 
-var StartTime = time.Now() // sets start time
+// StartTime sets start time
+var StartTime = time.Now()
 
 func main() {
 
