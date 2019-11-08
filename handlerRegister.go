@@ -76,6 +76,8 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	}
 
 	w.Header().Add("content-type", "application/json")
+
+	CallURL(IngredientCollection, &i)
 }
 
 // RegisterRecipe func saves the recipe to its respective collection in our firestore DB
@@ -131,6 +133,13 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		fmt.Fprintf(w, "\n Register these ingredients first!")
 
 	}
+<<<<<<< HEAD
+=======
+	w.Header().Add("content-type", "application/json")
+
+	CallURL(RecipeCollection, &rec)
+
+>>>>>>> a982a422473ea5934b7b1955eb03f65008e604be
 }
 
 // GetRecipe returns all recipes from database using the DBReadAllRecipes function
