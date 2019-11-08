@@ -15,6 +15,7 @@ const RecipeCollection = "recipes"
 
 // IngredientCollection is the name of the ingredients collection in the database
 const IngredientCollection = "ingredients"
+const TokenCollection = "tokens"
 
 // WebhooksCollection is the name of the webhooks collection in the database
 const WebhooksCollection = "webhooks"

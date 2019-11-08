@@ -2,7 +2,10 @@ package cravings
 
 import (
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -10,38 +13,61 @@ import (
 func HandlerRegister(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	endpoint := parts[3]
-	//fmt.Println(endpoint)
+
 	switch r.Method {
 	// Gets either recipes or ingredients
 	case http.MethodGet:
 		switch endpoint {
 		case "ingredient":
 			ingredients := GetIngredient(w, r)
+			totalIngredients := strconv.Itoa(len(ingredients))
+			fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
 			json.NewEncoder(w).Encode(&ingredients)
 
 		case "recipe":
 			recipes := GetRecipe(w, r)
+			totalRecipes := strconv.Itoa(len(recipes))
+			fmt.Fprintln(w, "Total recipes: "+totalRecipes)
 			json.NewEncoder(w).Encode(&recipes)
 		}
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
-		switch endpoint {
-		case "ingredient": // Posts ingredient
-			RegisterIngredient(w, r)
+		authToken := Token{}
+		resp, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, "Couldn't read request: ", http.StatusBadRequest)
+		}
 
-		case "recipe": // Posts recipe
-			RegisterRecipe(w, r)
+		err = json.Unmarshal(resp, &authToken)
+		if err != nil {
+			http.Error(w, "Unable to unmarshal request body: ", http.StatusBadRequest)
+		}
+
+		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
+		//  and include the authorization token given by the developers through mail inside the body
+		//  Detailed instructions for registering is in the readme
+		if DBCheckAuthorization(authToken.AuthToken) {
+			switch endpoint {
+			case "ingredient": // Posts ingredient
+				RegisterIngredient(w, resp)
+
+			case "recipe": // Posts recipe
+				RegisterRecipe(w, r)
+			}
+		} else {
+			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
+			break
 		}
 	}
 	w.Header().Add("content-type", "application/json")
 }
 
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
-func RegisterIngredient(w http.ResponseWriter, r *http.Request) {
+func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	i := Ingredient{}
-	err := json.NewDecoder(r.Body).Decode(&i)
+	err := json.Unmarshal(respo, &i)
 	if err != nil {
-		http.Error(w, "Could not decode body of request"+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Could not save UNMARSHAL ISTEDDT document to collection  "+err.Error(), http.StatusBadRequest)
 	}
 
 	err = DBSaveIngredient(&i)
