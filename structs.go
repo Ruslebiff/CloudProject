@@ -3,6 +3,7 @@ package cravings
 import (
 	"context"
 	"time"
+
 	"cloud.google.com/go/firestore"
 )
 
@@ -13,6 +14,7 @@ type Recipe struct {
 	Ingredients []Ingredient `json:"ingredients"`
 }
 
+//RecipePrint struct containing the ingredients the user has, needs and what remains after using the recipe
 type RecipePrint struct {
 	RecipeName  string `json:"recipeName"`
 	Ingredients struct {
