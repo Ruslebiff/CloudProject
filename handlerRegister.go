@@ -221,6 +221,12 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
 
 }
 
+// GetRecipeNutrients calculates total nutritients in a recipe
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
-	// todo
+	for i := range rec.Ingredients {
+		temptotalnutrients := CalcNutrition(rec.Ingredients[i], rec.Ingredients[i].Unit, rec.Ingredients[i].Quantity)
+		// assign these to rec totalnutrients or something
+	}
+
+	return nil
 }
