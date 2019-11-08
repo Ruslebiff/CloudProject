@@ -17,8 +17,9 @@ type Recipe struct {
 type RecipePrint struct {
 	RecipeName  string `json:"recipeName"`
 	Ingredients struct {
-		Have     []Ingredient `json:"have"`
-		DontHave []Ingredient `json:"missing"`
+		Have      []Ingredient `json:"have"`      //Ingredients that fits the recipe
+		Missing   []Ingredient `json:"missing"`   //Missing ingredients for recipe
+		Remaining []Ingredient `json:"remaining"` //Remaining ingredients after using recipe
 	} `json:"ingredients"`
 }
 
@@ -75,6 +76,11 @@ type RecipeAnalysisPost struct {
 type FirestoreDatabase struct {
 	Ctx    context.Context
 	Client *firestore.Client
+}
+
+type Token struct {
+	ID        string `json:"id"`
+	AuthToken string `json:"token"`
 }
 
 // Status struct for status endpoint

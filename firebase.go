@@ -205,3 +205,31 @@ func DBReadAllWebhooks() ([]Webhook, error) {
 	}
 	return tempWebhooks, nil
 }
+
+//	DBCheckAuthorization func is used in the register functions to see if the user has authorization to upload data to the DB
+//  The authorization token is one which we the creators of the program has created and saved manually
+//  For security purposes we have chosen not to include code which saves the token, and the token itself can be given
+//  to the reviewers of this project by mail which can be found in the readme
+func DBCheckAuthorization(tokenParam string) bool {
+	tempToken := Token{} //  Loop through collection of authorization tokens
+	iter := FireBaseDB.Client.Collection(TokenCollection).Documents(FireBaseDB.Ctx)
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("Failed to iterate: %v", err)
+		}
+		//fmt.Println(doc.Data())
+		err = doc.DataTo(&tempToken) // put data into temp struct
+		if err != nil {
+			fmt.Println("Error when converting retrieved document to struct: ", err)
+		} //  If the user's token is in the collection, return true
+
+		if tempToken.AuthToken == tokenParam {
+			return true
+		}
+	}
+	return false
+}
