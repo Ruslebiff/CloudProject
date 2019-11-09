@@ -114,7 +114,8 @@ func DBReadIngredientByName(name string) (Ingredient, error) {
 			temp.ID = i.ID
 			temp.Name = i.Name
 			temp.Nutrients = i.Nutrients
-
+			temp.Calories = i.Calories
+			temp.Weight = i.Weight
 			return temp, err
 		}
 	}
