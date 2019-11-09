@@ -31,7 +31,7 @@ type Ingredient struct {
 	Quantity  float64        `json:"quantity"`
 	Unit      string         `json:"unit"`
 	Name      string         `json:"name"`
-	Calories  int            `json:"calories"`
+	Calories  float64        `json:"calories"`
 	Weight    float64        `json:"totalWeight"`
 	Nutrients TotalNutrients `json:"totalNutrients"`
 }
