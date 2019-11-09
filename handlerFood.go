@@ -9,46 +9,46 @@ import (
 	"strings"
 )
 
-// HandlerFood which registers or view either an ingredient or a recipe 
+// HandlerFood which registers or view either an ingredient or a recipe
 // Whenever calling this endpoint in the browser, it is only possible to view the food,
 // to register food, one has to post the .json body
 func HandlerFood(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(r.URL.Path, "/")		
+	parts := strings.Split(r.URL.Path, "/")
 	endpoint := parts[3] // Store the query which represents either recipe or ingredient
-	name := parts[4] // The name of the ingredient or recipe
+	name := parts[4]     // The name of the ingredient or recipe
 
 	switch r.Method {
 	// Gets either recipes or ingredients
 	case http.MethodGet:
 		switch endpoint {
 		case "ingredient":
-			if name != "" {		//  If user wrote in query for name of ingredient
+			if name != "" { //  If user wrote in query for name of ingredient
 				ingr := Ingredient{}
-				ing, err := DBReadIngredientByName(name)		//  Get that ingredient
+				ing, err := DBReadIngredientByName(name) //  Get that ingredient
 				if err != nil {
-					http.Error(w, "Couldn't retrieve ingredient: "+ err.Error(), http.StatusBadRequest)
+					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
 				}
-			} else {	//  Else retireve all ingredients
-				ingredients := GetAllIngredients(w, r)	
-				totalIngredients := strconv.Itoa(len(ingredients)) 	// With the number of total ingredients
+			} else { //  Else retireve all ingredients
+				ingredients := GetAllIngredients(w, r)
+				totalIngredients := strconv.Itoa(len(ingredients)) // With the number of total ingredients
 				fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
 				json.NewEncoder(w).Encode(&ingredients)
 			}
 		case "recipe":
-			if name != "" {		//  If user wrote in query for name of recipe
+			if name != "" { //  If user wrote in query for name of recipe
 				re := Recipe{}
-				ing, err := DBReadRecipeByName(name)		//  Get that recipe
+				ing, err := DBReadRecipeByName(name) //  Get that recipe
 				if err != nil {
-					http.Error(w, "Couldn't retrieve recipe: "+ err.Error(), http.StatusBadRequest)
-				} 
-			} else {	//  Else get all recipes
+					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
+				}
+			} else { //  Else get all recipes
 				recipes := GetAllRecipes(w, r)
 				totalRecipes := strconv.Itoa(len(recipes))
-				fmt.Fprintln(w, "Total recipes: "+totalRecipes)  // With the number of total recipes
+				fmt.Fprintln(w, "Total recipes: "+totalRecipes) // With the number of total recipes
 				json.NewEncoder(w).Encode(&recipes)
 			}
 		}
-	
+
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
 		authToken := Token{}

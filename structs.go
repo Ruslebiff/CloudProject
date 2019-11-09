@@ -9,11 +9,10 @@ import (
 
 // Recipe Struct for a recipe containting ingredients used in firebase.go and register.go -
 type Recipe struct {
-	ID              string       `json:"id"`
-	RecipeName      string       `json:"recipeName"`
-	Ingredients     []Ingredient `json:"ingredients"`
-	NutritionalInfo TotalNutrients `json:"TotalNutritionalInfo"`
-	TotalWeight     float64
+	ID           string       `json:"id"`
+	RecipeName   string       `json:"recipeName"`
+	Ingredients  []Ingredient `json:"ingredients"`
+	AllNutrients TotalNutrients
 }
 
 //RecipePrint struct containing the ingredients the user has, needs and what remains after using the recipe
@@ -29,7 +28,7 @@ type RecipePrint struct {
 // Ingredient Struct for an ingredient used in firebase.go and register.go
 type Ingredient struct {
 	ID        string         `json:"id"`
-	Quantity  int            `json:"quantity"`
+	Quantity  float64        `json:"quantity"`
 	Unit      string         `json:"unit"`
 	Name      string         `json:"name"`
 	Calories  int            `json:"calories"`
