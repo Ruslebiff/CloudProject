@@ -12,7 +12,7 @@ type Recipe struct {
 	ID              string       `json:"id"`
 	RecipeName      string       `json:"recipeName"`
 	Ingredients     []Ingredient `json:"ingredients"`
-	NutritionalInfo TotalNutrients
+	NutritionalInfo TotalNutrients `json:"TotalNutritionalInfo"`
 	TotalWeight     float64
 }
 

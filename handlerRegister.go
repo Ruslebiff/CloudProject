@@ -225,7 +225,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	return nil
 }
 
-//  This is meant for when each ingredient is 100g, change later
-func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
+// //  This is meant for when each ingredient is 100g, change later
+// func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 
-}
+// }

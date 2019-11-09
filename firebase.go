@@ -83,7 +83,6 @@ func DBDelete(id string, collection string) error {
 }
 
 // DBReadRecipeByName reads a single recipe by Name
-// UNTESTED
 func DBReadRecipeByName(name string) (Recipe, error) {
 	temp := Recipe{}		//  Recipe to be returned
 	allrec, err := DBReadAllRecipes()	//  Query all the recipes 
@@ -136,9 +135,10 @@ func DBReadIngredientByID(id string) (Ingredient, error) {
 // DBReadAllRecipes reads all recipes from database
 func DBReadAllRecipes() ([]Recipe, error) {
 	var temprecipes []Recipe
-	recipe := Recipe{}
+
 	iter := FireBaseDB.Client.Collection(RecipeCollection).Documents(FireBaseDB.Ctx)
 	for {
+		recipe := Recipe{}
 		doc, err := iter.Next()
 		if err == iterator.Done {
 			break
@@ -152,7 +152,6 @@ func DBReadAllRecipes() ([]Recipe, error) {
 		}
 
 		temprecipes = append(temprecipes, recipe) // add to temp array
-
 	}
 	return temprecipes, nil
 }
@@ -160,21 +159,21 @@ func DBReadAllRecipes() ([]Recipe, error) {
 // DBReadAllIngredients reads all ingredients from database
 func DBReadAllIngredients() ([]Ingredient, error) {
 	var tempingredients []Ingredient
-	ingredient := Ingredient{}
+	ingredient := Ingredient{}		//  Collects the entire collection
 	iter := FireBaseDB.Client.Collection(IngredientCollection).Documents(FireBaseDB.Ctx)
 	for {
-		doc, err := iter.Next()
+		doc, err := iter.Next()		//  Iterates over each document
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
 			log.Fatalf("Failed to iterate: %v", err)
 		}
-		err = doc.DataTo(&ingredient) // put data into temp struct
+		err = doc.DataTo(&ingredient) // Put data into temp struct
 		if err != nil {
 			fmt.Println("Error when converting retrieved document to struct: ", err)
 		}
-		tempingredients = append(tempingredients, ingredient) // add to temp array
+		tempingredients = append(tempingredients, ingredient) // Append to temp array
 	}
 	return tempingredients, nil
 }
