@@ -11,7 +11,8 @@ import (
 	"google.golang.org/api/option"
 )
 
-// FireBaseDB is an instance of FirestoreDatabase struct ------ Flytt til globalfil senere
+
+// FireBaseDB is an instance of FirestoreDatabase struct which is used in firebase.go
 var FireBaseDB = FirestoreDatabase{}
 
 // DBInit initialises the database
@@ -21,11 +22,11 @@ func DBInit() error {
 	// We use a service account, load credentials file that you downloaded from your project's settings menu.
 	// Make sure this file is gitignored, it is the access token to the database.
 	sa := option.WithCredentialsFile(FirestoreCredentials)
-	app, err := firebase.NewApp(FireBaseDB.Ctx, nil, sa)
+	app, err := firebase.NewApp(FireBaseDB.Ctx, nil, sa)		//  Creates the application with its contents
 	if err != nil {
 		fmt.Println("Failed to initialize the firebase database when creating a new app: ", err)
 	}
-
+	//  Sets the app created to our local struct's client
 	FireBaseDB.Client, err = app.Firestore(FireBaseDB.Ctx)
 	if err != nil {
 		fmt.Println("Failed to create app")
@@ -41,8 +42,8 @@ func DBClose() {
 // DBSaveRecipe saves recipe to database
 func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(RecipeCollection).NewDoc()
-	r.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
-	_, err := ref.Set(FireBaseDB.Ctx, r) //  Set the context of the document to the one of the webhook
+	r.ID = ref.ID                        //  Asserts the recipes id to be the one given by firebase
+	_, err := ref.Set(FireBaseDB.Ctx, r) //  Set the context of the document to the one of the recipe
 	if err != nil {
 		fmt.Println("ERROR saving recipe to recipe collection: ", err)
 	}
@@ -52,8 +53,8 @@ func DBSaveRecipe(r *Recipe) error { //  Creates a new document in firebase
 // DBSaveIngredient saves ingredient to database
 func DBSaveIngredient(i *Ingredient) error { //  Creates a new document in firebase
 	ref := FireBaseDB.Client.Collection(IngredientCollection).NewDoc()
-	i.ID = ref.ID                        //  Asserts the webhooks id to be the one given by firebase
-	_, err := ref.Set(FireBaseDB.Ctx, i) //  Set the context of the document to the one of the webhook
+	i.ID = ref.ID                        //  Asserts the ingredients id to be the one given by firebase
+	_, err := ref.Set(FireBaseDB.Ctx, i) //  Set the context of the document to the one of the ingredient
 	if err != nil {
 		fmt.Println("ERROR saving ingredient to ingredients collection: ", err)
 	}
@@ -71,8 +72,8 @@ func DBSaveWebhook(i *Webhook) error {
 	return nil
 }
 
-// DBDelete deletes an entry from given collection in database
-func DBDelete(id string, collection string) error {
+// DBDelete deletes an entry from given collection in database by its id, either ingredient, recipe or webhook
+func DBDelete(id string, collection string) error {	
 	_, err := FireBaseDB.Client.Collection(collection).Doc(id).Delete(FireBaseDB.Ctx)
 	if err != nil {
 		fmt.Printf("ERROR deleting from collection: %v\n", err)
@@ -84,15 +85,14 @@ func DBDelete(id string, collection string) error {
 // DBReadRecipeByName reads a single recipe by Name
 // UNTESTED
 func DBReadRecipeByName(name string) (Recipe, error) {
-	allrec, err := DBReadAllRecipes()
-	temp := Recipe{}
+	temp := Recipe{}		//  Recipe to be returned
+	allrec, err := DBReadAllRecipes()	//  Query all the recipes 
 	if err != nil {
 		return temp, err
 	}
-
+	//  Loops through all the recipes and checks if the parameter name is equal to one of the recipes
 	for _, i := range allrec {
 		if i.RecipeName == name {
-			fmt.Println(name)
 			temp.ID = i.ID
 			temp.RecipeName = i.RecipeName
 			temp.Ingredients = i.Ingredients
@@ -174,9 +174,7 @@ func DBReadAllIngredients() ([]Ingredient, error) {
 		if err != nil {
 			fmt.Println("Error when converting retrieved document to struct: ", err)
 		}
-
 		tempingredients = append(tempingredients, ingredient) // add to temp array
-
 	}
 	return tempingredients, nil
 }

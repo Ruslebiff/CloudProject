@@ -222,19 +222,10 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 		http.Error(w, "Could not decode response body "+err.Error(), http.StatusInternalServerError)
 	}
 
-	return err
+	return nil
 }
 
 //  This is meant for when each ingredient is 100g, change later
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
-	//  Loops through each ingredient and adds
-	for _, v := range rec.Ingredients {
-		rec.NutritionalInfo.Fat += (v.Nutrients.Fat * v.Quantity)
-		rec.NutritionalInfo.Protein += (v.Nutrients.Protein * v.Quantity)
-		rec.NutritionalInfo.Carbohydrate += (v.Nutrients.Carbohydrate * v.Quantity)
-		rec.NutritionalInfo.Sugar += (v.Nutrients.Sugar * v.Quantity)
-		rec.NutritionalInfo.Energy += (v.Nutrients.Energy * v.Quantity)
-		rec.Weight += v.Weight
-	}
-	return nil
+
 }
