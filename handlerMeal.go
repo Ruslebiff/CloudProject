@@ -38,20 +38,20 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		}
 
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
-
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
-
 				if j.Name == i.Name { //if it matches ingredient from recipe
 
-					//j = CalcNutrition(i, i.Unit, j.Quantity)
-
+					fmt.Println("FØR", j)
+					j = CalcNutrition(i, j.Unit, j.Quantity)
+					fmt.Println("ETT: ",j)
 					if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
-
-						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j) //adds the ingredients sendt to 'have'
-						i.Quantity -= j.Quantity                                             //sets the quantity to 'missing' value
-						recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
+						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
 						recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
 
+						i.Quantity -= j.Quantity //sets the quantity to 'missing' value
+						if i.Quantity > 0 {
+							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
+						}
 					} else {
 						fmt.Println("\tFør: ", recipeTemp.Ingredients.Remaining)
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
