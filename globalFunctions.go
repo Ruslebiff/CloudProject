@@ -69,25 +69,34 @@ func CallURL(event string, s interface{}) {
 //ReadIngredients splits up the ingredient name from the quantity
 func ReadIngredients(ingredients []string) []Ingredient {
 	IngredientList := []Ingredient{}
+	defVal := 1.0
 
 	for i := range ingredients {
 		ingredient := strings.Split(ingredients[i], "|")
-		var quantity float64
 		var err error
-		if len(ingredient) < 2 { //checks if quantity is set for this ingredient
-			quantity = 1.0 //Sets quantity to 'default' if not defined
-		} else {
-			quantity, err = strconv.ParseFloat(ingredient[1], 64)
-			if err != nil { //if error set to 1
-				quantity = 1.0
+		ingredientTemp := Ingredient{}
+		ingredientTemp.Quantity = defVal //sets to defVal
+
+		if len(ingredient) == 2 {
+			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
+
+			if err != nil { //if error set to defVal
+				ingredientTemp.Quantity = defVal
 			}
 		}
 
-		ingredientTemp := Ingredient{}
-		ingredientTemp.Name = ingredient[0] //name of the ingredient
-		ingredientTemp.Quantity = quantity  //quantity of the ingredient
+		if len(ingredient) == 3 {
+			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
 
+			if err != nil { //if error set to defVal
+				ingredientTemp.Quantity = defVal
+			}
+			ingredientTemp.Unit = ingredient[2]
+		}
+
+		ingredientTemp.Name = ingredient[0] //name of the ingredient
 		IngredientList = append(IngredientList, ingredientTemp)
+
 	}
 	return IngredientList
 }
@@ -134,31 +143,21 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 
 // ConvertUnit converts units for ingredients, and changes their quantity respectively.
 func ConvertUnit(ing Ingredient) Ingredient {
-	var quantity float64
-	quantity = ing.Quantity
+	switch ing.Unit {
+	case "dl":
+		ing.Quantity = ing.Quantity / 10
+		ing.Unit = "l"
+	case "cl":
+		ing.Quantity = ing.Quantity / 100
+		ing.Unit = "l"
+	case "ml":
+		ing.Quantity = ing.Quantity / 1000
+		ing.Unit = "l"
+	case "kg":
+		ing.Quantity = ing.Quantity * 1000
+		ing.Unit = "g"
 
-	if ing.Unit == "l" {
-		ing.Quantity += quantity
 	}
-	if ing.Unit == "dl" {
-		ing.Quantity += quantity / 10
-		ing.Unit = "l"
-	}
-	if ing.Unit == "cl" {
-		ing.Quantity += quantity / 100
-		ing.Unit = "l"
-	}
-	if ing.Unit == "ml" {
-		ing.Quantity += quantity / 1000
-		ing.Unit = "l"
-	}
-	if ing.Unit == "g" {
-		ing.Quantity += quantity
-		ing.Unit = "g"
-	}
-	if ing.Unit == "kg" {
-		ing.Quantity += quantity * 1000
-		ing.Unit = "g"
-	}
+
 	return ing
 }

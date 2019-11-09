@@ -101,6 +101,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	temping := ConvertUnit(ing)
 	ing.Unit = temping.Unit
 	ing.Quantity = 1
+	ing.Name = strings.ToLower(ing.Name)
 
 	GetNutrients(&ing, w) // calls func
 
