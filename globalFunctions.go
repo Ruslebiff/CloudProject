@@ -138,6 +138,9 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 	ing.Nutrients.Protein.Quantity *= temping.Quantity
 	ing.Nutrients.Sugar.Quantity *= temping.Quantity
 
+	ing.Calories = temping.Nutrients.Energy.Quantity
+	ing.ID = temping.ID
+
 	return ing
 }
 
@@ -159,5 +162,11 @@ func ConvertUnit(ing Ingredient) Ingredient {
 
 	}
 
+	return ing
+}
+
+func GetUnitFromAPI(ing Ingredient) Ingredient {
+	//ing = GetNutrients(&ing, w)
+	ing.Unit = "g"
 	return ing
 }

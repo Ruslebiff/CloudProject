@@ -101,6 +101,11 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	ing.Quantity = 1
 	ing.Name = strings.ToLower(ing.Name)
 
+	if ing.Unit == "" {
+		temping = GetUnitFromAPI(ing)
+		ing.Unit = temping.Unit
+	}
+
 	GetNutrients(&ing, w) // calls func
 
 	allIngredients, err := DBReadAllIngredients()
