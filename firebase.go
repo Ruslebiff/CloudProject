@@ -102,6 +102,27 @@ func DBReadRecipeByName(name string) (Recipe, error) {
 	return temp, err
 }
 
+// DBReadIngredientByName reads a ingredient recipe by name
+func DBReadIngredientByName(name string) (Ingredient, error) {
+	alling, err := DBReadAllIngredients()
+	temp := Ingredient{}
+	if err != nil {
+		return temp, err
+	}
+
+	for _, i := range alling {
+		if i.Name == name {
+			fmt.Println(name)
+			temp.ID = i.ID
+			temp.Name = i.Name
+			temp.Nutrients = i.Nutrients
+
+			return temp, err
+		}
+	}
+	return temp, err
+}
+
 // DBReadRecipeByID reads a single recipe by ID
 func DBReadRecipeByID(id string) (Recipe, error) {
 	res := Recipe{} //  Creates an empty struct for the recipe
