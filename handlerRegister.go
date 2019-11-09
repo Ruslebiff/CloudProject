@@ -70,6 +70,10 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
+	temping := ConvertUnit(ing)
+	ing.Unit = temping.Unit
+	ing.Quantity = 1
+
 	GetNutrients(&ing, w) // calls func
 
 	allIngredients, err := DBReadAllIngredients() // reads all ingredients from database
@@ -206,8 +210,8 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
 	client := http.DefaultClient
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
 	//APIURL += strconv.Itoa(ing.Quantity) // temp removed due to changing Quantity to Float64 type
-	//APIURL += strconv.ParseFloat(ing.Quantity) // maybe this instead
-	APIURL += "%20"
+	//APIURL += strconv.ParseFloat(ing.Quantity) // maybe this instead if needed at all
+	//APIURL += "%20"
 	if ing.Unit != "" {
 		APIURL += ing.Unit
 		APIURL += "%20"
@@ -218,7 +222,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) { // fix error return?
 
 	err := json.NewDecoder(r.Body).Decode(&ing)
 	if err != nil {
-		http.Error(w, "Could not HER BAJSER JEG PAA MEE decode response body "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Could not decode response body "+err.Error(), http.StatusInternalServerError)
 	}
 
 }
