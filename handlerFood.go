@@ -9,26 +9,44 @@ import (
 	"strings"
 )
 
-// HandlerRegister which registers either an ingredient or a recipe
-func HandlerRegister(w http.ResponseWriter, r *http.Request) {
-	parts := strings.Split(r.URL.Path, "/")
-	endpoint := parts[3]
+// HandlerFood which registers or view either an ingredient or a recipe 
+// Whenever calling this endpoint in the browser, it is only possible to view the food,
+// to register food, one has to post the .json body
+func HandlerFood(w http.ResponseWriter, r *http.Request) {
+	parts := strings.Split(r.URL.Path, "/")		
+	endpoint := parts[3] // Store the query which represents either recipe or ingredient
+	name := parts[4] // The name of the ingredient or recipe
 
 	switch r.Method {
 	// Gets either recipes or ingredients
 	case http.MethodGet:
 		switch endpoint {
 		case "ingredient":
-			ingredients := GetIngredient(w, r)
-			totalIngredients := strconv.Itoa(len(ingredients))
-			fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
-			json.NewEncoder(w).Encode(&ingredients)
-
+			if name != "" {		//  If user wrote in query for name of ingredient
+				var ing Ingredient{}
+				ing, err := DBGetIngredientByName(name)		//  Get that ingredient
+				if err != nil {
+					http.Error(w, "Couldn't retrieve ingredient: "+ err.Error(), http.StatusBadRequest)
+				}
+			} else {	//  Else retireve all ingredients
+				ingredients := GetAllIngredients(w, r)	
+				totalIngredients := strconv.Itoa(len(ingredients)) 	// With the number of total ingredients
+				fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
+				json.NewEncoder(w).Encode(&ingredients)
+			}
 		case "recipe":
-			recipes := GetRecipe(w, r)
-			totalRecipes := strconv.Itoa(len(recipes))
-			fmt.Fprintln(w, "Total recipes: "+totalRecipes)
-			json.NewEncoder(w).Encode(&recipes)
+			if name != "" {		//  If user wrote in query for name of recipe
+				var rec Recipe{}
+				ing, err := DBGetRecipeByName(name)		//  Get that recipe
+				if err != nil {
+					http.Error(w, "Couldn't retrieve recipe: "+ err.Error(), http.StatusBadRequest)
+				} 
+			} else {	//  Else get all recipes
+				recipes := GetAllRecipes(w, r)
+				totalRecipes := strconv.Itoa(len(recipes))
+				fmt.Fprintln(w, "Total recipes: "+totalRecipes)  // With the number of total recipes
+				json.NewEncoder(w).Encode(&recipes)
+			}
 		}
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
@@ -183,7 +201,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 }
 
 // GetRecipe returns all recipes from database using the DBReadAllRecipes function
-func GetRecipe(w http.ResponseWriter, r *http.Request) []Recipe {
+func GetAllRecipes(w http.ResponseWriter, r *http.Request) []Recipe {
 	var allRecipes []Recipe
 	allRecipes, err := DBReadAllRecipes()
 	if err != nil {
@@ -194,7 +212,7 @@ func GetRecipe(w http.ResponseWriter, r *http.Request) []Recipe {
 }
 
 // GetIngredient returns all ingredients from database using the DBReadAllIngredients function
-func GetIngredient(w http.ResponseWriter, r *http.Request) []Ingredient {
+func GetAllIngredients(w http.ResponseWriter, r *http.Request) []Ingredient {
 	var allIngredients []Ingredient
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
