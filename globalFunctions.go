@@ -166,7 +166,9 @@ func ConvertUnit(ing Ingredient) Ingredient {
 }
 
 func GetUnitFromAPI(ing Ingredient) Ingredient {
-	//ing = GetNutrients(&ing, w)
-	ing.Unit = "g"
+	// TODO: Lookup ingredient on API, check which unit it has there, and return that.
+
+	//ing = GetNutrients(&ing, w) ..?
+	ing.Unit = "g" // temp, remove this
 	return ing
 }
