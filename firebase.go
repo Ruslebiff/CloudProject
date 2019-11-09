@@ -153,7 +153,6 @@ func DBReadAllRecipes() ([]Recipe, error) {
 		}
 
 		temprecipes = append(temprecipes, recipe) // add to temp array
-		fmt.Println("\ttemprecipe: ", temprecipes)
 	}
 	return temprecipes, nil
 }
