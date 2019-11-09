@@ -69,6 +69,12 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 	var grams float64
 	var litres float64
 
+	temping, err := DBReadIngredientByName(ing.Name)
+	if err != nil {
+		fmt.Println("Cound not read ingredient by name")
+	}
+	ing.Nutrients = temping.Nutrients
+
 	if unit == "l" {
 		litres += quantity
 	}
