@@ -43,7 +43,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 					fmt.Println("FØR", j)
 					j = CalcNutrition(i, j.Unit, j.Quantity)
-					fmt.Println("ETT: ",j)
+					fmt.Println("ETT: ", j)
 					if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
 						recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining

@@ -1,10 +1,12 @@
 package cravings
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -157,9 +159,9 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		}
 	}
 
-	for i := range rec.Ingredients { //
+	for i := range rec.Ingredients { // Loops through all the ingredients
 		found := false
-		for _, j := range allIngredients { // l
+		for _, j := range allIngredients { // If the ingredient is found the loop breaks and found is set to true
 			if rec.Ingredients[i].Name == j.Name {
 				ingredientsfound = ingredientsfound + 1
 				found = true
@@ -233,11 +235,32 @@ func GetAllIngredients(w http.ResponseWriter, r *http.Request) []Ingredient {
 }
 
 func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
-	client := http.DefaultClient // MÅ FINNE EN MÅTE Å EKSKLUDERE API ID OG KEY
-	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
-	//APIURL += strconv.Itoa(ing.Quantity) // temp removed due to changing Quantity to Float64 type
-	//APIURL += strconv.ParseFloat(ing.Quantity) // maybe this instead if needed at all
-	//APIURL += "%20"
+	client := http.DefaultClient
+	//  Application API key
+	app_id := ""
+	app_key := ""
+	//  Opens local file which contains application id and key
+	file, err := os.Open("appIdAndKey.txt")
+	if err != nil {
+		http.Error(w, "Unable to open file", http.StatusFailedDependency)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	app_id = scanner.Text()
+	scanner.Scan()
+	app_key = scanner.Text()
+
+	if err := scanner.Err(); err != nil {
+		http.Error(w, "Unable to read the application ID and key from file ", http.StatusFailedDependency)
+	}
+
+	APIURL := "http://api.edamam.com/api/nutrition-data?app_id="
+	APIURL += app_id
+	APIURL += "&app_key="
+	APIURL += app_key
+	APIURL += "&ingr="
 	if ing.Unit != "" {
 		APIURL += ing.Unit
 		APIURL += "%20"
@@ -245,7 +268,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	APIURL += ing.Name
 	r := DoRequest(APIURL, client, w)
 
-	err := json.NewDecoder(r.Body).Decode(&ing)
+	err = json.NewDecoder(r.Body).Decode(&ing)
 	if err != nil {
 		http.Error(w, "Could not decode response body "+err.Error(), http.StatusInternalServerError)
 	}
