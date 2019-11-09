@@ -23,8 +23,8 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		switch endpoint {
 		case "ingredient":
 			if name != "" {		//  If user wrote in query for name of ingredient
-				var ing Ingredient{}
-				ing, err := DBGetIngredientByName(name)		//  Get that ingredient
+				ingr := Ingredient{}
+				ing, err := DBReadIngredientByName(name)		//  Get that ingredient
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredient: "+ err.Error(), http.StatusBadRequest)
 				}
@@ -36,8 +36,8 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 			}
 		case "recipe":
 			if name != "" {		//  If user wrote in query for name of recipe
-				var rec Recipe{}
-				ing, err := DBGetRecipeByName(name)		//  Get that recipe
+				re := Recipe{}
+				ing, err := DBReadRecipeByName(name)		//  Get that recipe
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipe: "+ err.Error(), http.StatusBadRequest)
 				} 
@@ -48,6 +48,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				json.NewEncoder(w).Encode(&recipes)
 			}
 		}
+	
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
 		authToken := Token{}
@@ -165,7 +166,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	diff := strconv.Itoa(recingredients - ingredientsfound)
 
 	if ingredientsfound == recingredients && recipeNameInUse == false {
-		err = GetRecipeNutrients(&rec)
+		err = GetRecipeNutrients(&rec, w)
 		if err != nil {
 			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
 		}
@@ -244,6 +245,38 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 }
 
 // //  This is meant for when each ingredient is 100g, change later
-// func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
+// GetRecipeNutrients calculates total nutritients in a recipe
+func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 
-// }
+	for i := range rec.Ingredients {
+		temptotalnutrients := CalcNutrition(rec.Ingredients[i], rec.Ingredients[i].Unit, rec.Ingredients[i].Quantity)
+
+		rec.AllNutrients.Energy.Label = temptotalnutrients.Nutrients.Energy.Label
+		rec.AllNutrients.Energy.Unit = temptotalnutrients.Nutrients.Energy.Unit
+		rec.AllNutrients.Energy.Quantity += temptotalnutrients.Nutrients.Energy.Quantity
+
+		rec.AllNutrients.Fat.Label = temptotalnutrients.Nutrients.Fat.Label
+		rec.AllNutrients.Fat.Unit = temptotalnutrients.Nutrients.Fat.Unit
+		rec.AllNutrients.Fat.Quantity += temptotalnutrients.Nutrients.Fat.Quantity
+
+		rec.AllNutrients.Carbohydrate.Label = temptotalnutrients.Nutrients.Carbohydrate.Label
+		rec.AllNutrients.Carbohydrate.Unit = temptotalnutrients.Nutrients.Carbohydrate.Unit
+		rec.AllNutrients.Carbohydrate.Quantity += temptotalnutrients.Nutrients.Carbohydrate.Quantity
+
+		rec.AllNutrients.Sugar.Label = temptotalnutrients.Nutrients.Sugar.Label
+		rec.AllNutrients.Sugar.Unit = temptotalnutrients.Nutrients.Sugar.Unit
+		rec.AllNutrients.Sugar.Quantity += temptotalnutrients.Nutrients.Sugar.Quantity
+
+		rec.AllNutrients.Protein.Label = temptotalnutrients.Nutrients.Protein.Label
+		rec.AllNutrients.Protein.Unit = temptotalnutrients.Nutrients.Protein.Unit
+		rec.AllNutrients.Protein.Quantity += temptotalnutrients.Nutrients.Protein.Quantity
+
+		rec.Ingredients[i].Nutrients.Energy = temptotalnutrients.Nutrients.Energy
+		rec.Ingredients[i].Nutrients.Fat = temptotalnutrients.Nutrients.Fat
+		rec.Ingredients[i].Nutrients.Carbohydrate = temptotalnutrients.Nutrients.Carbohydrate
+		rec.Ingredients[i].Nutrients.Sugar = temptotalnutrients.Nutrients.Sugar
+		rec.Ingredients[i].Nutrients.Protein = temptotalnutrients.Nutrients.Protein
+	}
+
+	return nil
+}
