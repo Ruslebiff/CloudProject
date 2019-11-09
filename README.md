@@ -5,8 +5,7 @@ NTNU Cloud Technologies project 2019
 Register Ingredient: 
 {
 	"token":"",
-	"name":"Kardemomme",
-	"quantity":5
+	"name":"Kardemomme"
 }
 
 

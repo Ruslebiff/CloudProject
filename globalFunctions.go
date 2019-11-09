@@ -69,33 +69,58 @@ func CallURL(event string, s interface{}) {
 //ReadIngredients splits up the ingredient name from the quantity
 func ReadIngredients(ingredients []string) []Ingredient {
 	IngredientList := []Ingredient{}
+	defVal := 1.0
 
 	for i := range ingredients {
 		ingredient := strings.Split(ingredients[i], "|")
-		var quantity float64
 		var err error
-		if len(ingredient) < 2 { //checks if quantity is set for this ingredient
-			quantity = 1.0 //Sets quantity to 'default' if not defined
-		} else {
-			quantity, err = strconv.ParseFloat(ingredient[1], 64)
-			if err != nil { //if error set to 1
-				quantity = 1.0
+		ingredientTemp := Ingredient{}
+		ingredientTemp.Quantity = defVal //sets to defVal
+
+		if len(ingredient) == 2 {
+			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
+
+			if err != nil { //if error set to defVal
+				ingredientTemp.Quantity = defVal
 			}
 		}
 
-		ingredientTemp := Ingredient{}
-		ingredientTemp.Name = ingredient[0] //name of the ingredient
-		ingredientTemp.Quantity = quantity  //quantity of the ingredient
+		if len(ingredient) == 3 {
+			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
 
+			if err != nil { //if error set to defVal
+				ingredientTemp.Quantity = defVal
+			}
+			ingredientTemp.Unit = ingredient[2]
+		}
+
+		ingredientTemp.Name = ingredient[0] //name of the ingredient
 		IngredientList = append(IngredientList, ingredientTemp)
+
 	}
 	return IngredientList
 }
 
+func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
+	for n, i := range list {
+		if i.Name == ingredient.Name {
+			fmt.Println(i.Quantity, " : ", ingredient.Quantity)
+			if i.Quantity <= ingredient.Quantity {
+				fmt.Println("Sletter: " + i.Name)
+
+				list = append(list[:n], list[n+1:]...)
+			} else {
+				fmt.Println("Tar vekk: ", ingredient.Quantity, "fra: "+i.Name)
+				i.Quantity = i.Quantity - ingredient.Quantity
+			}
+			return list
+		}
+	}
+	return list
+}
+
 // CalcNutrition calculates nutritional info for given ingredient
 func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
-	var grams float64
-	var litres float64
 
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
@@ -103,39 +128,35 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 	}
 	ing.Nutrients = temping.Nutrients
 
-	if unit == "l" {
-		litres += quantity
-	}
-	if unit == "dl" {
-		litres += quantity / 10
-	}
-	if unit == "cl" {
-		litres += quantity / 100
-	}
-	if unit == "ml" {
-		litres += quantity / 1000
-	}
-	if unit == "g" {
-		grams += quantity
-	}
-	if unit == "kg" {
-		grams += quantity * 1000
-	}
+	temping = ConvertUnit(ing)
+	ing.Unit = temping.Unit
+	ing.Quantity = temping.Quantity
 
-	if grams > 0 {
-		ing.Unit = "g"
-		ing.Nutrients.Energy.Quantity *= grams
-		ing.Nutrients.Fat.Quantity *= grams
-		ing.Nutrients.Carbohydrate.Quantity *= grams
-		ing.Nutrients.Protein.Quantity *= grams
-		ing.Nutrients.Sugar.Quantity *= grams
-	} else if litres > 0 {
+	ing.Nutrients.Energy.Quantity *= temping.Quantity
+	ing.Nutrients.Fat.Quantity *= temping.Quantity
+	ing.Nutrients.Carbohydrate.Quantity *= temping.Quantity
+	ing.Nutrients.Protein.Quantity *= temping.Quantity
+	ing.Nutrients.Sugar.Quantity *= temping.Quantity
+
+	return ing
+}
+
+// ConvertUnit converts units for ingredients, and changes their quantity respectively.
+func ConvertUnit(ing Ingredient) Ingredient {
+	switch ing.Unit {
+	case "dl":
+		ing.Quantity = ing.Quantity / 10
 		ing.Unit = "l"
-		ing.Nutrients.Energy.Quantity *= litres
-		ing.Nutrients.Fat.Quantity *= litres
-		ing.Nutrients.Carbohydrate.Quantity *= litres
-		ing.Nutrients.Protein.Quantity *= litres
-		ing.Nutrients.Sugar.Quantity *= litres
+	case "cl":
+		ing.Quantity = ing.Quantity / 100
+		ing.Unit = "l"
+	case "ml":
+		ing.Quantity = ing.Quantity / 1000
+		ing.Unit = "l"
+	case "kg":
+		ing.Quantity = ing.Quantity * 1000
+		ing.Unit = "g"
+
 	}
 
 	return ing
