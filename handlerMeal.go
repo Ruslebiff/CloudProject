@@ -22,7 +22,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 			}
 		}*/
 	ingredientsQuery := strings.Split(r.URL.Query().Get("ingredients"), "_") //Array of all the ingredients|quantity
-	recipeList, err := DBReadAllRecipes()
+	recipeList, err := DBReadAllRecipes()                                    //  Retrieves all the recipes
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
