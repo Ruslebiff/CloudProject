@@ -30,7 +30,7 @@ func main() {
 	}
 
 	http.HandleFunc("/", cravings.HandlerNil)
-	http.HandleFunc("/cravings/register/", cravings.HandlerRegister) // runs handler function
+	http.HandleFunc("/cravings/food/", cravings.HandlerFood)         // runs handler function
 	http.HandleFunc("/cravings/status/", cravings.HandlerStatus)     // runs handler function
 	http.HandleFunc("/cravings/meal/", cravings.HandlerMeal)         // runs handler function
 	http.HandleFunc("/cravings/webhooks/", cravings.HandlerWebhooks) // runs handler function
