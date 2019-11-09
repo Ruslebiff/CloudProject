@@ -16,6 +16,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	parts := strings.Split(r.URL.Path, "/")
 	endpoint := parts[3] // Store the query which represents either recipe or ingredient
 	name := parts[4]     // The name of the ingredient or recipe
+	w.Header().Add("content-type", "application/json")
 
 	switch r.Method {
 	// Gets either recipes or ingredients
@@ -24,10 +25,11 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		case "ingredient":
 			if name != "" { //  If user wrote in query for name of ingredient
 				ingr := Ingredient{}
-				ing, err := DBReadIngredientByName(name) //  Get that ingredient
+				ingr, err := DBReadIngredientByName(name) //  Get that ingredient
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
 				}
+				json.NewEncoder(w).Encode(&ingr)
 			} else { //  Else retireve all ingredients
 				ingredients := GetAllIngredients(w, r)
 				totalIngredients := strconv.Itoa(len(ingredients)) // With the number of total ingredients
@@ -37,10 +39,11 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		case "recipe":
 			if name != "" { //  If user wrote in query for name of recipe
 				re := Recipe{}
-				ing, err := DBReadRecipeByName(name) //  Get that recipe
+				re, err := DBReadRecipeByName(name) //  Get that recipe
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
 				}
+				json.NewEncoder(w).Encode(&re)
 			} else { //  Else get all recipes
 				recipes := GetAllRecipes(w, r)
 				totalRecipes := strconv.Itoa(len(recipes))
@@ -78,7 +81,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	w.Header().Add("content-type", "application/json")
+
 }
 
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
@@ -98,7 +101,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
-
+	//  Check to see if the ingredient is already in the DB
 	for i := range allIngredients {
 		if ing.Name == allIngredients[i].Name {
 			found = true // found ingredient in database
@@ -226,14 +229,13 @@ func GetAllIngredients(w http.ResponseWriter, r *http.Request) []Ingredient {
 func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	client := http.DefaultClient // MÅ FINNE EN MÅTE Å EKSKLUDERE API ID OG KEY
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
-	APIURL += strconv.Itoa(ing.Quantity)
-	APIURL += "%20"
+	//APIURL += strconv.Itoa(ing.Quantity)
+	//	APIURL += "%20"
 	if ing.Unit != "" {
 		APIURL += ing.Unit
 		APIURL += "%20"
 	}
 	APIURL += ing.Name
-	fmt.Println(APIURL)
 	r := DoRequest(APIURL, client, w)
 
 	err := json.NewDecoder(r.Body).Decode(&ing)

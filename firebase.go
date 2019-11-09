@@ -11,7 +11,6 @@ import (
 	"google.golang.org/api/option"
 )
 
-
 // FireBaseDB is an instance of FirestoreDatabase struct which is used in firebase.go
 var FireBaseDB = FirestoreDatabase{}
 
@@ -22,7 +21,7 @@ func DBInit() error {
 	// We use a service account, load credentials file that you downloaded from your project's settings menu.
 	// Make sure this file is gitignored, it is the access token to the database.
 	sa := option.WithCredentialsFile(FirestoreCredentials)
-	app, err := firebase.NewApp(FireBaseDB.Ctx, nil, sa)		//  Creates the application with its contents
+	app, err := firebase.NewApp(FireBaseDB.Ctx, nil, sa) //  Creates the application with its contents
 	if err != nil {
 		fmt.Println("Failed to initialize the firebase database when creating a new app: ", err)
 	}
@@ -73,7 +72,7 @@ func DBSaveWebhook(i *Webhook) error {
 }
 
 // DBDelete deletes an entry from given collection in database by its id, either ingredient, recipe or webhook
-func DBDelete(id string, collection string) error {	
+func DBDelete(id string, collection string) error {
 	_, err := FireBaseDB.Client.Collection(collection).Doc(id).Delete(FireBaseDB.Ctx)
 	if err != nil {
 		fmt.Printf("ERROR deleting from collection: %v\n", err)
@@ -84,8 +83,8 @@ func DBDelete(id string, collection string) error {
 
 // DBReadRecipeByName reads a single recipe by Name
 func DBReadRecipeByName(name string) (Recipe, error) {
-	temp := Recipe{}		//  Recipe to be returned
-	allrec, err := DBReadAllRecipes()	//  Query all the recipes 
+	temp := Recipe{}                  //  Recipe to be returned
+	allrec, err := DBReadAllRecipes() //  Query all the recipes
 	if err != nil {
 		return temp, err
 	}
@@ -112,7 +111,6 @@ func DBReadIngredientByName(name string) (Ingredient, error) {
 
 	for _, i := range alling {
 		if i.Name == name {
-			fmt.Println(name)
 			temp.ID = i.ID
 			temp.Name = i.Name
 			temp.Nutrients = i.Nutrients
@@ -180,10 +178,10 @@ func DBReadAllRecipes() ([]Recipe, error) {
 // DBReadAllIngredients reads all ingredients from database
 func DBReadAllIngredients() ([]Ingredient, error) {
 	var tempingredients []Ingredient
-	ingredient := Ingredient{}		//  Collects the entire collection
+	ingredient := Ingredient{} //  Collects the entire collection
 	iter := FireBaseDB.Client.Collection(IngredientCollection).Documents(FireBaseDB.Ctx)
 	for {
-		doc, err := iter.Next()		//  Iterates over each document
+		doc, err := iter.Next() //  Iterates over each document
 		if err == iterator.Done {
 			break
 		}
