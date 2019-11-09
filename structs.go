@@ -7,7 +7,7 @@ import (
 	"cloud.google.com/go/firestore"
 )
 
-// Recipe Struct for a recipe containting ingredients used in firebase.go and register.go
+// Recipe Struct for a recipe containting ingredients used in firebase.go and register.go -
 type Recipe struct {
 	ID              string       `json:"id"`
 	RecipeName      string       `json:"recipeName"`

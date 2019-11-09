@@ -35,45 +35,42 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		recipeTemp := RecipePrint{}
 		recipeTemp.RecipeName = r.RecipeName
 		recipeTemp.Ingredients.Remaining = ingredientsList
-		for _, i := range r.Ingredients { //i is name of the ingredients needed for the recipe
-			have := false //if there are enough of the ingredient to the recipe, this becomes true
 
+		for _, i := range r.Ingredients { //i is the ingredient needed for the recipe
+			//have := false //if there are enough of the ingredient to the recipe, this becomes true
 			fmt.Println(i.Name + ":")
 
 			for _, j := range ingredientsList { //Name|quantity of ingredients from query
 
 				fmt.Println("\t"+j.Name, j.Quantity, ":")
 				if i.Name == j.Name { //if it matches ingredient from recipe
+
 					fmt.Println("\tFør: ", recipeTemp.Ingredients.Remaining)
-					recipeTemp.Ingredients.Remaining = RemoveIngredient(recipeTemp.Ingredients.Remaining, i) //removes from remaining
-					fmt.Println("\tEtt: ", recipeTemp.Ingredients.Remaining)
+					//recipeTemp = RemoveIngredient(recipeTemp, i) //removes from remaining
+					for n := range recipeTemp.Ingredients.Remaining {
 
-					if j.Quantity >= i.Quantity { //if there are more of an ingredient than needed
-						have = true //have enough ingredients
-						fmt.Println("\t\tHave: ")
-						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
+						if recipeTemp.Ingredients.Remaining[n].Name == i.Name {
+							fmt.Println(recipeTemp.Ingredients.Remaining[n], " : ", i.Quantity)
 
-						rest := j.Quantity - i.Quantity //quantity remaining after using recipe
-						/*if rest > 0 {                   //if there is a rest,add it to the remaining list
-								i.Quantity = rest
-								recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining, i)
+							if recipeTemp.Ingredients.Remaining[n].Quantity <= i.Quantity { //If recipe needs more than what was sendt
+								fmt.Println("Sletter: " + recipeTemp.Ingredients.Remaining[n].Name)
+
+								recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j) //adds the ingredients sendt to have
+								i.Quantity -= j.Quantity                                             //sets the quantity to 'missing' value
+								recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
+								recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
+
+							} else {
+								fmt.Println("Tar vekk: ", i.Quantity, "fra: "+recipeTemp.Ingredients.Remaining[n].Name)
+								recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
+								recipeTemp.Ingredients.Remaining[n].Quantity = recipeTemp.Ingredients.Remaining[n].Quantity - i.Quantity
 							}
-						} else*/
-
-						if rest <= 0 { //adds the ingredients that was sendt
-							temp := i.Quantity
-							i.Quantity = j.Quantity //the quantity that user has
-							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
-							i.Quantity = temp - j.Quantity //sets quantity to the 'missing' value
+							break //break out of search
 						}
 					}
-					//fmt.Println("have " + ingredient[0])
-					//break //break out of loop since the ingredient was found
+					fmt.Println("\tEtt: ", recipeTemp.Ingredients.Remaining)
+					break //break out after finding matching name
 				}
-			}
-			if !have { //if ingredient was not found, put it in the missing list
-				fmt.Println("\t\tDont: " + i.Name)
-				recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 			}
 		}
 		recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
