@@ -143,21 +143,21 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 
 // ConvertUnit converts units for ingredients, and changes their quantity respectively.
 func ConvertUnit(ing Ingredient) Ingredient {
-	if ing.Unit == "dl" {
+	switch ing.Unit {
+	case "dl":
 		ing.Quantity = ing.Quantity / 10
 		ing.Unit = "l"
-	}
-	if ing.Unit == "cl" {
+	case "cl":
 		ing.Quantity = ing.Quantity / 100
 		ing.Unit = "l"
-	}
-	if ing.Unit == "ml" {
+	case "ml":
 		ing.Quantity = ing.Quantity / 1000
 		ing.Unit = "l"
-	}
-	if ing.Unit == "kg" {
+	case "kg":
 		ing.Quantity = ing.Quantity * 1000
 		ing.Unit = "g"
+
 	}
+
 	return ing
 }
