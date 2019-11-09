@@ -14,7 +14,7 @@ func HandlerNil(w http.ResponseWriter, r *http.Request) { //standard default res
 
 	// ********** Informatian about endpoints *************
 
-	file, err := os.Open("nil.text") // opens text file
+	file, err := os.Open("nil.txt") // opens text file
 	if err != nil {
 		fmt.Println("Can't open file: ", err)
 	}
