@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -68,21 +69,20 @@ func CallURL(event string, s interface{}) {
 //ReadIngredients splits up the ingredient name from the quantity
 func ReadIngredients(ingredients []string) []Ingredient {
 	IngredientList := []Ingredient{}
+
 	for i := range ingredients {
 		ingredient := strings.Split(ingredients[i], "|")
-		/*
-			var quantity float64
-			var err error
-			if len(ingredient) < 2 { //checks if quantity is set for this ingredient
-				quantity = 1.0 //Sets quantity to 'default' if not defined
-			} else {
-				quantity, err = strconv.Atoi(ingredient[1])
-				if err != nil { //if error set to 1
-					quantity = 1.0
-				}
+		var quantity float64
+		var err error
+		if len(ingredient) < 2 { //checks if quantity is set for this ingredient
+			quantity = 1.0 //Sets quantity to 'default' if not defined
+		} else {
+			quantity, err = strconv.ParseFloat(ingredient[1], 64)
+			if err != nil { //if error set to 1
+				quantity = 1.0
 			}
-		*/
-		quantity := 1.0
+		}
+
 		ingredientTemp := Ingredient{}
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
 		ingredientTemp.Quantity = quantity  //quantity of the ingredient

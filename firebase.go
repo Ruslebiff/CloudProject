@@ -136,9 +136,10 @@ func DBReadIngredientByID(id string) (Ingredient, error) {
 // DBReadAllRecipes reads all recipes from database
 func DBReadAllRecipes() ([]Recipe, error) {
 	var temprecipes []Recipe
-	recipe := Recipe{}
+
 	iter := FireBaseDB.Client.Collection(RecipeCollection).Documents(FireBaseDB.Ctx)
 	for {
+		recipe := Recipe{}
 		doc, err := iter.Next()
 		if err == iterator.Done {
 			break
@@ -152,7 +153,7 @@ func DBReadAllRecipes() ([]Recipe, error) {
 		}
 
 		temprecipes = append(temprecipes, recipe) // add to temp array
-
+		fmt.Println("\ttemprecipe: ", temprecipes)
 	}
 	return temprecipes, nil
 }
