@@ -92,24 +92,6 @@ func ReadIngredients(ingredients []string) []Ingredient {
 	return IngredientList
 }
 
-func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
-	for n, i := range list {
-		if i.Name == ingredient.Name {
-			fmt.Println(i.Quantity, " : ", ingredient.Quantity)
-			if i.Quantity <= ingredient.Quantity {
-				fmt.Println("Sletter: " + i.Name)
-
-				list = append(list[:n], list[n+1:]...)
-			} else {
-				fmt.Println("Tar vekk: ", ingredient.Quantity, "fra: "+i.Name)
-				i.Quantity = i.Quantity - ingredient.Quantity
-			}
-			return list
-		}
-	}
-	return list
-}
-
 // CalcNutrition calculates nutritional info for given ingredient
 func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 	var grams float64
