@@ -69,25 +69,34 @@ func CallURL(event string, s interface{}) {
 //ReadIngredients splits up the ingredient name from the quantity
 func ReadIngredients(ingredients []string) []Ingredient {
 	IngredientList := []Ingredient{}
+	defVal := 1.0
 
 	for i := range ingredients {
 		ingredient := strings.Split(ingredients[i], "|")
-		var quantity float64
 		var err error
-		if len(ingredient) < 2 { //checks if quantity is set for this ingredient
-			quantity = 1.0 //Sets quantity to 'default' if not defined
-		} else {
-			quantity, err = strconv.ParseFloat(ingredient[1], 64)
-			if err != nil { //if error set to 1
-				quantity = 1.0
+		ingredientTemp := Ingredient{}
+		ingredientTemp.Quantity = defVal //sets to defVal
+
+		if len(ingredient) == 2 {
+			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
+
+			if err != nil { //if error set to defVal
+				ingredientTemp.Quantity = defVal
 			}
 		}
 
-		ingredientTemp := Ingredient{}
-		ingredientTemp.Name = ingredient[0] //name of the ingredient
-		ingredientTemp.Quantity = quantity  //quantity of the ingredient
+		if len(ingredient) == 3 {
+			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
 
+			if err != nil { //if error set to defVal
+				ingredientTemp.Quantity = defVal
+			}
+			ingredientTemp.Unit = ingredient[2]
+		}
+
+		ingredientTemp.Name = ingredient[0] //name of the ingredient
 		IngredientList = append(IngredientList, ingredientTemp)
+
 	}
 	return IngredientList
 }
