@@ -96,10 +96,11 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	err = GetNutrients(&ing, w)
-	if err != nil {
-		http.Error(w, "Could not retrieve nutrients from API "+err.Error(), http.StatusBadRequest)
-	}
+	temping := ConvertUnit(ing)
+	ing.Unit = temping.Unit
+	ing.Quantity = 1
+
+	GetNutrients(&ing, w) // calls func
 
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
@@ -233,8 +234,9 @@ func GetAllIngredients(w http.ResponseWriter, r *http.Request) []Ingredient {
 func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	client := http.DefaultClient // MÅ FINNE EN MÅTE Å EKSKLUDERE API ID OG KEY
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id=f1d62971&app_key=fd32917955dc051f73436739d92b374e&ingr="
-	//APIURL += strconv.Itoa(ing.Quantity)
-	//	APIURL += "%20"
+	//APIURL += strconv.Itoa(ing.Quantity) // temp removed due to changing Quantity to Float64 type
+	//APIURL += strconv.ParseFloat(ing.Quantity) // maybe this instead if needed at all
+	//APIURL += "%20"
 	if ing.Unit != "" {
 		APIURL += ing.Unit
 		APIURL += "%20"
