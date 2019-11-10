@@ -98,8 +98,9 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	temping := ConvertUnit(ing)
-	ing.Unit = temping.Unit
+	ConvertUnit(&ing) // testing reference instead
+	//temping := ConvertUnit(ing)
+	//ing.Unit = temping.Unit
 	ing.Quantity = 1
 	ing.Name = strings.ToLower(ing.Name)
 
@@ -313,6 +314,9 @@ func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 		rec.Ingredients[i].Nutrients.Carbohydrate = temptotalnutrients.Nutrients.Carbohydrate
 		rec.Ingredients[i].Nutrients.Sugar = temptotalnutrients.Nutrients.Sugar
 		rec.Ingredients[i].Nutrients.Protein = temptotalnutrients.Nutrients.Protein
+
+		rec.Ingredients[i].Calories = temptotalnutrients.Nutrients.Energy.Quantity
+		rec.Ingredients[i].ID = temptotalnutrients.ID
 	}
 
 	return nil

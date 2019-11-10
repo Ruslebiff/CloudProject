@@ -121,15 +121,16 @@ func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
 }
 
 // CalcNutrition calculates nutritional info for given ingredient
-func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
-
+func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { // maybe only get ingredient as parameter
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
 	}
 	ing.Nutrients = temping.Nutrients
+	ing.ID = temping.ID
 
-	temping = ConvertUnit(ing)
+	//temping = ConvertUnit(&ing)
+	ConvertUnit(&temping)
 	ing.Unit = temping.Unit
 	ing.Quantity = temping.Quantity
 
@@ -139,14 +140,11 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 	ing.Nutrients.Protein.Quantity *= temping.Quantity
 	ing.Nutrients.Sugar.Quantity *= temping.Quantity
 
-	ing.Calories = temping.Nutrients.Energy.Quantity
-	ing.ID = temping.ID
-
 	return ing
 }
 
 // ConvertUnit converts units for ingredients, and changes their quantity respectively.
-func ConvertUnit(ing Ingredient) Ingredient {
+func ConvertUnit(ing *Ingredient) {
 	switch ing.Unit {
 	case "dl":
 		ing.Quantity = ing.Quantity / 10
@@ -160,8 +158,5 @@ func ConvertUnit(ing Ingredient) Ingredient {
 	case "kg":
 		ing.Quantity = ing.Quantity * 1000
 		ing.Unit = "g"
-
 	}
-
-	return ing
 }
