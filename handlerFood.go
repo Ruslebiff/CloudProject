@@ -87,7 +87,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-
+g
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
 func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	ing := Ingredient{}
@@ -96,7 +96,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	ConvertUnit(&ing) // testing reference instead
+	ConvertUnit(&ing, "g") // testing reference instead
 	//temping := ConvertUnit(ing)
 	//ing.Unit = temping.Unit
 	ing.Quantity = 1
