@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 )
 
@@ -41,21 +42,21 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
 				if j.Name == i.Name { //if it matches ingredient from recipe
 
-					fmt.Println("FØR", j)
-					j = CalcNutrition(i, j.Unit, j.Quantity)
-					fmt.Println("ETT: ", j)
+					j = CalcNutrition(j, j.Unit, j.Quantity)
+
 					if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
 						recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
 
 						i.Quantity -= j.Quantity //sets the quantity to 'missing' value
 						if i.Quantity > 0 {
-							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
+
+							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, CalcNutrition(i, i.Unit, i.Quantity))
 						}
 					} else {
 						fmt.Println("\tFør: ", recipeTemp.Ingredients.Remaining)
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
-						recipeTemp.Ingredients.Remaining[n].Quantity -= i.Quantity
+						recipeTemp.Ingredients.Remaining[n] = CalcNutrition(recipeTemp.Ingredients.Remaining[n], recipeTemp.Ingredients.Remaining[n].Unit, recipeTemp.Ingredients.Remaining[n].Quantity-i.Quantity)
 					}
 					break //break out after finding matching name
 				}
@@ -64,5 +65,8 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		}
 		recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 	}
+	sort.Slice(recipeCount, func(i, j int) bool {
+		return len(recipeCount[i].Ingredients.Missing) > len(recipeCount[j].Ingredients.Missing)
+	})
 	json.NewEncoder(w).Encode(recipeCount)
 }

@@ -95,6 +95,7 @@ func ReadIngredients(ingredients []string) []Ingredient {
 		}
 
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
+		ingredientTemp = CalcNutrition(ingredientTemp, ingredientTemp.Unit, ingredientTemp.Quantity)
 		IngredientList = append(IngredientList, ingredientTemp)
 
 	}
