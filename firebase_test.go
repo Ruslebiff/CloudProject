@@ -10,14 +10,13 @@ func TestFirebase(t *testing.T) {
 
 	err := DBInit() // check that the database initalises
 	if err != nil {
-		t.Error(err) // feild to initalise
-
+		t.Error(err) // failed to initalise
 	}
 
 	// testing of Ingredients functions for database **************
 	i := Ingredient{Name: "TestIngredient"}
 
-	err = DBSaveIngredient(&i) //test sevaing Ingredient
+	err = DBSaveIngredient(&i) //test saving Ingredient
 	if err != nil {
 		t.Error(err)
 	}
@@ -28,18 +27,18 @@ func TestFirebase(t *testing.T) {
 		t.Error(err)
 	}
 
-	_, err = DBReadIngredientByID(ingredients[1].ID) // test read ingrediants by id
+	_, err = DBReadIngredientByID(ingredients[1].ID) // test read ingredients by id
 	if err != nil {
 		t.Error(err)
 	}
 
-	i2, err := DBReadIngredientByName(i.Name) // test read ingrediants by name
+	i2, err := DBReadIngredientByName(i.Name) // test read ingredients by name
 	if err != nil {
 		t.Error(err)
 	}
 
 	fmt.Println("test ingredient", i2)
-	err = DBDelete(i2.ID, IngredientCollection) // test delete and delet test ingredieant
+	err = DBDelete(i2.ID, IngredientCollection) // test delete and delete test ingredient
 	if err != nil {
 		t.Error(err)
 	}
@@ -89,10 +88,14 @@ func TestFirebase(t *testing.T) {
 		t.Error(err)
 	}
 
-	fmt.Println("test webhooks ", wh[1].ID)
-	err = DBDelete(wh[1].ID, WebhooksCollection) // delets test webhook
-	if err != nil {
-		t.Error(err)
+	for i := range wh {
+		if wh[i].Event == w.Event {
+			fmt.Println("test webhooks ", wh[i].ID)
+			err = DBDelete(wh[i].ID, WebhooksCollection) // delets test webhook
+			if err != nil {
+				t.Error(err)
+			}
+		}
 	}
 
 }

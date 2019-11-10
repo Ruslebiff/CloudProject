@@ -1,12 +1,10 @@
 package cravings
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -89,7 +87,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-
+g
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
 func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	ing := Ingredient{}
@@ -98,39 +96,42 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	temping := ConvertUnit(ing)
-	ing.Unit = temping.Unit
+	//temping := ConvertUnit(ing)
+	//ing.Unit = temping.Unit
 	ing.Quantity = 1
 	ing.Name = strings.ToLower(ing.Name)
 
 	if ing.Unit == "" {
-		temping = GetUnitFromAPI(ing)
-		ing.Unit = temping.Unit
-	}
+		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
+	} else {
+		ConvertUnit(&ing, ing.Unit) // testing reference instead
+		GetNutrients(&ing, w)       // calls func
 
-	GetNutrients(&ing, w) // calls func
-
-	allIngredients, err := DBReadAllIngredients()
-	if err != nil {
-		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
-	}
-	//  Check to see if the ingredient is already in the DB
-	for i := range allIngredients {
-		if ing.Name == allIngredients[i].Name {
-			found = true // found ingredient in database
-			http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
-			break
-		}
-	}
-
-	if found == false { // if ingredient is not found in database
-		err = DBSaveIngredient(&ing) // save it
+		allIngredients, err := DBReadAllIngredients()
 		if err != nil {
-			http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
-		} else {
-			// if saving didn't return error, call webhooks
-			CallURL(IngredientCollection, &ing)
-			fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.")
+			http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+		}
+		//  Check to see if the ingredient is already in the DB
+		for i := range allIngredients {
+			if ing.Name == allIngredients[i].Name {
+				found = true // found ingredient in database
+				http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
+				break
+			}
+		}
+
+		if found == false { // if ingredient is not found in database
+			err = DBSaveIngredient(&ing) // save it
+			if err != nil {
+				http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+			} else {
+				// if saving didn't return error, call webhooks
+				err := CallURL(IngredientCollection, &ing)
+				if err != nil {
+					fmt.Println("could not post to webhooks.site: ", err)
+				}
+				fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.")
+			}
 		}
 	}
 
@@ -149,15 +150,17 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	var missingingredients []string        // name of ingredients in recipe missing in database
 	recipeNameInUse := false
 
+	//  Retrieve all recipes and ingredients to see if the one the user is trying to register already exists
 	allRecipes, err := DBReadAllRecipes()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
+	//  Retrieves all the ingredients to get the ones missing for the recipe
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
-
+	//  If the name of the one created matches any of the ones in the DB
 	for i := range allRecipes {
 		if allRecipes[i].RecipeName == rec.RecipeName {
 			recipeNameInUse = true
@@ -190,7 +193,10 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 		} else {
-			//CallURL(RecipeCollection, &rec)
+			err := CallURL(RecipeCollection, &rec)
+			if err != nil {
+				fmt.Println("could not post to webhooks.site: ", err)
+			}
 			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
 		}
 
@@ -241,30 +247,11 @@ func GetAllIngredients(w http.ResponseWriter, r *http.Request) []Ingredient {
 
 func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	client := http.DefaultClient
-	//  Application API key
-	app_id := ""
-	app_key := ""
-	//  Opens local file which contains application id and key
-	file, err := os.Open("appIdAndKey.txt")
-	if err != nil {
-		http.Error(w, "Unable to open file", http.StatusFailedDependency)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	scanner.Scan()
-	app_id = scanner.Text()
-	scanner.Scan()
-	app_key = scanner.Text()
-
-	if err := scanner.Err(); err != nil {
-		http.Error(w, "Unable to read the application ID and key from file ", http.StatusFailedDependency)
-	}
 
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id="
-	APIURL += app_id
+	APIURL += App_id
 	APIURL += "&app_key="
-	APIURL += app_key
+	APIURL += App_key
 	APIURL += "&ingr="
 	if ing.Unit != "" {
 		APIURL += ing.Unit
@@ -273,7 +260,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	APIURL += ing.Name
 	r := DoRequest(APIURL, client, w)
 
-	err = json.NewDecoder(r.Body).Decode(&ing)
+	err := json.NewDecoder(r.Body).Decode(&ing)
 	if err != nil {
 		http.Error(w, "Could not decode response body "+err.Error(), http.StatusInternalServerError)
 	}
@@ -284,7 +271,8 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 // //  This is meant for when each ingredient is 100g, change later
 // GetRecipeNutrients calculates total nutritients in a recipe
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
-
+	//  Loops through each ingredient in the recipe and adds up the nutritional information from each
+	//  to a total amount of nutrients for the recipe as a whol
 	for i := range rec.Ingredients {
 		temptotalnutrients := CalcNutrition(rec.Ingredients[i], rec.Ingredients[i].Unit, rec.Ingredients[i].Quantity)
 
@@ -313,7 +301,9 @@ func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 		rec.Ingredients[i].Nutrients.Carbohydrate = temptotalnutrients.Nutrients.Carbohydrate
 		rec.Ingredients[i].Nutrients.Sugar = temptotalnutrients.Nutrients.Sugar
 		rec.Ingredients[i].Nutrients.Protein = temptotalnutrients.Nutrients.Protein
-	}
 
+		rec.Ingredients[i].Calories = temptotalnutrients.Nutrients.Energy.Quantity
+		rec.Ingredients[i].ID = temptotalnutrients.ID
+	}
 	return nil
 }

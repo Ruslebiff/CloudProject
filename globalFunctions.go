@@ -1,10 +1,12 @@
 package cravings
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -35,7 +37,7 @@ func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 }
 
 // CallURL post webhooks to webhooks.site
-func CallURL(event string, s interface{}) {
+func CallURL(event string, s interface{}) error {
 
 	webhooks, err := DBReadAllWebhooks() // gets all webhooks
 	if err != nil {
@@ -64,9 +66,10 @@ func CallURL(event string, s interface{}) {
 
 	}
 
+	return nil
 }
 
-//ReadIngredients splits up the ingredient name from the quantity
+//ReadIngredients splits up the ingredient name from the quantity from the URL
 func ReadIngredients(ingredients []string) []Ingredient {
 	IngredientList := []Ingredient{}
 	defVal := 1.0
@@ -103,55 +106,107 @@ func ReadIngredients(ingredients []string) []Ingredient {
 }
 
 // CalcNutrition calculates nutritional info for given ingredient
-func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
+func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { //maybe only ingredient as parameter
 
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
 	}
-	ing.Nutrients = temping.Nutrients
 
-	temping = ConvertUnit(ing)
-	ing.Unit = temping.Unit
-	ing.Quantity = temping.Quantity
+	ing.ID = temping.ID               // add ID to ing since it's a copy
+	ing.Nutrients = temping.Nutrients // reset nutrients to nutrients for 1g or 1l
 
-	ing.Nutrients.Energy.Quantity *= temping.Quantity
-	ing.Nutrients.Fat.Quantity *= temping.Quantity
-	ing.Nutrients.Carbohydrate.Quantity *= temping.Quantity
-	ing.Nutrients.Protein.Quantity *= temping.Quantity
-	ing.Nutrients.Sugar.Quantity *= temping.Quantity
+	ConvertUnit(&ing, "g") // convert unit to g - change this to handle liter too
 
-	ing.Calories = temping.Nutrients.Energy.Quantity
-	ing.ID = temping.ID
+	// Calc nutrition:
 
 	return ing
 }
 
 // ConvertUnit converts units for ingredients, and changes their quantity respectively.
-func ConvertUnit(ing Ingredient) Ingredient {
-	switch ing.Unit {
-	case "dl":
-		ing.Quantity = ing.Quantity / 10
-		ing.Unit = "l"
-	case "cl":
-		ing.Quantity = ing.Quantity / 100
-		ing.Unit = "l"
-	case "ml":
-		ing.Quantity = ing.Quantity / 1000
-		ing.Unit = "l"
-	case "kg":
-		ing.Quantity = ing.Quantity * 1000
-		ing.Unit = "g"
+func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 
+	if ing.Unit == "kg" && unitConvertTo == "g" {
+		ing.Quantity *= 1000
+		ing.Unit = unitConvertTo
+	}
+	if ing.Unit == "g" && unitConvertTo == "kg" {
+		ing.Quantity /= 1000
+		ing.Unit = unitConvertTo
 	}
 
-	return ing
+	if unitConvertTo == "l" {
+		switch ing.Unit {
+		case "dl":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		case "cl":
+			ing.Quantity /= 100
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 1000
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "dl" {
+		switch ing.Unit {
+		case "l":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "cl":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 100
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "cl" {
+		switch ing.Unit {
+		case "dl":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "l":
+			ing.Quantity *= 100
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "ml" {
+		switch ing.Unit {
+		case "cl":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "dl":
+			ing.Quantity *= 100
+			ing.Unit = unitConvertTo
+		case "l":
+			ing.Quantity *= 1000
+			ing.Unit = unitConvertTo
+
+		}
+	}
+
 }
 
-func GetUnitFromAPI(ing Ingredient) Ingredient {
-	// TODO: Lookup ingredient on API, check which unit it has there, and return that.
+func InitAPICredentials() error {
+	//  Opens local file which contains application id and key
+	file, err := os.Open("appIdAndKey.txt")
+	if err != nil {
+		fmt.Println("Error: Unable to open file")
+	}
+	defer file.Close()
 
-	//ing = GetNutrients(&ing, w) ..?
-	ing.Unit = "g" // temp, remove this
-	return ing
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	App_id = scanner.Text()
+	scanner.Scan()
+	App_key = scanner.Text()
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error: Unable to read the application ID and key from file ")
+	}
+	return nil
 }
