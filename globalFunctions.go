@@ -143,32 +143,69 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { /
 // ConvertUnit converts units for ingredients, and changes their quantity respectively.
 func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 
-	// if ing.Unit == "kg" && unitConvertTo == "g"{
-	// 	ing.Quantity *= 1000
-	// 	ing.Unit = unitConvertTo
-	// }
-	// if ing.Unit == "g" && unitConvertTo == "kg"{
-	// 	ing.Quantity /= 1000
-	// 	ing.Unit = unitConvertTo
-	// }
-
-	//switch unitConvertTo {
-	switch ing.Unit {
-	case "dl":
-		ing.Quantity = ing.Quantity / 10
-		ing.Unit = "l"
-	case "cl":
-		ing.Quantity = ing.Quantity / 100
-		ing.Unit = "l"
-	case "ml":
-		ing.Quantity = ing.Quantity / 1000
-		ing.Unit = "l"
-	case "g":
-
-	case "kg":
-		ing.Quantity = ing.Quantity * 1000
-		ing.Unit = "g"
+	if ing.Unit == "kg" && unitConvertTo == "g" {
+		ing.Quantity *= 1000
+		ing.Unit = unitConvertTo
 	}
+	if ing.Unit == "g" && unitConvertTo == "kg" {
+		ing.Quantity /= 1000
+		ing.Unit = unitConvertTo
+	}
+
+	if unitConvertTo == "l" {
+		switch ing.Unit {
+		case "dl":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		case "cl":
+			ing.Quantity /= 100
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 1000
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "dl" {
+		switch ing.Unit {
+		case "l":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "cl":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 100
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "cl" {
+		switch ing.Unit {
+		case "dl":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "l":
+			ing.Quantity *= 100
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "ml" {
+		switch ing.Unit {
+		case "cl":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "dl":
+			ing.Quantity *= 100
+			ing.Unit = unitConvertTo
+		case "l":
+			ing.Quantity *= 1000
+			ing.Unit = unitConvertTo
+
+		}
+	}
+
 }
 
 func InitAPICredentials() error {
