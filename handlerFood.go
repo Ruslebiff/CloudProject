@@ -87,7 +87,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-g
+
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
 func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	ing := Ingredient{}
