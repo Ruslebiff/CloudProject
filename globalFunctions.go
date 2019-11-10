@@ -135,7 +135,7 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { /
 	ConvertUnit(&ing, "g") // convert unit to g - change this to handle liter too
 
 	// Calc nutrition:
-
+	//ing.Nutrients.Carbohydrate.Quantity = temping.Nutrients.Carbohydrate.Quantity * ing.Nutrients.Carbohydrate.Quantity
 	return ing
 }
 
