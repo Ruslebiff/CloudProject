@@ -1,10 +1,12 @@
 package cravings
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -66,7 +68,7 @@ func CallURL(event string, s interface{}) {
 
 }
 
-//ReadIngredients splits up the ingredient name from the quantity
+//ReadIngredients splits up the ingredient name from the quantity from the URL
 func ReadIngredients(ingredients []string) []Ingredient {
 	IngredientList := []Ingredient{}
 	defVal := 1.0
@@ -107,7 +109,7 @@ func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
 		if i.Name == ingredient.Name {
 			fmt.Println(i.Quantity, " : ", ingredient.Quantity)
 			if i.Quantity <= ingredient.Quantity {
-				fmt.Println("Sletter: " + i.Name)
+				fmt.Println("Deletes: " + i.Name)
 
 				list = append(list[:n], list[n+1:]...)
 			} else {
@@ -152,8 +154,18 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { /
 }
 
 // ConvertUnit converts units for ingredients, and changes their quantity respectively.
-func ConvertUnit(ing *Ingredient) {
-	switch ing.Unit {
+func ConvertUnit(ing *Ingredient, unitConvertTo string) {
+
+	// if ing.Unit == "kg" && unitConvertTo == "g"{
+	// 	ing.Quantity *= 1000
+	// 	ing.Unit = unitConvertTo
+	// }
+	// if ing.Unit == "g" && unitConvertTo == "kg"{
+	// 	ing.Quantity /= 1000
+	// 	ing.Unit = unitConvertTo
+	// }
+
+	switch unitConvertTo {
 	case "dl":
 		ing.Quantity = ing.Quantity / 10
 		ing.Unit = "l"
@@ -163,8 +175,30 @@ func ConvertUnit(ing *Ingredient) {
 	case "ml":
 		ing.Quantity = ing.Quantity / 1000
 		ing.Unit = "l"
+	case "g":
+
 	case "kg":
 		ing.Quantity = ing.Quantity * 1000
 		ing.Unit = "g"
 	}
+}
+
+func InitAPICredentials() error {
+	//  Opens local file which contains application id and key
+	file, err := os.Open("appIdAndKey.txt")
+	if err != nil {
+		fmt.Println("Error: Unable to open file")
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	scanner.Scan()
+	App_id = scanner.Text()
+	scanner.Scan()
+	App_key = scanner.Text()
+
+	if err := scanner.Err(); err != nil {
+		fmt.Println("Error: Unable to read the application ID and key from file ")
+	}
+	return nil
 }
