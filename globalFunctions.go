@@ -105,26 +105,9 @@ func ReadIngredients(ingredients []string) []Ingredient {
 	return IngredientList
 }
 
-func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
-	for n, i := range list {
-		if i.Name == ingredient.Name {
-			fmt.Println(i.Quantity, " : ", ingredient.Quantity)
-			if i.Quantity <= ingredient.Quantity {
-				fmt.Println("Deletes: " + i.Name)
+// CalcNutrition calculates nutritional info for given ingredient
+func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { //maybe only ingredient as parameter
 
-				list = append(list[:n], list[n+1:]...)
-			} else {
-				fmt.Println("Tar vekk: ", ingredient.Quantity, "fra: "+i.Name)
-				i.Quantity = i.Quantity - ingredient.Quantity
-			}
-			return list
-		}
-	}
-	return list
-}
-
-// CalcNutrition calculates nutritional info for given ingredient - UNFINISHED
-func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { // maybe only get ingredient as parameter
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
