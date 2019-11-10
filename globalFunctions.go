@@ -1,12 +1,10 @@
 package cravings
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -68,7 +66,7 @@ func CallURL(event string, s interface{}) {
 
 }
 
-//ReadIngredients splits up the ingredient name from the quantity from the URL
+//ReadIngredients splits up the ingredient name from the quantity
 func ReadIngredients(ingredients []string) []Ingredient {
 	IngredientList := []Ingredient{}
 	defVal := 1.0
@@ -109,7 +107,7 @@ func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
 		if i.Name == ingredient.Name {
 			fmt.Println(i.Quantity, " : ", ingredient.Quantity)
 			if i.Quantity <= ingredient.Quantity {
-				fmt.Println("Deletes: " + i.Name)
+				fmt.Println("Sletter: " + i.Name)
 
 				list = append(list[:n], list[n+1:]...)
 			} else {
@@ -128,8 +126,8 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { /
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
 	}
-	ing.Nutrients = temping.Nutrients
-	ing.ID = temping.ID
+	ing.Nutrients = temping.Nutrients // reset nutrients to 1g or 1l
+	ing.ID = temping.ID               // add ID to ing since it's a copy
 
 	//temping = ConvertUnit(&ing)
 	ConvertUnit(&temping)
@@ -169,32 +167,4 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 		ing.Quantity = ing.Quantity * 1000
 		ing.Unit = "g"
 	}
-}
-
-func GetUnitFromAPI(ing Ingredient) Ingredient {
-	// TODO: Lookup ingredient on API, check which unit it has there, and return that.
-
-	//ing = GetNutrients(&ing, w) ..?
-	ing.Unit = "g" // temp, remove this
-	return ing
-}
-
-func InitAPICredentials() error {
-	//  Opens local file which contains application id and key
-	file, err := os.Open("appIdAndKey.txt")
-	if err != nil {
-		fmt.Println("Error: Unable to open file")
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	scanner.Scan()
-	App_id = scanner.Text()
-	scanner.Scan()
-	App_key = scanner.Text()
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Error: Unable to read the application ID and key from file ")
-	}
-	return nil
 }
