@@ -126,14 +126,22 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { /
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
 	}
-	ing.Nutrients = temping.Nutrients // reset nutrients to 1g or 1l
+
 	ing.ID = temping.ID               // add ID to ing since it's a copy
+	ing.Nutrients = temping.Nutrients // reset nutrients to nutrients for 1g or 1l
 
 	//temping = ConvertUnit(&ing)
+	fmt.Println(temping.Unit)
+	fmt.Println(temping.Quantity)
+	fmt.Println(temping.Nutrients.Carbohydrate)
 	ConvertUnit(&temping)
-	ing.Unit = temping.Unit
-	ing.Quantity = temping.Quantity
+	fmt.Println(temping.Unit)
+	fmt.Println(temping.Quantity)
+	fmt.Println(temping.Nutrients.Carbohydrate)
+	ing.Unit = temping.Unit         // change ing unit to g or l
+	ing.Quantity = temping.Quantity // and change quantity respectively
 
+	// calculate nutrition
 	ing.Nutrients.Energy.Quantity *= temping.Quantity
 	ing.Nutrients.Fat.Quantity *= temping.Quantity
 	ing.Nutrients.Carbohydrate.Quantity *= temping.Quantity
