@@ -89,7 +89,7 @@ type Token struct {
 
 // Status struct for status endpoint
 type Status struct {
-	Edemam           int     `json:"edemam"`
+	Edamam           int     `json:"edamam"`
 	Database         int     `json:"database"`
 	TotalRecipe      int     `json:"total recipes"`
 	TotalIngredients int     `json:"total ingredients"`

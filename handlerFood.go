@@ -1,12 +1,10 @@
 package cravings
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -150,15 +148,17 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	var missingingredients []string        // name of ingredients in recipe missing in database
 	recipeNameInUse := false
 
+	//  Retrieve all recipes and ingredients to see if the one the user is trying to register already exists
 	allRecipes, err := DBReadAllRecipes()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
+	//  Retrieves all the ingredients to get the ones missing for the recipe
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
-
+	//  If the name of the one created matches any of the ones in the DB
 	for i := range allRecipes {
 		if allRecipes[i].RecipeName == rec.RecipeName {
 			recipeNameInUse = true
@@ -242,30 +242,11 @@ func GetAllIngredients(w http.ResponseWriter, r *http.Request) []Ingredient {
 
 func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	client := http.DefaultClient
-	//  Application API key
-	app_id := ""
-	app_key := ""
-	//  Opens local file which contains application id and key
-	file, err := os.Open("appIdAndKey.txt")
-	if err != nil {
-		http.Error(w, "Unable to open file", http.StatusFailedDependency)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	scanner.Scan()
-	app_id = scanner.Text()
-	scanner.Scan()
-	app_key = scanner.Text()
-
-	if err := scanner.Err(); err != nil {
-		http.Error(w, "Unable to read the application ID and key from file ", http.StatusFailedDependency)
-	}
 
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id="
-	APIURL += app_id
+	APIURL += App_id
 	APIURL += "&app_key="
-	APIURL += app_key
+	APIURL += App_key
 	APIURL += "&ingr="
 	if ing.Unit != "" {
 		APIURL += ing.Unit
@@ -274,7 +255,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	APIURL += ing.Name
 	r := DoRequest(APIURL, client, w)
 
-	err = json.NewDecoder(r.Body).Decode(&ing)
+	err := json.NewDecoder(r.Body).Decode(&ing)
 	if err != nil {
 		http.Error(w, "Could not decode response body "+err.Error(), http.StatusInternalServerError)
 	}
@@ -285,7 +266,8 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 // //  This is meant for when each ingredient is 100g, change later
 // GetRecipeNutrients calculates total nutritients in a recipe
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
-
+	//  Loops through each ingredient in the recipe and adds up the nutritional information from each
+	//  to a total amount of nutrients for the recipe as a whol
 	for i := range rec.Ingredients {
 		temptotalnutrients := CalcNutrition(rec.Ingredients[i], rec.Ingredients[i].Unit, rec.Ingredients[i].Quantity)
 
@@ -318,6 +300,5 @@ func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 		rec.Ingredients[i].Calories = temptotalnutrients.Nutrients.Energy.Quantity
 		rec.Ingredients[i].ID = temptotalnutrients.ID
 	}
-
 	return nil
 }

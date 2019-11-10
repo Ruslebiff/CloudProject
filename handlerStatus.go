@@ -10,14 +10,20 @@ import (
 func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 	var S Status
 
-	// Sets status for Edemam ***************************************
-	resp, err := http.Get("https://api.edamam.com/api/nutrition-details") // gets api
+	APIURL := "https://api.edamam.com/api/nutrition-data?app_id="
+	APIURL += App_id
+	APIURL += "&app_key="
+	APIURL += App_key
+	APIURL += "&ingr=1%20large%20apple"
+
+	// Sets status for Edamam ***************************************
+	resp, err := http.Get(APIURL) // gets api
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	S.Edemam = resp.StatusCode // sets status code for api
+	S.Edamam = resp.StatusCode // sets status code for api
 
 	// Sets staus for database ***************************************
 	resp, err = http.Get("https://firebase.google.com") // gets link

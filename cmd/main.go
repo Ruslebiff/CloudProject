@@ -17,9 +17,13 @@ func main() {
 	cravings.StartTime = StartTime // sends start time to ctavins.StartTime
 	err := cravings.DBInit()
 	if err != nil {
-		fmt.Println("Failed to initialise database")
+		fmt.Println("Failed to initialize database")
 	} else {
 		fmt.Println("Database init OK")
+	}
+	err = cravings.InitAPICredentials()
+	if err != nil {
+		fmt.Println("Failed to initialize the api credentials for edamam's API")
 	}
 
 	defer cravings.DBClose()

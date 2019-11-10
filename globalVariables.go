@@ -22,3 +22,7 @@ const WebhooksCollection = "webhooks"
 
 // URLRegistration is the url to edamam api for getting nutrition details when registering an ingredient or recipe
 var URLRegistration = "https://api.edamam.com/api/nutrition-details"
+
+//  Application API ID and Key
+var App_id = ""
+var App_key = ""
