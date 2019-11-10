@@ -35,7 +35,7 @@ func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 }
 
 // CallURL post webhooks to webhooks.site
-func CallURL(event string, s interface{}) {
+func CallURL(event string, s interface{}) error {
 
 	webhooks, err := DBReadAllWebhooks() // gets all webhooks
 	if err != nil {
@@ -64,6 +64,7 @@ func CallURL(event string, s interface{}) {
 
 	}
 
+	return nil
 }
 
 //ReadIngredients splits up the ingredient name from the quantity
