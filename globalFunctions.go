@@ -37,7 +37,7 @@ func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 }
 
 // CallURL post webhooks to webhooks.site
-func CallURL(event string, s interface{}) {
+func CallURL(event string, s interface{}) error {
 
 	webhooks, err := DBReadAllWebhooks() // gets all webhooks
 	if err != nil {
@@ -66,6 +66,7 @@ func CallURL(event string, s interface{}) {
 
 	}
 
+	return nil
 }
 
 //ReadIngredients splits up the ingredient name from the quantity from the URL
@@ -122,25 +123,19 @@ func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
 	return list
 }
 
-// CalcNutrition calculates nutritional info for given ingredient
+// CalcNutrition calculates nutritional info for given ingredient - UNFINISHED
 func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { // maybe only get ingredient as parameter
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
 	}
-	ing.Nutrients = temping.Nutrients
-	ing.ID = temping.ID
 
-	//temping = ConvertUnit(&ing)
-	ConvertUnit(&temping, "g")
-	ing.Unit = temping.Unit
-	ing.Quantity = temping.Quantity
+	ing.ID = temping.ID               // add ID to ing since it's a copy
+	ing.Nutrients = temping.Nutrients // reset nutrients to nutrients for 1g or 1l
 
-	ing.Nutrients.Energy.Quantity *= temping.Quantity
-	ing.Nutrients.Fat.Quantity *= temping.Quantity
-	ing.Nutrients.Carbohydrate.Quantity *= temping.Quantity
-	ing.Nutrients.Protein.Quantity *= temping.Quantity
-	ing.Nutrients.Sugar.Quantity *= temping.Quantity
+	ConvertUnit(&ing, "g") // convert unit to g - change this to handle liter too
+
+	// Calc nutrition:
 
 	return ing
 }

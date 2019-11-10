@@ -96,7 +96,6 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	ConvertUnit(&ing, "g") // testing reference instead
 	//temping := ConvertUnit(ing)
 	//ing.Unit = temping.Unit
 	ing.Quantity = 1
@@ -105,8 +104,8 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if ing.Unit == "" {
 		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
 	} else {
-
-		GetNutrients(&ing, w) // calls func
+		ConvertUnit(&ing, ing.Unit) // testing reference instead
+		GetNutrients(&ing, w)       // calls func
 
 		allIngredients, err := DBReadAllIngredients()
 		if err != nil {
@@ -127,7 +126,10 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 				http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 			} else {
 				// if saving didn't return error, call webhooks
-				CallURL(IngredientCollection, &ing)
+				err := CallURL(IngredientCollection, &ing)
+				if err != nil {
+					fmt.Println("could not post to webhooks.site: ", err)
+				}
 				fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.")
 			}
 		}
@@ -191,7 +193,10 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 		} else {
-			//CallURL(RecipeCollection, &rec)
+			err := CallURL(RecipeCollection, &rec)
+			if err != nil {
+				fmt.Println("could not post to webhooks.site: ", err)
+			}
 			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
 		}
 
