@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 )
 
@@ -64,5 +65,8 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		}
 		recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 	}
+	sort.Slice(recipeCount, func(i, j int) bool {
+		return len(recipeCount[i].Ingredients.Missing) > len(recipeCount[j].Ingredients.Missing)
+	})
 	json.NewEncoder(w).Encode(recipeCount)
 }
