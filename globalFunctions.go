@@ -37,7 +37,7 @@ func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 }
 
 // CallURL post webhooks to webhooks.site
-func CallURL(event string, s interface{}) {
+func CallURL(event string, s interface{}) error {
 
 	webhooks, err := DBReadAllWebhooks() // gets all webhooks
 	if err != nil {
@@ -66,6 +66,7 @@ func CallURL(event string, s interface{}) {
 
 	}
 
+	return nil
 }
 
 //ReadIngredients splits up the ingredient name from the quantity from the URL
@@ -104,26 +105,9 @@ func ReadIngredients(ingredients []string) []Ingredient {
 	return IngredientList
 }
 
-func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
-	for n, i := range list {
-		if i.Name == ingredient.Name {
-			fmt.Println(i.Quantity, " : ", ingredient.Quantity)
-			if i.Quantity <= ingredient.Quantity {
-				fmt.Println("Deletes: " + i.Name)
+// CalcNutrition calculates nutritional info for given ingredient
+func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { //maybe only ingredient as parameter
 
-				list = append(list[:n], list[n+1:]...)
-			} else {
-				fmt.Println("Tar vekk: ", ingredient.Quantity, "fra: "+i.Name)
-				i.Quantity = i.Quantity - ingredient.Quantity
-			}
-			return list
-		}
-	}
-	return list
-}
-
-// CalcNutrition calculates nutritional info for given ingredient - UNFINISHED
-func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { // maybe only get ingredient as parameter
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
@@ -142,32 +126,69 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { /
 // ConvertUnit converts units for ingredients, and changes their quantity respectively.
 func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 
-	// if ing.Unit == "kg" && unitConvertTo == "g"{
-	// 	ing.Quantity *= 1000
-	// 	ing.Unit = unitConvertTo
-	// }
-	// if ing.Unit == "g" && unitConvertTo == "kg"{
-	// 	ing.Quantity /= 1000
-	// 	ing.Unit = unitConvertTo
-	// }
-
-	//switch unitConvertTo {
-	switch ing.Unit {
-	case "dl":
-		ing.Quantity = ing.Quantity / 10
-		ing.Unit = "l"
-	case "cl":
-		ing.Quantity = ing.Quantity / 100
-		ing.Unit = "l"
-	case "ml":
-		ing.Quantity = ing.Quantity / 1000
-		ing.Unit = "l"
-	case "g":
-
-	case "kg":
-		ing.Quantity = ing.Quantity * 1000
-		ing.Unit = "g"
+	if ing.Unit == "kg" && unitConvertTo == "g" {
+		ing.Quantity *= 1000
+		ing.Unit = unitConvertTo
 	}
+	if ing.Unit == "g" && unitConvertTo == "kg" {
+		ing.Quantity /= 1000
+		ing.Unit = unitConvertTo
+	}
+
+	if unitConvertTo == "l" {
+		switch ing.Unit {
+		case "dl":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		case "cl":
+			ing.Quantity /= 100
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 1000
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "dl" {
+		switch ing.Unit {
+		case "l":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "cl":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 100
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "cl" {
+		switch ing.Unit {
+		case "dl":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "l":
+			ing.Quantity *= 100
+			ing.Unit = unitConvertTo
+		case "ml":
+			ing.Quantity /= 10
+			ing.Unit = unitConvertTo
+		}
+	}
+	if unitConvertTo == "ml" {
+		switch ing.Unit {
+		case "cl":
+			ing.Quantity *= 10
+			ing.Unit = unitConvertTo
+		case "dl":
+			ing.Quantity *= 100
+			ing.Unit = unitConvertTo
+		case "l":
+			ing.Quantity *= 1000
+			ing.Unit = unitConvertTo
+
+		}
+	}
+
 }
 
 func InitAPICredentials() error {
