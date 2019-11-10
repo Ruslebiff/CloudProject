@@ -95,6 +95,7 @@ func ReadIngredients(ingredients []string) []Ingredient {
 		}
 
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
+		ingredientTemp = CalcNutrition(ingredientTemp, ingredientTemp.Unit, ingredientTemp.Quantity)
 		IngredientList = append(IngredientList, ingredientTemp)
 
 	}
@@ -138,6 +139,9 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient {
 	ing.Nutrients.Protein.Quantity *= temping.Quantity
 	ing.Nutrients.Sugar.Quantity *= temping.Quantity
 
+	ing.Calories = temping.Nutrients.Energy.Quantity
+	ing.ID = temping.ID
+
 	return ing
 }
 
@@ -159,5 +163,13 @@ func ConvertUnit(ing Ingredient) Ingredient {
 
 	}
 
+	return ing
+}
+
+func GetUnitFromAPI(ing Ingredient) Ingredient {
+	// TODO: Lookup ingredient on API, check which unit it has there, and return that.
+
+	//ing = GetNutrients(&ing, w) ..?
+	ing.Unit = "g" // temp, remove this
 	return ing
 }
