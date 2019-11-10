@@ -88,10 +88,14 @@ func TestFirebase(t *testing.T) {
 		t.Error(err)
 	}
 
-	fmt.Println("test webhooks ", wh[1].ID)
-	err = DBDelete(wh[1].ID, WebhooksCollection) // delets test webhook
-	if err != nil {
-		t.Error(err)
+	for i := range wh {
+		if wh[i].Event == w.Event {
+			fmt.Println("test webhooks ", wh[i].ID)
+			err = DBDelete(wh[i].ID, WebhooksCollection) // delets test webhook
+			if err != nil {
+				t.Error(err)
+			}
+		}
 	}
 
 }
