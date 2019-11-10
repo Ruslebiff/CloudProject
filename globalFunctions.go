@@ -165,10 +165,16 @@ func ConvertUnit(ing Ingredient) Ingredient {
 	return ing
 }
 
-func GetUnitFromAPI(ing Ingredient) Ingredient {
+func GetUnitFromAPI(ing Ingredient, w http.ResponseWriter) Ingredient {
 	// TODO: Lookup ingredient on API, check which unit it has there, and return that.
-
-	//ing = GetNutrients(&ing, w) ..?
-	ing.Unit = "g" // temp, remove this
+	ing.Unit = "%20"
+	err := GetNutrients(&ing, w)
+	if err != nil {
+		fmt.Println("error getting nutrients from API asdfasdf")
+	}
+	//ing.Unit = "g" // temp, remove this
+	fmt.Println(ing.Unit)
+	fmt.Println(ing.Name)
+	fmt.Println(ing.Nutrients.Carbohydrate)
 	return ing
 }

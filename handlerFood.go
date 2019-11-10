@@ -104,33 +104,33 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	ing.Name = strings.ToLower(ing.Name)
 
 	if ing.Unit == "" {
-		temping = GetUnitFromAPI(ing)
-		ing.Unit = temping.Unit
-	}
+		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
+	} else {
 
-	GetNutrients(&ing, w) // calls func
+		GetNutrients(&ing, w) // calls func
 
-	allIngredients, err := DBReadAllIngredients()
-	if err != nil {
-		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
-	}
-	//  Check to see if the ingredient is already in the DB
-	for i := range allIngredients {
-		if ing.Name == allIngredients[i].Name {
-			found = true // found ingredient in database
-			http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
-			break
-		}
-	}
-
-	if found == false { // if ingredient is not found in database
-		err = DBSaveIngredient(&ing) // save it
+		allIngredients, err := DBReadAllIngredients()
 		if err != nil {
-			http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
-		} else {
-			// if saving didn't return error, call webhooks
-			CallURL(IngredientCollection, &ing)
-			fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.")
+			http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+		}
+		//  Check to see if the ingredient is already in the DB
+		for i := range allIngredients {
+			if ing.Name == allIngredients[i].Name {
+				found = true // found ingredient in database
+				http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
+				break
+			}
+		}
+
+		if found == false { // if ingredient is not found in database
+			err = DBSaveIngredient(&ing) // save it
+			if err != nil {
+				http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+			} else {
+				// if saving didn't return error, call webhooks
+				CallURL(IngredientCollection, &ing)
+				fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.")
+			}
 		}
 	}
 
