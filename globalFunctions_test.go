@@ -41,3 +41,7 @@ func TestCallURL(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestReadIngredients(t *testing.T) {
+
+}
