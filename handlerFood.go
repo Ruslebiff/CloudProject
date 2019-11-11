@@ -109,8 +109,8 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 		} else {
 			unitParam = "l"
 		}
-		ConvertUnit(&ing, unitParam) // testing reference instead
-		GetNutrients(&ing, w)        // calls func
+		ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
+		GetNutrients(&ing, w)        // get nutrients for the ingredient
 
 		allIngredients, err := DBReadAllIngredients()
 		if err != nil {
@@ -258,7 +258,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	APIURL += "&app_key="
 	APIURL += App_key
 	APIURL += "&ingr="
-	APIURL += ing.Name
+	APIURL += strings.ReplaceAll(ing.Name, " ", "%20") // substitute spaces with "%20" so URL to API works with spaces in ingredient name
 	if ing.Unit != "pc" {
 		APIURL += "%20"
 		APIURL += ing.Unit

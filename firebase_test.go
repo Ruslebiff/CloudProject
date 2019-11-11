@@ -1,7 +1,9 @@
 package cravings
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 )
@@ -90,8 +92,35 @@ func TestFirebase(t *testing.T) {
 		}
 	}
 
+	err = DBDelete("", WebhooksCollection) // test deleting somthing that dont exist
+	if err == nil {
+		t.Error(err)
+	}
+
 }
 
-// func TestDBCheckAuthorization(t *testing.T) {
+func TestDBCheckAuthorization(t *testing.T) {
 
-// }
+	file, err := os.Open("testToken.txt") // opens text file
+	if err != nil {
+		fmt.Println("Can't open file: ", err)
+	}
+
+	defer file.Close() // close file at the end
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		fmt.Println("text: ", scanner.Text())
+		testBool := DBCheckAuthorization(scanner.Text()) //test for vallid authorization with a vallid token
+		if testBool == false {
+			t.Error("Token was not vallid")
+		}
+	}
+
+	testBool := DBCheckAuthorization("") // test for unvallid authorization with a unvallig token
+	if testBool == true {
+		t.Error("Somthing went vrong, unvallid token is not supose to return true")
+	}
+
+}
