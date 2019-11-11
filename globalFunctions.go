@@ -128,7 +128,7 @@ func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient { //maybe o
 		}
 	}
 
-	// Calc nutrition:
+	// Calc nutrition :
 	ing.Nutrients.Carbohydrate.Quantity *= ing.Quantity
 	ing.Nutrients.Energy.Quantity *= ing.Quantity
 	ing.Nutrients.Fat.Quantity *= ing.Quantity
@@ -145,6 +145,7 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 		ing.Quantity *= 1000
 		ing.Unit = unitConvertTo
 	}
+
 	if ing.Unit == "g" && unitConvertTo == "kg" {
 		ing.Quantity /= 1000
 		ing.Unit = unitConvertTo

@@ -104,11 +104,25 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
 	} else {
 		unitParam := ing.Unit
-		if strings.Contains(unitParam, "g") {
-			unitParam = "g"
-		} else {
-			unitParam = "l"
+		inList := false
+		for _, v := range AllowedUnit {
+			if unitParam == v {
+				inList = true
+			}
 		}
+		if inList {
+			if strings.Contains(unitParam, "g") {
+				unitParam = "g"
+			} else {
+				unitParam = "l"
+			}
+		} else {
+			http.Error(w, "Unit has to be of one of the values ", http.StatusBadRequest)
+			for _, v := range AllowedUnit {
+				fmt.Fprintln(w, v)
+			}
+		}
+
 		ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
 		GetNutrients(&ing, w)        // get nutrients for the ingredient
 
