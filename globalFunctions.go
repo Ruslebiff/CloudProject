@@ -115,10 +115,18 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { /
 
 	ing.ID = temping.ID               // add ID to ing since it's a copy
 	ing.Nutrients = temping.Nutrients // reset nutrients to nutrients for 1g or 1l
-
-	ConvertUnit(&ing, "g") // convert unit to g - change this to handle liter too
+	if ing.Unit == "kg" || ing.Unit == "g" {
+		ConvertUnit(&ing, "g") // convert unit to g
+	} else if ing.Unit == "l" || ing.Unit == "dl" || ing.Unit == "cl" || ing.Unit == "ml" {
+		ConvertUnit(&ing, "l") // convert unit to g
+	}
 
 	// Calc nutrition:
+	ing.Nutrients.Carbohydrate.Quantity *= ing.Quantity
+	ing.Nutrients.Energy.Quantity *= ing.Quantity
+	ing.Nutrients.Fat.Quantity *= ing.Quantity
+	ing.Nutrients.Protein.Quantity *= ing.Quantity
+	ing.Nutrients.Sugar.Quantity *= ing.Quantity
 
 	return ing
 }
