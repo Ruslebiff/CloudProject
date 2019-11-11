@@ -146,15 +146,10 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 		ing.Unit = unitConvertTo
 	}
 
-	// if unitConvertTo == "kg" {
-	// 	switch ing.Unit {
-	// 	case "g":
-	// 		ing.Quantity /= 1000
-	// 	case "teaspoon":
-	// 		ing.Quantity
-	// 	}
-	// 	ing.Unit = unitConvertTo
-	// }
+	if ing.Unit == "g" && unitConvertTo == "kg" {
+		ing.Quantity /= 1000
+		ing.Unit = unitConvertTo
+	}
 
 	if unitConvertTo == "l" {
 
