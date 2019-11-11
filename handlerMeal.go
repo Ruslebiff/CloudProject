@@ -75,7 +75,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			allowMissing = true //sets to true if not set or set to non-boolean in query
 		}
-		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 { //appends the recipe if there is allowed to be missing, or there are no ingredients missing
+		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 { //appends the recipe if it is allowed to be missing, or there are no ingredients missing
 			recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 		}
 	}
