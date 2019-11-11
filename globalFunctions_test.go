@@ -2,6 +2,7 @@ package cravings
 
 import (
 	"fmt"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -45,6 +46,8 @@ func TestCallURL(t *testing.T) {
 
 func TestReadIngredients(t *testing.T) {
 
+	w := httptest.NewRecorder()
+
 	var testIngredient []string
 	a1 := "cheese"
 	a2 := "milk|70"
@@ -55,7 +58,7 @@ func TestReadIngredients(t *testing.T) {
 	testIngredient = append(testIngredient, a3)
 	fmt.Println("testIngredient", testIngredient)
 
-	test := ReadIngredients(testIngredient)
+	test := ReadIngredients(testIngredient, w)
 	if len(test) == 0 {
 		t.Error("somthing went wrong")
 	}
