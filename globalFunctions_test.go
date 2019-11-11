@@ -7,19 +7,19 @@ import (
 	"testing"
 )
 
-// func TestDoRequest(t *testing.T) { // needs to bee fixed!!!!!!!!
-// 	TestURL := "http://www.google.com"
-// 	TestClient := http.DefaultClient
+func TestDoRequest(t *testing.T) { // needs to bee fixed!!!!!!!!
+	TestURL := "http://www.google.com"
+	TestClient := http.DefaultClient
+	w := httptest.NewRecorder()
 
-// 	_ = func(w http.ResponseWriter) {
-// 		test := DoRequest(TestURL, TestClient, w)
-// 		if test.StatusCode != http.StatusOK {
-// 			t.Error(test)
-// 		}
-// 	}
-// 	fmt.Println("TestDoRequest")
+	test := DoRequest(TestURL, TestClient, w)
+	if test.StatusCode != http.StatusOK {
+		t.Error(test)
+	}
 
-// }
+	fmt.Println("TestDoRequest")
+
+}
 
 func TestQueryGet(t *testing.T) { // needs to bee fixed!!!!!!!!
 	r, err := http.NewRequest("GET", "/cravings/food/", nil)
