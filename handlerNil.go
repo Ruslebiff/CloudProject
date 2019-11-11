@@ -23,7 +23,7 @@ func HandlerNil(w http.ResponseWriter, r *http.Request) { //standard default res
 
 	scanner := bufio.NewScanner(file)
 
-	for scanner.Scan() { // loops true file
+	for scanner.Scan() { // loops through file
 		fmt.Fprintln(w, scanner.Text()) // print out one and one line
 	}
 
