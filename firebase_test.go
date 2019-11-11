@@ -92,7 +92,7 @@ func TestFirebase(t *testing.T) {
 		}
 	}
 
-	err = DBDelete("", WebhooksCollection) // test deleting somthing that dont exist
+	err = DBDelete("", WebhooksCollection) // test deleting somthing that dont exist, error is suposed to be sendt
 	if err == nil {
 		t.Error(err)
 	}
