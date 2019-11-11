@@ -127,4 +127,34 @@ func TestConvertUnit(t *testing.T) {
 		t.Error("quanity did not get converted")
 	}
 
+	ConvertUnit(&testIngredient2, testUnitCl) // test convert from l to cl
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 100 {
+		t.Error("quanity did not get converted")
+	}
+
+	ConvertUnit(&testIngredient2, testUnitMl) // test convert from cl to ml
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 1000 {
+		t.Error("quanity did not get converted")
+	}
+
+	ConvertUnit(&testIngredient2, testUnitL) // test convert from ml to l
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 1 {
+		t.Error("quanity did not get converted")
+	}
+
+	ConvertUnit(&testIngredient2, testUnitDl) // test convert from l to dl
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 10 {
+		t.Error("quanity did not get converted")
+	}
+
+	ConvertUnit(&testIngredient2, testUnitMl) // test convert from dl to ml
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 1000 {
+		t.Error("quanity did not get converted")
+	}
+
 }
