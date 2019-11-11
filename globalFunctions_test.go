@@ -2,6 +2,7 @@ package cravings
 
 import (
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 )
@@ -20,20 +21,24 @@ import (
 
 // }
 
-// func TestQueryGet(t *testing.T) { // needs to bee fixed!!!!!!!!
+func TestQueryGet(t *testing.T) { // needs to bee fixed!!!!!!!!
+	r, err := http.NewRequest("GET", "/cravings/food/", nil)
+	if err != nil {
+		t.Error(err)
+	}
 
-// 	Test := "app_id"
+	w := httptest.NewRecorder()
 
-// 	_ = func(w http.ResponseWriter, r *http.Request) {
-// 		test := QueryGet(Test, w, r)
-// 		if test == "" {
-// 			t.Error("not found")
-// 		}
-// 	}
+	Test := "app_id"
 
-// 	fmt.Println("TestQueryGet")
+	test := QueryGet(Test, w, r)
+	if test != "" {
+		t.Error("not found")
+	}
 
-// }
+	fmt.Println("TestQueryGet")
+
+}
 
 func TestCallURL(t *testing.T) {
 	TestRecipe := Recipe{RecipeName: "TestCallURl"}
