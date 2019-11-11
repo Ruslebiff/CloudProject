@@ -107,7 +107,6 @@ func ReadIngredients(ingredients []string) []Ingredient {
 
 // CalcNutrition calculates nutritional info for given ingredient
 func CalcNutrition(ing Ingredient) Ingredient { //maybe only ingredient as parameter
-
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
@@ -122,9 +121,11 @@ func CalcNutrition(ing Ingredient) Ingredient { //maybe only ingredient as param
 	} else if ing.Unit == "pc" {
 		// no conversion needed for pc
 	} else if ing.Unit == "tablespoon" || ing.Unit == "teaspoon" {
-		// check db which unit it has there
-		// and convertunit to that unit ("l" or "g")
-		ConvertUnit(&ing, temping.Unit)
+		// check nutrition for it in API. No conversion needed
+		err := GetNutrients(&ing, w)
+		if err != nil {
+
+		}
 	}
 
 	// Calc nutrition:
