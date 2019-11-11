@@ -47,6 +47,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
 				}
+
 				json.NewEncoder(w).Encode(&re)
 			} else { //  Else get all recipes
 				recipes := GetAllRecipes(w, r)
