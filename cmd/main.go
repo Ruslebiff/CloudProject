@@ -14,7 +14,7 @@ var StartTime = time.Now()
 
 func main() {
 
-	cravings.StartTime = StartTime // sends start time to ctavins.StartTime
+	cravings.StartTime = StartTime // sends start time to cravins.StartTime
 	err := cravings.DBInit()
 	if err != nil {
 		fmt.Println("Failed to initialize database")

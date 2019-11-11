@@ -98,7 +98,7 @@ func ReadIngredients(ingredients []string) []Ingredient {
 		}
 
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
-		ingredientTemp = CalcNutrition(ingredientTemp, ingredientTemp.Unit, ingredientTemp.Quantity)
+		ingredientTemp = CalcNutrition(ingredientTemp)
 		IngredientList = append(IngredientList, ingredientTemp)
 
 	}
@@ -106,7 +106,7 @@ func ReadIngredients(ingredients []string) []Ingredient {
 }
 
 // CalcNutrition calculates nutritional info for given ingredient
-func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { //maybe only ingredient as parameter
+func CalcNutrition(ing Ingredient) Ingredient { //maybe only ingredient as parameter
 
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
