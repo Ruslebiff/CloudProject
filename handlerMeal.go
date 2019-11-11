@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -48,21 +49,27 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
 						recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
 
-						i.Quantity -= j.Quantity //sets the quantity to 'missing' value
+						i.Quantity -= j.Quantity //calculates the 'missing' quantities
 						if i.Quantity > 0 {
 							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, CalcNutrition(i))
 						}
 					} else {
 
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
-						j.Quantity -= i.Quantity
+						j.Quantity -= i.Quantity //calculates 'remaining' quantities
 						recipeTemp.Ingredients.Remaining[n] = CalcNutrition(j)
 					}
 					break //break out after finding matching name
 				}
 			}
 		}
-		recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
+		allowMissing, err := strconv.ParseBool(r.URL.Query().Get("allowMissing"))
+		if err != nil {
+			allowMissing = true //sets to true if not set or set to non-boolean in query
+		}
+		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 { //appends the recipe if there is allowed to be missing, or there are no ingredients missing
+			recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
+		}
 	}
 	sort.Slice(recipeCount, func(i, j int) bool {
 		return len(recipeCount[i].Ingredients.Missing) > len(recipeCount[j].Ingredients.Missing)

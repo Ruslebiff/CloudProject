@@ -57,7 +57,7 @@ func TestReadIngredients(t *testing.T) {
 
 	test := ReadIngredients(testIngredient)
 	if len(test) == 0 {
-		t.Error("somthing vent wrong")
+		t.Error("somthing went wrong")
 	}
 
 }
