@@ -119,6 +119,8 @@ func CalcNutrition(ing Ingredient) Ingredient { //maybe only ingredient as param
 		ConvertUnit(&ing, "g") // convert unit to g
 	} else if ing.Unit == "l" || ing.Unit == "dl" || ing.Unit == "cl" || ing.Unit == "ml" {
 		ConvertUnit(&ing, "l") // convert unit to g
+	} else if ing.Unit == "pc" {
+		// no conversion needed for pc
 	}
 
 	// Calc nutrition:
