@@ -257,10 +257,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	APIURL += "&app_key="
 	APIURL += App_key
 	APIURL += "&ingr="
-	if ing.Unit != "" {
-		APIURL += ing.Unit
-		APIURL += "%20"
-	}
+	// APIURL += ing.Unit
 	APIURL += ing.Name
 	r := DoRequest(APIURL, client, w)
 
