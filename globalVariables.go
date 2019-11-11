@@ -20,6 +20,9 @@ const TokenCollection = "tokens"
 // WebhooksCollection is the name of the webhooks collection in the database
 const WebhooksCollection = "webhooks"
 
+//  Units of measurement: kilogram, gram, liter, deciliter, mililiter, piece, teaspoon
+var AllowedUnit = [8]string{"kg", "g", "l", "dl", "ml", "pc", "tablespoon", "teaspoon"}
+
 // URLRegistration is the url to edamam api for getting nutrition details when registering an ingredient or recipe
 var URLRegistration = "https://api.edamam.com/api/nutrition-details"
 
