@@ -258,14 +258,11 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	APIURL += "&app_key="
 	APIURL += App_key
 	APIURL += "&ingr="
-	APIURL += ing.Name
+	APIURL += strings.ReplaceAll(ing.Name, " ", "%20") // substitute spaces with "%20" so URL to API works with spaces in ingredient name
 	if ing.Unit != "pc" {
 		APIURL += "%20"
 		APIURL += ing.Unit
 	}
-
-	// substitute all spaces " " with "%20" in url, so ingredients with spaces (like "vanilla sugar") works
-
 	r := DoRequest(APIURL, client, w)
 
 	err := json.NewDecoder(r.Body).Decode(&ing)
