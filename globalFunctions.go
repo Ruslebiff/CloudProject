@@ -105,26 +105,9 @@ func ReadIngredients(ingredients []string) []Ingredient {
 	return IngredientList
 }
 
-func RemoveIngredient(list []Ingredient, ingredient Ingredient) []Ingredient {
-	for n, i := range list {
-		if i.Name == ingredient.Name {
-			fmt.Println(i.Quantity, " : ", ingredient.Quantity)
-			if i.Quantity <= ingredient.Quantity {
-				fmt.Println("Deletes: " + i.Name)
+// CalcNutrition calculates nutritional info for given ingredient
+func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { //maybe only ingredient as parameter
 
-				list = append(list[:n], list[n+1:]...)
-			} else {
-				fmt.Println("Tar vekk: ", ingredient.Quantity, "fra: "+i.Name)
-				i.Quantity = i.Quantity - ingredient.Quantity
-			}
-			return list
-		}
-	}
-	return list
-}
-
-// CalcNutrition calculates nutritional info for given ingredient - UNFINISHED
-func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { // maybe only get ingredient as parameter
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
@@ -132,10 +115,18 @@ func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { /
 
 	ing.ID = temping.ID               // add ID to ing since it's a copy
 	ing.Nutrients = temping.Nutrients // reset nutrients to nutrients for 1g or 1l
-
-	ConvertUnit(&ing, "g") // convert unit to g - change this to handle liter too
+	if ing.Unit == "kg" || ing.Unit == "g" {
+		ConvertUnit(&ing, "g") // convert unit to g
+	} else if ing.Unit == "l" || ing.Unit == "dl" || ing.Unit == "cl" || ing.Unit == "ml" {
+		ConvertUnit(&ing, "l") // convert unit to g
+	}
 
 	// Calc nutrition:
+	ing.Nutrients.Carbohydrate.Quantity *= ing.Quantity
+	ing.Nutrients.Energy.Quantity *= ing.Quantity
+	ing.Nutrients.Fat.Quantity *= ing.Quantity
+	ing.Nutrients.Protein.Quantity *= ing.Quantity
+	ing.Nutrients.Sugar.Quantity *= ing.Quantity
 
 	return ing
 }
