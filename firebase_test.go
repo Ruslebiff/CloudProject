@@ -26,11 +26,7 @@ func TestFirebase(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
-	_, err = DBReadIngredientByID(ingredients[1].ID) // test read ingredients by id
-	if err != nil {
-		t.Error(err)
-	}
+	fmt.Println("Ingredients: ", len(ingredients))
 
 	i2, err := DBReadIngredientByName(i.Name) // test read ingredients by name
 	if err != nil {
@@ -57,11 +53,7 @@ func TestFirebase(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
-	_, err = DBReadRecipeByID(Recipes[1].ID) // test reading recipe by id
-	if err != nil {
-		t.Error(err)
-	}
+	fmt.Println("Recipe: ", len(Recipes))
 
 	r2, err := DBReadRecipeByName(r.RecipeName) // test reading recipe by name
 	if err != nil {
