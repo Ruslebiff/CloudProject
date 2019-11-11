@@ -47,6 +47,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
 				}
+
 				json.NewEncoder(w).Encode(&re)
 			} else { //  Else get all recipes
 				recipes := GetAllRecipes(w, r)
@@ -96,16 +97,20 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	//temping := ConvertUnit(ing)
-	//ing.Unit = temping.Unit
 	ing.Quantity = 1
 	ing.Name = strings.ToLower(ing.Name)
 
 	if ing.Unit == "" {
 		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
 	} else {
-		ConvertUnit(&ing, ing.Unit) // testing reference instead
-		GetNutrients(&ing, w)       // calls func
+		unitParam := ing.Unit
+		if strings.Contains(unitParam, "g") {
+			unitParam = "g"
+		} else {
+			unitParam = "l"
+		}
+		ConvertUnit(&ing, unitParam) // testing reference instead
+		GetNutrients(&ing, w)        // calls func
 
 		allIngredients, err := DBReadAllIngredients()
 		if err != nil {
@@ -253,11 +258,11 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	APIURL += "&app_key="
 	APIURL += App_key
 	APIURL += "&ingr="
-	if ing.Unit != "" {
-		APIURL += ing.Unit
+	APIURL += strings.ReplaceAll(ing.Name, " ", "%20") // substitute spaces with "%20" so URL to API works with spaces in ingredient name
+	if ing.Unit != "pc" {
 		APIURL += "%20"
+		APIURL += ing.Unit
 	}
-	APIURL += ing.Name
 	r := DoRequest(APIURL, client, w)
 
 	err := json.NewDecoder(r.Body).Decode(&ing)
