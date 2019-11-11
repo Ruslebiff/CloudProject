@@ -105,8 +105,8 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	} else {
 		unitParam := ing.Unit
 		inList := false
-		for a, v := range AllowedUnit {
-			if unitParam == AllowedUnit[a] {
+		for _, v := range AllowedUnit {
+			if unitParam == v {
 				inList = true
 			}
 		}
@@ -118,8 +118,8 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 			}
 		} else {
 			http.Error(w, "Unit has to be of one of the values ", http.StatusBadRequest)
-			for a, v := range AllowedUnit {
-				fmt.Fprintln(w, AllowedUnit[a])
+			for _, v := range AllowedUnit {
+				fmt.Fprintln(w, v)
 			}
 		}
 
