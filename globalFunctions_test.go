@@ -158,3 +158,10 @@ func TestConvertUnit(t *testing.T) {
 	}
 
 }
+
+func TestInitAPICredentials(t *testing.T) {
+	err := InitAPICredentials()
+	if err != nil {
+		t.Error(err)
+	}
+}
