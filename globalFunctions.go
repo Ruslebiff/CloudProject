@@ -144,7 +144,7 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 	}
 
 	if unitConvertTo == "l" {
-		ing.Unit = unitConvertTo
+
 		switch ing.Unit {
 		case "dl":
 			ing.Quantity /= 10
@@ -153,9 +153,10 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 		case "ml":
 			ing.Quantity /= 1000
 		}
+		ing.Unit = unitConvertTo
 	}
 	if unitConvertTo == "dl" {
-		ing.Unit = unitConvertTo
+
 		switch ing.Unit {
 		case "l":
 			ing.Quantity *= 10
@@ -164,9 +165,10 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 		case "ml":
 			ing.Quantity /= 100
 		}
+		ing.Unit = unitConvertTo
 	}
 	if unitConvertTo == "cl" {
-		ing.Unit = unitConvertTo
+
 		switch ing.Unit {
 		case "dl":
 			ing.Quantity *= 10
@@ -175,9 +177,10 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 		case "ml":
 			ing.Quantity /= 10
 		}
+		ing.Unit = unitConvertTo
 	}
 	if unitConvertTo == "ml" {
-		ing.Unit = unitConvertTo
+
 		switch ing.Unit {
 		case "cl":
 			ing.Quantity *= 10
@@ -186,6 +189,7 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 		case "l":
 			ing.Quantity *= 1000
 		}
+		ing.Unit = unitConvertTo
 	}
 
 }
