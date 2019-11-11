@@ -6,7 +6,7 @@ import (
 )
 
 // func TestDoRequest(t *testing.T) { // needs to bee fixed!!!!!!!!
-// 	TestURL := "www.google.com"
+// 	TestURL := "http://www.google.com"
 // 	TestClient := http.DefaultClient
 
 // 	_ = func(w http.ResponseWriter) {
@@ -63,5 +63,38 @@ func TestReadIngredients(t *testing.T) {
 }
 
 func TestConvertUnit(t *testing.T) {
+
+	testIngredient := Ingredient{Name: "TestIngrdient", Quantity: 1000, Unit: "g"}
+	testUnitKG := "kg"
+	testUnitG := "g"
+
+	ConvertUnit(&testIngredient, testUnitKG)
+	fmt.Println("testIngredient: ", testIngredient)
+	if testIngredient.Quantity != 1 {
+		t.Error("quanity did not get converted")
+	}
+	ConvertUnit(&testIngredient, testUnitG)
+	fmt.Println("testIngredient: ", testIngredient)
+	if testIngredient.Quantity != 1000 {
+		t.Error("quanity did not get converted")
+	}
+
+	testIngredient2 := Ingredient{Name: "TestIngredient2", Quantity: 1000, Unit: "ml"}
+	// testUnitL := "l"
+	testUnitDl := "dl"
+	testUnitCl := "cl"
+	//testUnitMl := "ml"
+
+	ConvertUnit(&testIngredient2, testUnitCl)
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 100 {
+		t.Error("quanity did not get converted")
+	}
+
+	ConvertUnit(&testIngredient2, testUnitDl)
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 10 {
+		t.Error("quanity did not get converted")
+	}
 
 }
