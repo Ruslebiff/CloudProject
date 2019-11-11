@@ -91,3 +91,7 @@ func TestFirebase(t *testing.T) {
 	}
 
 }
+
+// func TestDBCheckAuthorization(t *testing.T) {
+
+// }
