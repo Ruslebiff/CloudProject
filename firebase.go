@@ -122,36 +122,6 @@ func DBReadIngredientByName(name string) (Ingredient, error) {
 	return temp, err
 }
 
-// DBReadRecipeByID reads a single recipe by ID
-func DBReadRecipeByID(id string) (Recipe, error) {
-	res := Recipe{} //  Creates an empty struct for the recipe
-	//  Collects that document with given id from collection from firestore
-	ref, err := FireBaseDB.Client.Collection(RecipeCollection).Doc(id).Get(FireBaseDB.Ctx)
-	if err != nil {
-		return res, err
-	}
-	err = ref.DataTo(&res)
-	if err != nil {
-		return res, err
-	}
-	return res, nil
-}
-
-// DBReadIngredientByID reads a ingredient recipe by ID
-func DBReadIngredientByID(id string) (Ingredient, error) {
-	res := Ingredient{} //  Creates empty struct
-	//  Collects that document with given id from collection from firestore
-	ref, err := FireBaseDB.Client.Collection(IngredientCollection).Doc(id).Get(FireBaseDB.Ctx)
-	if err != nil {
-		return res, err
-	}
-	err = ref.DataTo(&res)
-	if err != nil {
-		return res, err
-	}
-	return res, nil
-}
-
 // DBReadAllRecipes reads all recipes from database
 func DBReadAllRecipes() ([]Recipe, error) {
 	var temprecipes []Recipe
