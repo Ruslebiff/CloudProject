@@ -80,10 +80,10 @@ func TestConvertUnit(t *testing.T) {
 	}
 
 	testIngredient2 := Ingredient{Name: "TestIngredient2", Quantity: 1000, Unit: "ml"}
-	// testUnitL := "l"
+	testUnitL := "l"
 	testUnitDl := "dl"
 	testUnitCl := "cl"
-	//testUnitMl := "ml"
+	testUnitMl := "ml"
 
 	ConvertUnit(&testIngredient2, testUnitCl)
 	fmt.Println("testingredient2: ", testIngredient2)
@@ -97,4 +97,15 @@ func TestConvertUnit(t *testing.T) {
 		t.Error("quanity did not get converted")
 	}
 
+	ConvertUnit(&testIngredient2, testUnitL)
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 1 {
+		t.Error("quanity did not get converted")
+	}
+
+	ConvertUnit(&testIngredient2, testUnitMl)
+	fmt.Println("testingredient2: ", testIngredient2)
+	if testIngredient2.Quantity != 1000 {
+		t.Error("quanity did not get converted")
+	}
 }
