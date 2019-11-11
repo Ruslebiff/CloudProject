@@ -263,6 +263,9 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 		APIURL += "%20"
 		APIURL += ing.Unit
 	}
+
+	// substitute all spaces " " with "%20" in url, so ingredients with spaces (like "vanilla sugar") works
+
 	r := DoRequest(APIURL, client, w)
 
 	err := json.NewDecoder(r.Body).Decode(&ing)
