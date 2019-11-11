@@ -24,7 +24,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		}
 	case http.MethodGet:
 		{
-			ingredientsList = ReadIngredients(strings.Split(r.URL.Query().Get("ingredients"), "_"))
+			ingredientsList = ReadIngredients(strings.Split(r.URL.Query().Get("ingredients"), "_"), w)
 		}
 	}
 	recipeList, err := DBReadAllRecipes()
@@ -44,8 +44,8 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 				if j.Name == i.Name { //if it matches ingredient from recipe
 
 					tempUnit := i.Unit //saves the unit the recipe is based on
-					i = CalcNutrition(i)
-					j = CalcNutrition(j) //calculates nutritional value
+					i = CalcNutrition(i, w)
+					j = CalcNutrition(j, w) //calculates nutritional value
 					ConvertUnit(&i, tempUnit)
 					ConvertUnit(&j, tempUnit)     //sets both ingredients to the recipes unit
 					if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
@@ -55,7 +55,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 						i.Quantity -= j.Quantity //calculates the 'missing' quantities
 						if i.Quantity > 0 {
-							CalcNutrition(i)          //calculate nutrition with new quantity
+							CalcNutrition(i, w)       //calculate nutrition with new quantity
 							ConvertUnit(&i, tempUnit) //set unit back to recipes unit
 							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 						}
@@ -63,7 +63,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
 						j.Quantity -= i.Quantity //calculates 'remaining' quantities
-						CalcNutrition(j)
+						CalcNutrition(j, w)
 						ConvertUnit(&j, tempUnit)
 						recipeTemp.Ingredients.Remaining[n] = j
 					}
@@ -75,7 +75,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			allowMissing = true //sets to true if not set or set to non-boolean in query
 		}
-		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 { //appends the recipe if there is allowed to be missing, or there are no ingredients missing
+		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 { //appends the recipe if it is allowed to be missing, or there are no ingredients missing
 			recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 		}
 	}

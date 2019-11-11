@@ -109,8 +109,8 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 		} else {
 			unitParam = "l"
 		}
-		ConvertUnit(&ing, unitParam) // testing reference instead
-		GetNutrients(&ing, w)        // calls func
+		ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
+		GetNutrients(&ing, w)        // get nutrients for the ingredient
 
 		allIngredients, err := DBReadAllIngredients()
 		if err != nil {
@@ -279,7 +279,7 @@ func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 	//  Loops through each ingredient in the recipe and adds up the nutritional information from each
 	//  to a total amount of nutrients for the recipe as a whol
 	for i := range rec.Ingredients {
-		temptotalnutrients := CalcNutrition(rec.Ingredients[i])
+		temptotalnutrients := CalcNutrition(rec.Ingredients[i], w)
 
 		rec.AllNutrients.Energy.Label = temptotalnutrients.Nutrients.Energy.Label
 		rec.AllNutrients.Energy.Unit = temptotalnutrients.Nutrients.Energy.Unit

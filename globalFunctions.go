@@ -70,7 +70,7 @@ func CallURL(event string, s interface{}) error {
 }
 
 //ReadIngredients splits up the ingredient name from the quantity from the URL
-func ReadIngredients(ingredients []string) []Ingredient {
+func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 	IngredientList := []Ingredient{}
 	defVal := 1.0
 
@@ -98,7 +98,7 @@ func ReadIngredients(ingredients []string) []Ingredient {
 		}
 
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
-		ingredientTemp = CalcNutrition(ingredientTemp)
+		ingredientTemp = CalcNutrition(ingredientTemp, w)
 		IngredientList = append(IngredientList, ingredientTemp)
 
 	}
@@ -106,8 +106,7 @@ func ReadIngredients(ingredients []string) []Ingredient {
 }
 
 // CalcNutrition calculates nutritional info for given ingredient
-func CalcNutrition(ing Ingredient) Ingredient { //maybe only ingredient as parameter
-
+func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient { //maybe only ingredient as parameter
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
@@ -122,9 +121,11 @@ func CalcNutrition(ing Ingredient) Ingredient { //maybe only ingredient as param
 	} else if ing.Unit == "pc" {
 		// no conversion needed for pc
 	} else if ing.Unit == "tablespoon" || ing.Unit == "teaspoon" {
-		// check db which unit it has there
-		// and convertunit to that unit ("l" or "g")
-		ConvertUnit(&ing, temping.Unit)
+		// check nutrition for it in API. No conversion needed
+		err := GetNutrients(&ing, w)
+		if err != nil {
+
+		}
 	}
 
 	// Calc nutrition:
