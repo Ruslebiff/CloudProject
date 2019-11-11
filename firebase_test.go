@@ -92,6 +92,11 @@ func TestFirebase(t *testing.T) {
 		}
 	}
 
+	err = DBDelete("", WebhooksCollection)
+	if err == nil {
+		t.Error(err)
+	}
+
 }
 
 func TestDBCheckAuthorization(t *testing.T) {
