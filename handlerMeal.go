@@ -42,22 +42,30 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
 				if j.Name == i.Name { //if it matches ingredient from recipe
-					i = CalcNutrition(i)
-					j = CalcNutrition(j) //adds nutritional value and makes the ingredient the same unit
 
+					tempUnit := i.Unit //saves the unit the recipe is based on
+					i = CalcNutrition(i)
+					j = CalcNutrition(j) //calculates nutritional value
+					ConvertUnit(&i, tempUnit)
+					ConvertUnit(&j, tempUnit)     //sets both ingredients to the recipes unit
 					if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
+
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
 						recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
 
 						i.Quantity -= j.Quantity //calculates the 'missing' quantities
 						if i.Quantity > 0 {
-							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, CalcNutrition(i))
+							CalcNutrition(i)          //calculate nutrition with new quantity
+							ConvertUnit(&i, tempUnit) //set unit back to recipes unit
+							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 						}
 					} else {
 
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
 						j.Quantity -= i.Quantity //calculates 'remaining' quantities
-						recipeTemp.Ingredients.Remaining[n] = CalcNutrition(j)
+						CalcNutrition(j)
+						ConvertUnit(&j, tempUnit)
+						recipeTemp.Ingredients.Remaining[n] = j
 					}
 					break //break out after finding matching name
 				}
