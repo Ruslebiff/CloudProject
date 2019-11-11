@@ -96,16 +96,20 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	//temping := ConvertUnit(ing)
-	//ing.Unit = temping.Unit
 	ing.Quantity = 1
 	ing.Name = strings.ToLower(ing.Name)
 
 	if ing.Unit == "" {
 		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
 	} else {
-		ConvertUnit(&ing, ing.Unit) // testing reference instead
-		GetNutrients(&ing, w)       // calls func
+		unitParam := ing.Unit
+		if strings.Contains(unitParam, "g") {
+			unitParam = "g"
+		} else {
+			unitParam = "l"
+		}
+		ConvertUnit(&ing, unitParam) // testing reference instead
+		GetNutrients(&ing, w)        // calls func
 
 		allIngredients, err := DBReadAllIngredients()
 		if err != nil {
