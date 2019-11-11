@@ -1,6 +1,7 @@
 package cravings
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -42,6 +43,21 @@ func TestCallURL(t *testing.T) {
 	}
 }
 
-// func TestReadIngredients(t *testing.T) {
+func TestReadIngredients(t *testing.T) {
 
-// }
+	var testIngredient []string
+	a1 := "cheese"
+	a2 := "milk|70"
+	a3 := "cardamom|500|g"
+
+	testIngredient = append(testIngredient, a1)
+	testIngredient = append(testIngredient, a2)
+	testIngredient = append(testIngredient, a3)
+	fmt.Println("testIngredient", testIngredient)
+
+	test := ReadIngredients(testIngredient)
+	if len(test) == 0 {
+		t.Error("somthing vent wrong")
+	}
+
+}
