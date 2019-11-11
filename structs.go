@@ -60,17 +60,6 @@ type TotalNutrients struct {
 	Energy       Nutrient `json:"ENERC_KCAL"`
 }
 
-// VI FÅR SE OM DETTE BLIR MED
-//TotalDaily Struct that stores the % of the daily nutrition the recipe contains (?-)
-// type TotalDaily struct {
-// 	AllNutrients struct {
-// 		Fat          Nutrient `json:"FAT"`
-// 		Protein      Nutrient `json:"PROCNT"`
-// 		Carbohydrate Nutrient `json:"CHOCDF"`
-// 		Energy       Nutrient `json:"ENERC_KCAL"`
-// 	} `json:"totalDaily"`
-// }
-
 type RecipeAnalysisPost struct {
 	Title       string   `json:"title"`
 	Ingredients []string `json:"ingr"`

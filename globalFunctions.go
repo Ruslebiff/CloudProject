@@ -190,6 +190,7 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 
 }
 
+//  InitAPICredentials func opens up local file and reads the application id and key from that file
 func InitAPICredentials() error {
 	//  Opens local file which contains application id and key
 	file, err := os.Open("appIdAndKey.txt")
@@ -197,7 +198,7 @@ func InitAPICredentials() error {
 		fmt.Println("Error: Unable to open file")
 	}
 	defer file.Close()
-
+	//  Scans the lines of the file
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 	App_id = scanner.Text()
