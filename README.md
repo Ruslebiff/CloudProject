@@ -55,5 +55,6 @@ mealHandler:
 			
 	}
 ]
-
 list as many ingredients with quantity and unit as you want
+
+The user can send a post request with the payload of the 'remaining' struct of any given recipe to get the recipe for 'the next meal'. This process can be done repeatedly until the 'remaining' list is empty.
