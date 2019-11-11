@@ -2,7 +2,6 @@ package cravings
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sort"
 	"strings"
@@ -33,19 +32,17 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	recipeCount := []RecipePrint{}
-	fmt.Println(ingredientsList)
+
 	for _, list := range recipeList { //Goes through all recipes
 		recipeTemp := RecipePrint{}
 		recipeTemp.RecipeName = list.RecipeName
 		recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining, ingredientsList...)
 
-		fmt.Println(recipeTemp.Ingredients.Remaining)
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
-				fmt.Println(i.Name, j)
 				if j.Name == i.Name { //if it matches ingredient from recipe
-					i = CalcNutrition(i, i.Unit, i.Quantity)
-					j = CalcNutrition(j, i.Unit, j.Quantity) //adds nutritional value and makes the ingredient the same unit
+					i = CalcNutrition(i)
+					j = CalcNutrition(j) //adds nutritional value and makes the ingredient the same unit
 
 					if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
@@ -53,13 +50,13 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 						i.Quantity -= j.Quantity //sets the quantity to 'missing' value
 						if i.Quantity > 0 {
-							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, CalcNutrition(i, i.Unit, i.Quantity))
+							recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, CalcNutrition(i))
 						}
 					} else {
 
 						recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
 						j.Quantity -= i.Quantity
-						j = CalcNutrition(j, j.Unit, j.Quantity)
+						recipeTemp.Ingredients.Remaining[n] = CalcNutrition(j)
 					}
 					break //break out after finding matching name
 				}

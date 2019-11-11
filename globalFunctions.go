@@ -98,7 +98,7 @@ func ReadIngredients(ingredients []string) []Ingredient {
 		}
 
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
-		ingredientTemp = CalcNutrition(ingredientTemp, ingredientTemp.Unit, ingredientTemp.Quantity)
+		ingredientTemp = CalcNutrition(ingredientTemp)
 		IngredientList = append(IngredientList, ingredientTemp)
 
 	}
@@ -106,7 +106,7 @@ func ReadIngredients(ingredients []string) []Ingredient {
 }
 
 // CalcNutrition calculates nutritional info for given ingredient
-func CalcNutrition(ing Ingredient, unit string, quantity float64) Ingredient { //maybe only ingredient as parameter
+func CalcNutrition(ing Ingredient) Ingredient { //maybe only ingredient as parameter
 
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
@@ -144,61 +144,53 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 	}
 
 	if unitConvertTo == "l" {
+		ing.Unit = unitConvertTo
 		switch ing.Unit {
 		case "dl":
 			ing.Quantity /= 10
-			ing.Unit = unitConvertTo
 		case "cl":
 			ing.Quantity /= 100
-			ing.Unit = unitConvertTo
 		case "ml":
 			ing.Quantity /= 1000
-			ing.Unit = unitConvertTo
 		}
 	}
 	if unitConvertTo == "dl" {
+		ing.Unit = unitConvertTo
 		switch ing.Unit {
 		case "l":
 			ing.Quantity *= 10
-			ing.Unit = unitConvertTo
 		case "cl":
 			ing.Quantity /= 10
-			ing.Unit = unitConvertTo
 		case "ml":
 			ing.Quantity /= 100
-			ing.Unit = unitConvertTo
 		}
 	}
 	if unitConvertTo == "cl" {
+		ing.Unit = unitConvertTo
 		switch ing.Unit {
 		case "dl":
 			ing.Quantity *= 10
-			ing.Unit = unitConvertTo
 		case "l":
 			ing.Quantity *= 100
-			ing.Unit = unitConvertTo
 		case "ml":
 			ing.Quantity /= 10
-			ing.Unit = unitConvertTo
 		}
 	}
 	if unitConvertTo == "ml" {
+		ing.Unit = unitConvertTo
 		switch ing.Unit {
 		case "cl":
 			ing.Quantity *= 10
-			ing.Unit = unitConvertTo
 		case "dl":
 			ing.Quantity *= 100
-			ing.Unit = unitConvertTo
 		case "l":
 			ing.Quantity *= 1000
-			ing.Unit = unitConvertTo
-
 		}
 	}
 
 }
 
+//  InitAPICredentials func opens up local file and reads the application id and key from that file
 func InitAPICredentials() error {
 	//  Opens local file which contains application id and key
 	file, err := os.Open("appIdAndKey.txt")
@@ -206,7 +198,7 @@ func InitAPICredentials() error {
 		fmt.Println("Error: Unable to open file")
 	}
 	defer file.Close()
-
+	//  Scans the lines of the file
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 	App_id = scanner.Text()
