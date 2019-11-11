@@ -290,29 +290,27 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 // //  This is meant for when each ingredient is 100g, change later
 // GetRecipeNutrients calculates total nutritients in a recipe
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
+
+	rec.AllNutrients.Energy.Label = "Energy"
+	rec.AllNutrients.Energy.Unit = "kcal"
+	rec.AllNutrients.Fat.Label = "Fat"
+	rec.AllNutrients.Fat.Unit = "g"
+	rec.AllNutrients.Carbohydrate.Label = "Carbs"
+	rec.AllNutrients.Carbohydrate.Unit = "g"
+	rec.AllNutrients.Sugar.Label = "Sugar"
+	rec.AllNutrients.Sugar.Unit = "g"
+	rec.AllNutrients.Protein.Label = "Protein"
+	rec.AllNutrients.Protein.Unit = "g"
+
 	//  Loops through each ingredient in the recipe and adds up the nutritional information from each
 	//  to a total amount of nutrients for the recipe as a whol
 	for i := range rec.Ingredients {
 		temptotalnutrients := CalcNutrition(rec.Ingredients[i], w)
 
-		rec.AllNutrients.Energy.Label = temptotalnutrients.Nutrients.Energy.Label
-		rec.AllNutrients.Energy.Unit = temptotalnutrients.Nutrients.Energy.Unit
 		rec.AllNutrients.Energy.Quantity += temptotalnutrients.Nutrients.Energy.Quantity
-
-		rec.AllNutrients.Fat.Label = temptotalnutrients.Nutrients.Fat.Label
-		rec.AllNutrients.Fat.Unit = temptotalnutrients.Nutrients.Fat.Unit
 		rec.AllNutrients.Fat.Quantity += temptotalnutrients.Nutrients.Fat.Quantity
-
-		rec.AllNutrients.Carbohydrate.Label = temptotalnutrients.Nutrients.Carbohydrate.Label
-		rec.AllNutrients.Carbohydrate.Unit = temptotalnutrients.Nutrients.Carbohydrate.Unit
 		rec.AllNutrients.Carbohydrate.Quantity += temptotalnutrients.Nutrients.Carbohydrate.Quantity
-
-		rec.AllNutrients.Sugar.Label = temptotalnutrients.Nutrients.Sugar.Label
-		rec.AllNutrients.Sugar.Unit = temptotalnutrients.Nutrients.Sugar.Unit
 		rec.AllNutrients.Sugar.Quantity += temptotalnutrients.Nutrients.Sugar.Quantity
-
-		rec.AllNutrients.Protein.Label = temptotalnutrients.Nutrients.Protein.Label
-		rec.AllNutrients.Protein.Unit = temptotalnutrients.Nutrients.Protein.Unit
 		rec.AllNutrients.Protein.Quantity += temptotalnutrients.Nutrients.Protein.Quantity
 
 		rec.Ingredients[i].Nutrients.Energy = temptotalnutrients.Nutrients.Energy

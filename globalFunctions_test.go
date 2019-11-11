@@ -2,37 +2,43 @@ package cravings
 
 import (
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
-// func TestDoRequest(t *testing.T) { // needs to bee fixed!!!!!!!!
-// 	TestURL := "http://www.google.com"
-// 	TestClient := http.DefaultClient
+func TestDoRequest(t *testing.T) { // needs to bee fixed!!!!!!!!
+	TestURL := "http://www.google.com"
+	TestClient := http.DefaultClient
+	w := httptest.NewRecorder()
 
-// 	_ = func(w http.ResponseWriter) {
-// 		test := DoRequest(TestURL, TestClient, w)
-// 		if test.StatusCode != http.StatusOK {
-// 			t.Error(test)
-// 		}
-// 	}
-// 	fmt.Println("TestDoRequest")
+	test := DoRequest(TestURL, TestClient, w)
+	if test.StatusCode != http.StatusOK {
+		t.Error(test)
+	}
 
-// }
+	fmt.Println("TestDoRequest")
 
-// func TestQueryGet(t *testing.T) { // needs to bee fixed!!!!!!!!
+}
 
-// 	Test := "app_id"
+func TestQueryGet(t *testing.T) { // needs to bee fixed!!!!!!!!
+	r, err := http.NewRequest("GET", "/cravings/food/", nil)
+	if err != nil {
+		t.Error(err)
+	}
 
-// 	_ = func(w http.ResponseWriter, r *http.Request) {
-// 		test := QueryGet(Test, w, r)
-// 		if test == "" {
-// 			t.Error("not found")
-// 		}
-// 	}
+	w := httptest.NewRecorder()
 
-// 	fmt.Println("TestQueryGet")
+	Test := "app_id"
 
-// }
+	test := QueryGet(Test, w, r)
+	if test != "" {
+		t.Error("not found")
+	}
+
+	fmt.Println("TestQueryGet")
+
+}
 
 func TestCallURL(t *testing.T) {
 	TestRecipe := Recipe{RecipeName: "TestCallURl"}
@@ -45,6 +51,8 @@ func TestCallURL(t *testing.T) {
 
 func TestReadIngredients(t *testing.T) {
 
+	w := httptest.NewRecorder()
+
 	var testIngredient []string
 	a1 := "cheese"
 	a2 := "milk|70"
@@ -55,7 +63,7 @@ func TestReadIngredients(t *testing.T) {
 	testIngredient = append(testIngredient, a3)
 	fmt.Println("testIngredient", testIngredient)
 
-	test := ReadIngredients(testIngredient)
+	test := ReadIngredients(testIngredient, w)
 	if len(test) == 0 {
 		t.Error("somthing went wrong")
 	}
