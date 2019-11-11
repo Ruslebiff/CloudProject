@@ -120,6 +120,12 @@ func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient { //maybe o
 		ConvertUnit(&ing, "l") // convert unit to g
 	} else if ing.Unit == "pc" {
 		// no conversion needed for pc
+	} else if ing.Unit == "tablespoon" || ing.Unit == "teaspoon" {
+		// check nutrition for it in API. No conversion needed
+		err := GetNutrients(&ing, w)
+		if err != nil {
+
+		}
 	}
 
 	// Calc nutrition:
