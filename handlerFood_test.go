@@ -89,6 +89,39 @@ func TestHandlerFood(t *testing.T) {
 	}
 	fmt.Println("testeing handlerFood POST method recipe")
 
+	// Testing method GET for all ingredients  ***********************************************
+	r, err = http.NewRequest("GET", "/cravings/food/ingredient/", nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
+
+	resp = w.Result()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
+	}
+
+	// Testing method GET for one ingredient  ***********************************************
+
+	r, err = http.NewRequest("GET", "/cravings/food/ingredient/turmeric", nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
+
+	resp = w.Result()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
+	}
+
 	// Testing method GET for all recipes  ***********************************************
 
 	r, err = http.NewRequest("GET", "/cravings/food/recipe/", nil)
