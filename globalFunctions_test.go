@@ -7,12 +7,12 @@ import (
 	"testing"
 )
 
-func TestDoRequest(t *testing.T) { // needs to bee fixed!!!!!!!!
+func TestDoRequest(t *testing.T) {
 	TestURL := "http://www.google.com"
 	TestClient := http.DefaultClient
-	w := httptest.NewRecorder()
+	w := httptest.NewRecorder() // create ResponseRecorder
 
-	test := DoRequest(TestURL, TestClient, w)
+	test := DoRequest(TestURL, TestClient, w) // test func with a test url
 	if test.StatusCode != http.StatusOK {
 		t.Error(test)
 	}
@@ -21,17 +21,17 @@ func TestDoRequest(t *testing.T) { // needs to bee fixed!!!!!!!!
 
 }
 
-func TestQueryGet(t *testing.T) { // needs to bee fixed!!!!!!!!
-	r, err := http.NewRequest("GET", "/cravings/food/", nil)
+func TestQueryGet(t *testing.T) {
+	r, err := http.NewRequest("GET", "/cravings/food/", nil) //creat a request without anny body
 	if err != nil {
 		t.Error(err)
 	}
 
-	w := httptest.NewRecorder()
+	w := httptest.NewRecorder() // create ResponseRecorder
 
 	Test := "app_id"
 
-	test := QueryGet(Test, w, r)
+	test := QueryGet(Test, w, r) // test to read app_id and expecting it to return an empty string
 	if test != "" {
 		t.Error("not found")
 	}
@@ -41,9 +41,9 @@ func TestQueryGet(t *testing.T) { // needs to bee fixed!!!!!!!!
 }
 
 func TestCallURL(t *testing.T) {
-	TestRecipe := Recipe{RecipeName: "TestCallURl"}
+	TestRecipe := Recipe{RecipeName: "TestCallURl"} // create a struct with a name
 
-	err := CallURL(RecipeCollection, TestRecipe)
+	err := CallURL(RecipeCollection, TestRecipe) // check that we can callUrl
 	if err != nil {
 		t.Error(err)
 	}
@@ -51,7 +51,7 @@ func TestCallURL(t *testing.T) {
 
 func TestReadIngredients(t *testing.T) {
 
-	w := httptest.NewRecorder()
+	w := httptest.NewRecorder() // create ResponseRecorder
 
 	var testIngredient []string
 	a1 := "cheese"
@@ -63,8 +63,8 @@ func TestReadIngredients(t *testing.T) {
 	testIngredient = append(testIngredient, a3)
 	fmt.Println("testIngredient", testIngredient)
 
-	test := ReadIngredients(testIngredient, w)
-	if len(test) == 0 {
+	test := ReadIngredients(testIngredient, w) // test to read ingredients
+	if len(test) == 0 {                        // check that it dont return an empty slice
 		t.Error("somthing went wrong")
 	}
 
