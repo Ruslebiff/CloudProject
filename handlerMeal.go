@@ -2,7 +2,6 @@ package cravings
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
@@ -41,18 +40,19 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining, ingredientsList...)
 
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
+			found := false
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
-				if j.Name == i.Name { //if it matches ingredient from recipe
 
+				if j.Name == i.Name { //if it matches ingredient from recipe
+					found = true
 					tempUnit := i.Unit //saves the unit the recipe is based on
 
 					j = CalcNutrition(j, w) //calculates nutritional value
-					fmt.Println("\tJ: ", j)
+
 					if strings.Contains(i.Unit, "spoon") {
 						noOfSpoons := j.Calories / (i.Calories / i.Quantity) //Amount we have/the value of calories from 1 spoon
 						unitPerSpoon := j.Quantity / noOfSpoons
 						if noOfSpoons <= i.Quantity { // if less of equal to what is needed from recipe
-							fmt.Println("Mindre enn:", i.Quantity)
 							tempOriginalUnit := j.Unit
 							j.Unit = i.Unit         //set unit to recipes unit (xspoon)
 							j.Quantity = noOfSpoons //Quantity to number of spoons
@@ -70,13 +70,11 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 								recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 							}
 						} else {
-							fmt.Println("Mer enn:", i.Quantity)
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
 							j.Quantity -= i.Quantity * unitPerSpoon //calculates 'remaining' quantities
 							CalcNutrition(j, w)
 							ConvertUnit(&j, tempUnit)
 							recipeTemp.Ingredients.Remaining[n] = j
-							fmt.Println("\t:", i.Quantity)
 						}
 					} else {
 
@@ -104,6 +102,10 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 						break //break out after finding matching name
 					}
 				}
+
+			}
+			if !found { //adds the ingredient to 'missing' if not found
+				recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 			}
 		}
 		allowMissing, err := strconv.ParseBool(r.URL.Query().Get("allowMissing")) //reads the allowMissing bool from query
