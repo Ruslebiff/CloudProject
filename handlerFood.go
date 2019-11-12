@@ -3,7 +3,6 @@ package cravings
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -59,21 +58,12 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
-		authToken := Token{}
-		resp, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, "Couldn't read request: ", http.StatusBadRequest)
-		}
-
-		err = json.Unmarshal(resp, &authToken)
-		if err != nil {
-			http.Error(w, "Unable to unmarshal request body: ", http.StatusBadRequest)
-		}
+		authorised, resp := DBCheckAuthorization(w, r)
 
 		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
 		//  and include the authorization token given by the developers through mail inside the body
 		//  Detailed instructions for registering is in the readme
-		if DBCheckAuthorization(authToken.AuthToken) {
+		if authorised {
 			switch endpoint {
 			case "ingredient": // Posts ingredient
 				RegisterIngredient(w, resp)
@@ -83,21 +73,52 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
-			break
 		}
 	case http.MethodDelete:
-		switch endpoint {
-		case "ingredient":
-			err := DBDelete(parts[4], IngredientCollection)
-			if err != nil {
-				fmt.Fprintln(w, "Failed to delete ingredient")
-			}
-		case "recipe":
-			err := DBDelete(parts[4], RecipeCollection)
-			if err != nil {
-				fmt.Fprintln(w, "Failed to delete recipe")
-			}
+		authorised, resp := DBCheckAuthorization(w, r)
 
+		if authorised {
+			switch endpoint {
+			case "ingredient":
+
+				ing := Ingredient{}
+				err := json.Unmarshal(resp, &ing)
+				if err != nil {
+					http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
+				}
+				ing, err = DBReadIngredientByName(ing.Name) //  Get that ingredient
+				if err != nil {
+					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
+				}
+				err = DBDelete(ing.ID, IngredientCollection)
+				if err != nil {
+					fmt.Fprintln(w, "Failed to delete ingredient")
+				} else {
+					fmt.Fprintf(w, "Successfully deleted ingredient", http.StatusOK)
+				}
+
+			case "recipe":
+
+				rec := Recipe{}
+				err := json.Unmarshal(resp, &rec)
+				if err != nil {
+					http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
+				}
+				rec, err = DBReadRecipeByName(rec.RecipeName) //  Get that recipe
+				if err != nil {
+					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
+				}
+
+				err = DBDelete(rec.ID, RecipeCollection)
+				if err != nil {
+					fmt.Fprintln(w, "Failed to delete recipe")
+				} else {
+					fmt.Fprintf(w, "Successfully deleted recipe", http.StatusOK)
+				}
+
+			}
+		} else {
+			http.Error(w, "Not authorised to DELETE from DB: ", http.StatusBadRequest)
 		}
 	default:
 		http.Error(w, "Invalid method "+r.Method, http.StatusBadRequest)
