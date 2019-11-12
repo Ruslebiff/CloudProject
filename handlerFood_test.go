@@ -48,7 +48,6 @@ func TestHandlerFood(t *testing.T) {
 	requestI, _ := json.Marshal(i)
 	requestTestIngredient := bytes.NewReader(requestI)
 	ri, err := http.NewRequest("POST", "/cravings/food/ingredient", requestTestIngredient)
-	//r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if err != nil {
 		t.Error(err)
 	}
@@ -76,7 +75,6 @@ func TestHandlerFood(t *testing.T) {
 	requestR, _ := json.Marshal(re)
 	requestTestRecipe := bytes.NewReader(requestR)
 	rr, err := http.NewRequest("POST", "/cravings/food/recipe", requestTestRecipe)
-	//r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if err != nil {
 		t.Error(err)
 	}
@@ -91,7 +89,23 @@ func TestHandlerFood(t *testing.T) {
 	}
 	fmt.Println("testeing handlerFood POST method recipe")
 
-	// Testing method GET ***********************************************
+	// Testing method GET for ingredients  ***********************************************
+
+	riGet, err := http.NewRequest("GET", "/cravings/food/recipe/", nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	wiGet := httptest.NewRecorder()
+	handlerIngredientGet := http.HandlerFunc(HandlerFood)
+	handlerIngredientGet.ServeHTTP(wiGet, riGet)
+
+	respIngredientGet := wiGet.Result()
+
+	if respIngredientGet.StatusCode != http.StatusOK {
+		t.Error(respIngredientGet.StatusCode)
+	}
+	fmt.Println("testeing handlerFood GET method ingredient")
 
 	// Testing method DELETE
 
