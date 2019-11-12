@@ -154,8 +154,9 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 				break
 			}
 		}
-
-		if found == false { // if ingredient is not found in database
+		if ing.Nutrients.Energy.Label == "" { // check if it got nutrients from db. All ingredients will get this label if GetNutrients is ok
+			http.Error(w, "ERROR: Failed to get nutrients for ingredient. Ingredient was not saved.", http.StatusInternalServerError)
+		} else if found == false { // if ingredient is not found in database
 			err = DBSaveIngredient(&ing) // save it
 			if err != nil {
 				http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
