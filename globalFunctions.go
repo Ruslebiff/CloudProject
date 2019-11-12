@@ -106,7 +106,7 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 }
 
 // CalcNutrition calculates nutritional info for given ingredient
-func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient { //maybe only ingredient as parameter
+func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient {
 	temping, err := DBReadIngredientByName(ing.Name)
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
@@ -127,6 +127,9 @@ func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient { //maybe o
 
 		}
 	}
+
+	ing.Calories = temping.Calories * ing.Quantity //calculates calories based on ingredients quantity
+	ing.Weight = temping.Weight * ing.Quantity     //calculates weight based on ingredients quantity
 
 	// Calc nutrition :
 	ing.Nutrients.Carbohydrate.Quantity *= ing.Quantity
