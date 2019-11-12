@@ -2,8 +2,11 @@ package cravings
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 
 	firebase "firebase.google.com/go"
 	"github.com/pkg/errors"
@@ -75,7 +78,7 @@ func DBSaveWebhook(i *Webhook) error {
 func DBDelete(id string, collection string) error {
 	_, err := FireBaseDB.Client.Collection(collection).Doc(id).Delete(FireBaseDB.Ctx)
 	if err != nil {
-		fmt.Printf("ERROR deleting from collection: %v\n", err)
+		fmt.Println("ERROR deleting from collection: "+collection, err)
 		return errors.Wrap(err, "Error in FirebaseDatabase.Delete()")
 	}
 	return nil
@@ -197,25 +200,36 @@ func DBReadAllWebhooks() ([]Webhook, error) {
 //  The authorization token is one which we the creators of the program has created and saved manually
 //  For security purposes we have chosen not to include code which saves the token, and the token itself can be given
 //  to the reviewers of this project by mail which can be found in the readme
-func DBCheckAuthorization(tokenParam string) bool {
+func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte) {
 	tempToken := Token{} //  Loop through collection of authorization tokens
+	resp, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Couldn't read request: ", http.StatusBadRequest)
+	}
+
+	err = json.Unmarshal(resp, &tempToken)
+	if err != nil {
+		http.Error(w, "Unable to unmarshal request body: ", http.StatusBadRequest)
+	}
+
 	iter := FireBaseDB.Client.Collection(TokenCollection).Documents(FireBaseDB.Ctx)
 	for {
+		DBToken := Token{}
 		doc, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Failed to iterate: %v", err)
+			http.Error(w, "Couldn't iterate over document colleciton : ", http.StatusInternalServerError)
 		}
-		err = doc.DataTo(&tempToken) // put data into temp struct
+		err = doc.DataTo(&DBToken) // put data into temp struct
 		if err != nil {
-			fmt.Println("Error when converting retrieved document to struct: ", err)
-		} //  If the user's token is in the collection, return true
+			http.Error(w, "Couldn't retrieve document from collection : ", http.StatusInternalServerError)
+		} //  If the token the user posted is in the collection, return true
 
-		if tempToken.AuthToken == tokenParam {
-			return true
+		if tempToken.AuthToken == DBToken.AuthToken {
+			return true, resp
 		}
 	}
-	return false
+	return false, resp
 }
