@@ -9,6 +9,8 @@ import (
 
 func TestHandlerMeal(t *testing.T) {
 
+	// test GET method for Meal
+
 	r, err := http.NewRequest("GET", "/cravings/meal/", nil)
 	if err != nil {
 		t.Error(err)

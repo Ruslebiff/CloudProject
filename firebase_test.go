@@ -2,7 +2,11 @@ package cravings
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 	"time"
@@ -99,6 +103,10 @@ func TestFirebase(t *testing.T) {
 
 }
 
+// type tToken struct {
+// 	Token string `json:"token"`
+// }
+
 func TestDBCheckAuthorization(t *testing.T) {
 
 	file, err := os.Open("testToken.txt") // opens text file
@@ -110,17 +118,28 @@ func TestDBCheckAuthorization(t *testing.T) {
 
 	scanner := bufio.NewScanner(file)
 
+	var testToken string
 	for scanner.Scan() {
-		fmt.Println("text: ", scanner.Text())
-		testBool := DBCheckAuthorization(scanner.Text()) //test for vallid authorization with a vallid token
-		if testBool == false {
-			t.Error("Token was not vallid")
-		}
+
+		testToken = scanner.Text()
+	}
+	fmt.Println("text: ", testToken)
+
+	testStruct := Token{AuthToken: testToken}
+	request, _ := json.Marshal(testStruct)
+	requestTest := bytes.NewReader(request)
+	r, err := http.NewRequest("GET", "/cravings/food/", requestTest)
+	if err != nil {
+		t.Error(err)
 	}
 
-	testBool := DBCheckAuthorization("") // test for unvallid authorization with a unvallig token
-	if testBool == true {
-		t.Error("Somthing went vrong, unvallid token is not supose to return true")
+	w := httptest.NewRecorder()
+
+	testBool, _ := DBCheckAuthorization(w, r) //test for vallid authorization with a vallid token
+	if testBool == false {
+		t.Error("Token was not vallid")
 	}
+
+	fmt.Println("test DBCheckAuthorization")
 
 }
