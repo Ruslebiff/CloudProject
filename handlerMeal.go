@@ -40,19 +40,19 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining, ingredientsList...)
 
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
-			found := false
+			found := false                                       //sets found to true if ingredient is in recipe
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
 
 				if j.Name == i.Name { //if it matches ingredient from recipe
-					found = true
+					found = true       //found ingredient
 					tempUnit := i.Unit //saves the unit the recipe is based on
 
 					j = CalcNutrition(j, w) //calculates nutritional value
 
-					if strings.Contains(i.Unit, "spoon") {
+					if strings.Contains(i.Unit, "spoon") { //if recipe uses tablespoon or teaspoon as unit
 						noOfSpoons := j.Calories / (i.Calories / i.Quantity) //Amount we have/the value of calories from 1 spoon
-						unitPerSpoon := j.Quantity / noOfSpoons
-						if noOfSpoons <= i.Quantity { // if less of equal to what is needed from recipe
+						unitPerSpoon := j.Quantity / noOfSpoons              //calculates the amount of units stored per spoon
+						if noOfSpoons <= i.Quantity {                        // if less of equal to what is needed from recipe
 							tempOriginalUnit := j.Unit
 							j.Unit = i.Unit         //set unit to recipes unit (xspoon)
 							j.Quantity = noOfSpoons //Quantity to number of spoons
