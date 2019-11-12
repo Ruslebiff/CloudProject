@@ -89,7 +89,44 @@ func TestHandlerFood(t *testing.T) {
 	}
 	fmt.Println("testeing handlerFood POST method recipe")
 
-	// Testing method GET for ingredients  ***********************************************
+	// Testing method GET for all ingredients  ***********************************************
+	r, err = http.NewRequest("GET", "/cravings/food/ingredient/", nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
+
+	resp = w.Result()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
+	}
+
+	fmt.Println("testeing handlerFood GET method for all ingredient")
+
+	// Testing method GET for one ingredient  ***********************************************
+
+	r, err = http.NewRequest("GET", "/cravings/food/ingredient/turmeric", nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
+
+	resp = w.Result()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
+	}
+
+	fmt.Println("testeing handlerFood GET method for one ingredient")
+
+	// Testing method GET for all recipes  ***********************************************
 
 	r, err = http.NewRequest("GET", "/cravings/food/recipe/", nil)
 	if err != nil {
@@ -105,7 +142,27 @@ func TestHandlerFood(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Error(resp.StatusCode)
 	}
-	fmt.Println("testeing handlerFood GET method ingredient")
+
+	fmt.Println("testeing handlerFood GET method for all recipe")
+
+	// Testing method GET for one recipe  ***********************************************
+
+	r, err = http.NewRequest("GET", "/cravings/food/recipe/TestRecipePOST", nil)
+	if err != nil {
+		t.Error(err)
+	}
+
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
+
+	resp = w.Result()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
+	}
+
+	fmt.Println("testeing handlerFood GET method for one recipe")
 
 	// Testing method DELETE for ingredient ***********************************************
 	test := testIngredient{Token: testToken, Name: "turmeric"}
