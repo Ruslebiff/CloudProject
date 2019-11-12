@@ -222,3 +222,22 @@ func InitAPICredentials() error {
 	}
 	return nil
 }
+
+//  UnitCheck func checks the unit measurements of two ingredients and checks if they are of the same type solid/liquid
+func UnitCheck(firstIngredient string, secondIngredient string) bool {
+	if strings.Contains(firstIngredient, "l") {
+		if strings.Contains(secondIngredient, "l") {
+			return true
+		}
+	}
+	if strings.Contains(firstIngredient, "g") {
+		if strings.Contains(secondIngredient, "g") {
+			return true
+		}
+	}
+	if strings.Contains(firstIngredient, "spoon") {
+		// table/teaspoon can be registered as liquid or solid
+		return true
+	}
+	return false
+}

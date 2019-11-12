@@ -15,21 +15,21 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	ingredientsList := []Ingredient{}
 	switch r.Method { //sets the list of remaining ingredients from either a post or get request
 	case http.MethodPost:
-		{
+		{ //  case Post posts a meal and ceodes it
 			err := json.NewDecoder(r.Body).Decode(&ingredientsList)
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				http.Error(w, "Failed to post meal "+err.Error(), http.StatusBadRequest)
 				return
 			}
 		}
 	case http.MethodGet:
-		{
+		{ //  Case get reads the ingredients which is in the URL, each ingredient is separated by '_'
 			ingredientsList = ReadIngredients(strings.Split(r.URL.Query().Get("ingredients"), "_"), w)
 		}
 	}
 	recipeList, err := DBReadAllRecipes()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to retrieve recipes "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 	recipeCount := []RecipePrint{}

@@ -85,6 +85,22 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
 			break
 		}
+	case http.MethodDelete:
+		switch endpoint {
+		case "ingredient":
+			err := DBDelete(parts[4], IngredientCollection)
+			if err != nil {
+				fmt.Fprintln(w, "Failed to delete ingredient")
+			}
+		case "recipe":
+			err := DBDelete(parts[4], RecipeCollection)
+			if err != nil {
+				fmt.Fprintln(w, "Failed to delete recipe")
+			}
+
+		}
+	default:
+		http.Error(w, "Invalid method "+r.Method, http.StatusBadRequest)
 	}
 
 }
@@ -103,13 +119,13 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if ing.Unit == "" {
 		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
 	} else {
-		unitParam := ing.Unit
+		unitParam := ing.Unit //  Checks if the posted unit is one of the legal measurements
 		inList := false
-		for _, v := range AllowedUnit {
+		for _, v := range AllowedUnit { //  Loops through the allowed units
 			if unitParam == v {
 				inList = true
 			}
-		}
+		} //  If it is one of the allowed units, cast it into g or l
 		if inList {
 			if strings.Contains(unitParam, "g") {
 				unitParam = "g"
@@ -186,12 +202,17 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		}
 	}
 
+	unitOk := false                  //  Check to see if user has posted with the equivalent unit as the ingredient has in the DB
 	for i := range rec.Ingredients { // Loops through all the ingredients
 		found := false
 		for _, j := range allIngredients { // If the ingredient is found the loop breaks and found is set to true
 			if rec.Ingredients[i].Name == j.Name {
 				ingredientsfound = ingredientsfound + 1
 				found = true
+				unitOk = UnitCheck(rec.Ingredients[i].Unit, j.Unit)
+				if !unitOk {
+					fmt.Fprintln(w, rec.Ingredients[i].Name+" can't be saved with unit "+j.Unit)
+				}
 				break
 			}
 		}
@@ -199,11 +220,10 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 			missingingredients = append(missingingredients, rec.Ingredients[i].Name)
 		}
 	}
-
 	// difference for printing
 	diff := strconv.Itoa(recingredients - ingredientsfound)
 
-	if ingredientsfound == recingredients && recipeNameInUse == false {
+	if ingredientsfound == recingredients && !recipeNameInUse && unitOk {
 		err = GetRecipeNutrients(&rec, w)
 		if err != nil {
 			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
@@ -237,6 +257,9 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 
 		// http response:
 		http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
+	} else if !unitOk {
+		//  Error message when posting with mismatched units, i.e liquid with kg or solid with ml
+		http.Error(w, "Couldn't save recipe due to unit mismatch", http.StatusBadRequest)
 	} else {
 		http.Error(w, "Cannot save recipe, internal server error.", http.StatusInternalServerError)
 	}
