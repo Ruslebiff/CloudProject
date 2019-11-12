@@ -30,11 +30,12 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
 				}
 				json.NewEncoder(w).Encode(&ingr)
-			} else { //  Else retireve all ingredients
-				ingredients := GetAllIngredients(w, r) // TODO: Add err, :=
-				// if err != nil {
-				// 	http.Error(w, "Couldn't retrieve ingredients: "+err.Error(), http.StatusBadRequest)
-				// }
+			} else {
+				ingredients, err := GetAllIngredients(w, r) //  Else retireve all ingredients
+				if err != nil {
+					http.Error(w, "Couldn't retrieve ingredients: "+err.Error(), http.StatusBadRequest)
+				}
+
 				totalIngredients := strconv.Itoa(len(ingredients)) // With the number of total ingredients
 				fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
 				json.NewEncoder(w).Encode(&ingredients)
@@ -48,11 +49,11 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				}
 
 				json.NewEncoder(w).Encode(&re)
-			} else { //  Else get all recipes
-				recipes := GetAllRecipes(w, r) // TODO: Add err, :=
-				// if err != nil {
-				// 	http.Error(w, "Couldn't retrieve recipes: "+err.Error(), http.StatusBadRequest)
-				// }
+			} else {
+				recipes, err := GetAllRecipes(w, r) //  Else get all recipes
+				if err != nil {
+					http.Error(w, "Couldn't retrieve recipes: "+err.Error(), http.StatusBadRequest)
+				}
 				totalRecipes := strconv.Itoa(len(recipes))
 				fmt.Fprintln(w, "Total recipes: "+totalRecipes) // With the number of total recipes
 				json.NewEncoder(w).Encode(&recipes)
@@ -60,7 +61,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Post either recipes or ingredients to firebase DB
-	case http.MethodPost:
+	case http.MethodPost: //  Func DBCheck checks if the user has posted a valid token, returns a bool
 		authorised, resp := DBCheckAuthorization(w, r)
 
 		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
@@ -247,19 +248,18 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 			missingingredients = append(missingingredients, rec.Ingredients[i].Name)
 		}
 	}
-	// difference for printing
-	//diff := strconv.Itoa(recingredients - ingredientsfound)
 
+	//  If the ingredient found matchets that of the recipe, the name is available and the unit of legal value
 	if ingredientsfound == recingredients && !recipeNameInUse && unitOk {
-		err = GetRecipeNutrients(&rec, w)
+		err = GetRecipeNutrients(&rec, w) //  Collect the nutrients of that recipe
 		if err != nil {
 			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
 		}
-		err = DBSaveRecipe(&rec)
+		err = DBSaveRecipe(&rec) //  Saves the recipe
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 		} else {
-			err := CallURL(RecipeCollection, &rec)
+			err := CallURL(RecipeCollection, &rec) // Invokes the url
 			if err != nil {
 				fmt.Println("could not post to webhooks.site: ", err)
 			}
@@ -294,25 +294,24 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 }
 
 // GetAllRecipes returns all recipes from database using the DBReadAllRecipes function
-func GetAllRecipes(w http.ResponseWriter, r *http.Request) []Recipe {
+func GetAllRecipes(w http.ResponseWriter, r *http.Request) ([]Recipe, error) {
 	var allRecipes []Recipe
 	allRecipes, err := DBReadAllRecipes()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
-
-	return allRecipes
+	return allRecipes, err
 }
 
 // GetAllIngredients returns all ingredients from database using the DBReadAllIngredients function
-func GetAllIngredients(w http.ResponseWriter, r *http.Request) []Ingredient {
+func GetAllIngredients(w http.ResponseWriter, r *http.Request) ([]Ingredient, error) {
 	var allIngredients []Ingredient
 	allIngredients, err := DBReadAllIngredients()
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 
-	return allIngredients
+	return allIngredients, err
 }
 
 // GetNutrients gets nutritional info from external API for the ingredient. Returns http error if it fails
@@ -341,7 +340,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 
 // GetRecipeNutrients calculates total nutritients in a recipe
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
-
+	//  Set all the labels for the recipe
 	rec.AllNutrients.Energy.Label = "Energy"
 	rec.AllNutrients.Energy.Unit = "kcal"
 	rec.AllNutrients.Fat.Label = "Fat"
