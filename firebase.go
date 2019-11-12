@@ -93,7 +93,7 @@ func DBReadRecipeByName(name string) (Recipe, error) {
 	}
 	//  Loops through all the recipes and checks if the parameter name is equal to one of the recipes
 	for _, i := range allrec {
-		if i.RecipeName == name {
+		if i.RecipeName == name { //  If recipe is found, return
 			temp.ID = i.ID
 			temp.RecipeName = i.RecipeName
 			temp.Ingredients = i.Ingredients
@@ -106,14 +106,14 @@ func DBReadRecipeByName(name string) (Recipe, error) {
 
 // DBReadIngredientByName reads a ingredient recipe by name
 func DBReadIngredientByName(name string) (Ingredient, error) {
-	alling, err := DBReadAllIngredients()
+	alling, err := DBReadAllIngredients() // Get all ingredients
 	temp := Ingredient{}
 	if err != nil {
 		return temp, err
 	}
 
 	for _, i := range alling {
-		if i.Name == name {
+		if i.Name == name { // If name of parameter is in DB, return
 			temp.ID = i.ID
 			temp.Name = i.Name
 			temp.Nutrients = i.Nutrients
@@ -127,17 +127,16 @@ func DBReadIngredientByName(name string) (Ingredient, error) {
 
 // DBReadAllRecipes reads all recipes from database
 func DBReadAllRecipes() ([]Recipe, error) {
-	var temprecipes []Recipe
-
+	var temprecipes []Recipe //  Slice of all recipes, iterate over these
 	iter := FireBaseDB.Client.Collection(RecipeCollection).Documents(FireBaseDB.Ctx)
 	for {
-		recipe := Recipe{}
+		recipe := Recipe{} //  Create a placeholder for the document
 		doc, err := iter.Next()
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			log.Fatalf("Failed to iterate: %v", err)
+			fmt.Println("Failed to iterate over: "+RecipeCollection, err)
 		}
 		err = doc.DataTo(&recipe) // put data into temp struct
 		if err != nil {
@@ -201,8 +200,8 @@ func DBReadAllWebhooks() ([]Webhook, error) {
 //  For security purposes we have chosen not to include code which saves the token, and the token itself can be given
 //  to the reviewers of this project by mail which can be found in the readme
 func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte) {
-	tempToken := Token{} //  Loop through collection of authorization tokens
-	resp, err := ioutil.ReadAll(r.Body)
+	tempToken := Token{}                //  Loop through collection of authorization tokens
+	resp, err := ioutil.ReadAll(r.Body) //  Read the body of the json posted with the authentication token
 	if err != nil {
 		http.Error(w, "Couldn't read request: ", http.StatusBadRequest)
 	}
@@ -211,7 +210,7 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte)
 	if err != nil {
 		http.Error(w, "Unable to unmarshal request body: ", http.StatusBadRequest)
 	}
-
+	//  Loop through the collection of documents containing approved tokens
 	iter := FireBaseDB.Client.Collection(TokenCollection).Documents(FireBaseDB.Ctx)
 	for {
 		DBToken := Token{}
@@ -225,8 +224,8 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte)
 		err = doc.DataTo(&DBToken) // put data into temp struct
 		if err != nil {
 			http.Error(w, "Couldn't retrieve document from collection : ", http.StatusInternalServerError)
-		} //  If the token the user posted is in the collection, return true
-
+		}
+		//  If the token the user posted is in the collection, return true
 		if tempToken.AuthToken == DBToken.AuthToken {
 			return true, resp
 		}

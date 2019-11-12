@@ -73,15 +73,15 @@ func CallURL(event string, s interface{}) error {
 // ReadIngredients splits up the ingredient name from the quantity from the URL
 func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 	IngredientList := []Ingredient{}
-	defVal := 1.0
+	defVal := 1.0 //default value for quantity
 
 	for i := range ingredients {
-		ingredient := strings.Split(ingredients[i], "|")
+		ingredient := strings.Split(ingredients[i], "|") //splits up the string 'name|quantity|unit'
 		var err error
 		ingredientTemp := Ingredient{}
 		ingredientTemp.Quantity = defVal //sets to defVal
 
-		if len(ingredient) == 2 {
+		if len(ingredient) == 2 { //if quantity value is set
 			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
 
 			if err != nil { //if error set to defVal
@@ -89,7 +89,7 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 			}
 		}
 
-		if len(ingredient) == 3 {
+		if len(ingredient) == 3 { //if unit value is set
 			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
 
 			if err != nil { //if error set to defVal
@@ -101,14 +101,13 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
 		ingredientTemp = CalcNutrition(ingredientTemp, w)
 		IngredientList = append(IngredientList, ingredientTemp)
-
 	}
 	return IngredientList
 }
 
 // CalcNutrition calculates nutritional info for given ingredient
 func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient {
-	temping, err := DBReadIngredientByName(ing.Name)
+	temping, err := DBReadIngredientByName(ing.Name) //gets the ingredient with the same name from firebase
 	if err != nil {
 		fmt.Println("Cound not read ingredient by name")
 	}
