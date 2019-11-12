@@ -107,8 +107,27 @@ func TestHandlerFood(t *testing.T) {
 	}
 	fmt.Println("testeing handlerFood GET method ingredient")
 
-	// Testing method DELETE
+	// Testing method DELETE for ingredient ***********************************************
+	test := testIngredient{Token: testToken, Name: "turmeric"}
+	req, _ := json.Marshal(test)
+	reqTest := bytes.NewReader(req)
 
+	riDelet, err := http.NewRequest("DELETE", "/cravings/food/ingredient", reqTest)
+	if err != nil {
+		t.Error(err)
+	}
+
+	wiDelete := httptest.NewRecorder()
+	handlerIngredientDelete := http.HandlerFunc(HandlerFood)
+	handlerIngredientDelete.ServeHTTP(wiDelete, riDelet)
+
+	respIngredientDelete := wiGet.Result()
+
+	if respIngredientDelete.StatusCode != http.StatusOK {
+		t.Error(respIngredientDelete.StatusCode)
+	}
+
+	fmt.Println("testeing handlerFood DELETE method ingredient")
 }
 
 func TestGetAllRecipes(t *testing.T) {

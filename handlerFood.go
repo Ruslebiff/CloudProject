@@ -94,7 +94,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					fmt.Fprintln(w, "Failed to delete ingredient")
 				} else {
-					fmt.Fprintf(w, "Successfully deleted ingredient", http.StatusOK)
+					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
 				}
 
 			case "recipe":
@@ -113,7 +113,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					fmt.Fprintln(w, "Failed to delete recipe")
 				} else {
-					fmt.Fprintf(w, "Successfully deleted recipe", http.StatusOK)
+					fmt.Fprintln(w, "Successfully deleted recipe", http.StatusOK)
 				}
 
 			}
