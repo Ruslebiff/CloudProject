@@ -17,6 +17,12 @@ type testIngredient struct {
 	Unit  string `json:"unit"`
 }
 
+type testRecipe struct {
+	Token       string       `json:"token"`
+	RecipeName  string       `json:"recipeName"`
+	Ingredients []Ingredient `json:"ingredients"`
+}
+
 func TestHandlerFood(t *testing.T) {
 
 	// Reads token from text file
@@ -37,27 +43,58 @@ func TestHandlerFood(t *testing.T) {
 
 	fmt.Println(testToken)
 
-	// Testing methon POST ***********************************************
+	// Testing methon POST for Ingredient ***********************************************
 	i := testIngredient{Token: testToken, Name: "turmeric", Unit: "g"}
 	requestI, _ := json.Marshal(i)
-	requestTest := bytes.NewReader(requestI)
-	r, err := http.NewRequest("POST", "/cravings/food/ingredient", requestTest)
+	requestTestIngredient := bytes.NewReader(requestI)
+	ri, err := http.NewRequest("POST", "/cravings/food/ingredient", requestTestIngredient)
 	//r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if err != nil {
 		t.Error(err)
 	}
-	w := httptest.NewRecorder()
-	handler := http.HandlerFunc(HandlerFood)
-	handler.ServeHTTP(w, r)
+	wi := httptest.NewRecorder()
+	handlerIngredient := http.HandlerFunc(HandlerFood)
+	handlerIngredient.ServeHTTP(wi, ri)
 
-	resp := w.Result()
+	respIngredient := wi.Result()
 
-	if resp.StatusCode != http.StatusOK {
-		t.Error(resp.StatusCode)
+	if respIngredient.StatusCode != http.StatusOK {
+		t.Error(respIngredient.StatusCode)
 	}
-	fmt.Println("testeing handlerFood POST method")
+	fmt.Println("testeing handlerFood POST method ingredient")
 
-	//Testing method POST ***********************************************
+	// Testing methon POST for Recipe ***********************************************
+	ingredient1 := Ingredient{Name: "milk", Quantity: 5, Unit: "ml"}
+	ingredient2 := Ingredient{Name: "salt", Quantity: 2, Unit: "tablespoon"}
+	ingredient3 := Ingredient{Name: "flour", Quantity: 1, Unit: "kg"}
+	var testI []Ingredient
+	testI = append(testI, ingredient1)
+	testI = append(testI, ingredient2)
+	testI = append(testI, ingredient3)
+
+	re := testRecipe{Token: testToken, RecipeName: "TestRecipePOST", Ingredients: testI}
+	requestR, _ := json.Marshal(re)
+	requestTestRecipe := bytes.NewReader(requestR)
+	rr, err := http.NewRequest("POST", "/cravings/food/recipe", requestTestRecipe)
+	//r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	if err != nil {
+		t.Error(err)
+	}
+	wr := httptest.NewRecorder()
+	handlerRecipe := http.HandlerFunc(HandlerFood)
+	handlerRecipe.ServeHTTP(wr, rr)
+
+	respRecipe := wr.Result()
+
+	if respRecipe.StatusCode != http.StatusOK {
+		t.Error(respRecipe.StatusCode)
+	}
+	fmt.Println("testeing handlerFood POST method recipe")
+
+	// Testing method GET ***********************************************
+
+	// Testing method DELETE
+
 }
 
 func TestGetAllRecipes(t *testing.T) {
