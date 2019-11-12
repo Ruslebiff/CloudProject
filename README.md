@@ -16,7 +16,7 @@ Register Recipe:
 	"recipeName":"Emils Kakoramarama2",
 	"ingredients":[
 		{
-			"name":"Kardemomme",
+			"name":"cardamom",
 			"quantity":5,
 			"unit":"kg"
 		},
@@ -27,6 +27,14 @@ Register Recipe:
 		}
 	]
 }
+
+# Delete
+Delete Ingredient/Recipe: 
+{
+	"token":"",
+	"name":""
+}
+
 
 mealHandler:
 	Get method:

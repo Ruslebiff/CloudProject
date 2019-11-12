@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// DoRequest sends a new http request
 func DoRequest(url string, c *http.Client, w http.ResponseWriter) *http.Response {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -25,7 +26,7 @@ func DoRequest(url string, c *http.Client, w http.ResponseWriter) *http.Response
 	return resp
 }
 
-//QueryGet func to read  variable for link
+// QueryGet func to read  variable for link
 func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 
 	test := r.URL.Query().Get(s) // gets app key or app id
@@ -69,7 +70,7 @@ func CallURL(event string, s interface{}) error {
 	return nil
 }
 
-//ReadIngredients splits up the ingredient name from the quantity from the URL
+// ReadIngredients splits up the ingredient name from the quantity from the URL
 func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 	IngredientList := []Ingredient{}
 	defVal := 1.0
@@ -202,7 +203,7 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 
 }
 
-//  InitAPICredentials func opens up local file and reads the application id and key from that file
+// InitAPICredentials func opens up local file and reads the application id and key from that file
 func InitAPICredentials() error {
 	//  Opens local file which contains application id and key
 	file, err := os.Open("appIdAndKey.txt")
@@ -223,7 +224,7 @@ func InitAPICredentials() error {
 	return nil
 }
 
-//  UnitCheck func checks the unit measurements of two ingredients and checks if they are of the same type solid/liquid
+// UnitCheck func checks the unit measurements of two ingredients and checks if they are of the same type solid/liquid
 func UnitCheck(firstIngredient string, secondIngredient string) bool {
 	if strings.Contains(firstIngredient, "l") {
 		if strings.Contains(secondIngredient, "l") {
