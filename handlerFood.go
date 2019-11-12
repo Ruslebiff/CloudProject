@@ -113,7 +113,6 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
-	ing.Quantity = 1
 	ing.Name = strings.ToLower(ing.Name)
 
 	if ing.Unit == "" {
@@ -140,7 +139,8 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 		}
 
 		ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
-		GetNutrients(&ing, w)        // get nutrients for the ingredient
+		ing.Quantity = 1
+		GetNutrients(&ing, w) // get nutrients for the ingredient
 
 		allIngredients, err := DBReadAllIngredients()
 		if err != nil {
