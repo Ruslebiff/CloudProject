@@ -45,20 +45,20 @@ func TestHandlerFood(t *testing.T) {
 
 	// Testing methon POST for Ingredient ***********************************************
 	i := testIngredient{Token: testToken, Name: "turmeric", Unit: "g"}
-	requestI, _ := json.Marshal(i)
-	requestTestIngredient := bytes.NewReader(requestI)
-	ri, err := http.NewRequest("POST", "/cravings/food/ingredient", requestTestIngredient)
+	req, _ := json.Marshal(i)
+	reqTest := bytes.NewReader(req)
+	r, err := http.NewRequest("POST", "/cravings/food/ingredient", reqTest)
 	if err != nil {
 		t.Error(err)
 	}
-	wi := httptest.NewRecorder()
-	handlerIngredient := http.HandlerFunc(HandlerFood)
-	handlerIngredient.ServeHTTP(wi, ri)
+	w := httptest.NewRecorder()
+	handler := http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
 
-	respIngredient := wi.Result()
+	resp := w.Result()
 
-	if respIngredient.StatusCode != http.StatusOK {
-		t.Error(respIngredient.StatusCode)
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
 	}
 	fmt.Println("testeing handlerFood POST method ingredient")
 
@@ -72,81 +72,81 @@ func TestHandlerFood(t *testing.T) {
 	testI = append(testI, ingredient3)
 
 	re := testRecipe{Token: testToken, RecipeName: "TestRecipePOST", Ingredients: testI}
-	requestR, _ := json.Marshal(re)
-	requestTestRecipe := bytes.NewReader(requestR)
-	rr, err := http.NewRequest("POST", "/cravings/food/recipe", requestTestRecipe)
+	req, _ = json.Marshal(re)
+	reqTest = bytes.NewReader(req)
+	r, err = http.NewRequest("POST", "/cravings/food/recipe", reqTest)
 	if err != nil {
 		t.Error(err)
 	}
-	wr := httptest.NewRecorder()
-	handlerRecipe := http.HandlerFunc(HandlerFood)
-	handlerRecipe.ServeHTTP(wr, rr)
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
 
-	respRecipe := wr.Result()
+	resp = w.Result()
 
-	if respRecipe.StatusCode != http.StatusOK {
-		t.Error(respRecipe.StatusCode)
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
 	}
 	fmt.Println("testeing handlerFood POST method recipe")
 
 	// Testing method GET for ingredients  ***********************************************
 
-	riGet, err := http.NewRequest("GET", "/cravings/food/recipe/", nil)
+	r, err = http.NewRequest("GET", "/cravings/food/recipe/", nil)
 	if err != nil {
 		t.Error(err)
 	}
 
-	wiGet := httptest.NewRecorder()
-	handlerIngredientGet := http.HandlerFunc(HandlerFood)
-	handlerIngredientGet.ServeHTTP(wiGet, riGet)
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
 
-	respIngredientGet := wiGet.Result()
+	resp = w.Result()
 
-	if respIngredientGet.StatusCode != http.StatusOK {
-		t.Error(respIngredientGet.StatusCode)
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
 	}
 	fmt.Println("testeing handlerFood GET method ingredient")
 
 	// Testing method DELETE for ingredient ***********************************************
 	test := testIngredient{Token: testToken, Name: "turmeric"}
-	req, _ := json.Marshal(test)
-	reqTest := bytes.NewReader(req)
+	req, _ = json.Marshal(test)
+	reqTest = bytes.NewReader(req)
 
-	riDelet, err := http.NewRequest("DELETE", "/cravings/food/ingredient", reqTest)
+	r, err = http.NewRequest("DELETE", "/cravings/food/ingredient", reqTest)
 	if err != nil {
 		t.Error(err)
 	}
 
-	wiDelete := httptest.NewRecorder()
-	handlerIngredientDelete := http.HandlerFunc(HandlerFood)
-	handlerIngredientDelete.ServeHTTP(wiDelete, riDelet)
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
 
-	respIngredientDelete := wiGet.Result()
+	resp = w.Result()
 
-	if respIngredientDelete.StatusCode != http.StatusOK {
-		t.Error(respIngredientDelete.StatusCode)
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
 	}
 
 	fmt.Println("testeing handlerFood DELETE method ingredient")
 
 	// Testing method DELETE for ingredient **********************************************
 	test2 := testRecipe{Token: testToken, RecipeName: "TestRecipePOST"}
-	req2, _ := json.Marshal(test2)
-	reqTest2 := bytes.NewReader(req2)
+	req, _ = json.Marshal(test2)
+	reqTest = bytes.NewReader(req)
 
-	riDelet, err = http.NewRequest("DELETE", "/cravings/food/recipe", reqTest2)
+	r, err = http.NewRequest("DELETE", "/cravings/food/recipe", reqTest)
 	if err != nil {
 		t.Error(err)
 	}
 
-	wiDelete = httptest.NewRecorder()
-	handlerIngredientDelete = http.HandlerFunc(HandlerFood)
-	handlerIngredientDelete.ServeHTTP(wiDelete, riDelet)
+	w = httptest.NewRecorder()
+	handler = http.HandlerFunc(HandlerFood)
+	handler.ServeHTTP(w, r)
 
-	respIngredientDelete = wiGet.Result()
+	resp = w.Result()
 
-	if respIngredientDelete.StatusCode != http.StatusOK {
-		t.Error(respIngredientDelete.StatusCode)
+	if resp.StatusCode != http.StatusOK {
+		t.Error(resp.StatusCode)
 	}
 
 	fmt.Println("testeing handlerFood DELETE method recipe")
