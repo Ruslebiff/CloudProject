@@ -219,10 +219,14 @@ func TestGetAllRecipes(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	testRecipe := GetAllRecipes(w, r)
+	testRecipe, err := GetAllRecipes(w, r)
 	if len(testRecipe) == 0 {
 		t.Error("Cant read recipes from database")
 	}
+	if err != nil {
+		t.Error(err)
+	}
+
 }
 
 func TestGetAllIngredients(t *testing.T) {
@@ -234,9 +238,12 @@ func TestGetAllIngredients(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	testRecipe := GetAllIngredients(w, r)
+	testRecipe, err := GetAllIngredients(w, r)
 	if len(testRecipe) == 0 {
 		t.Error("Cant read ingredients from database")
+	}
+	if err != nil {
+		t.Error(err)
 	}
 
 }
