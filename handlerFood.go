@@ -96,7 +96,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				}
 				err = DBDelete(ing.ID, IngredientCollection, w)
 				if err != nil {
-					http.Error(w, "Failed to delete ingredient: "+err.Error(), StatusInternalServerError)
+					http.Error(w, "Failed to delete ingredient: "+err.Error(), http.StatusInternalServerError)
 				} else {
 					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
 				}
@@ -115,7 +115,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 				err = DBDelete(rec.ID, RecipeCollection, w)
 				if err != nil {
-					http.Error(w, "Failed to delete recipe: "+err.Error(), StatusInternalServerError)
+					http.Error(w, "Failed to delete recipe: "+err.Error(), http.StatusInternalServerError)
 				} else {
 					fmt.Fprintln(w, "Successfully deleted recipe"+rec.RecipeName, http.StatusOK)
 				}
@@ -239,7 +239,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 				found = true
 				unitOk = UnitCheck(rec.Ingredients[i].Unit, j.Unit)
 				if !unitOk {
-					http.Error(w, rec.Ingredients[i].Name+" can't be saved with unit "+j.Unit)
+					http.Error(w, rec.Ingredients[i].Name+" can't be saved with unit "+j.Unit, http.StatusBadRequest)
 				}
 				break
 			}
@@ -329,11 +329,16 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 		APIURL += "%20"
 		APIURL += ing.Unit
 	}
-	r := DoRequest(APIURL, client, w)
+	resp, err := DoRequest(APIURL, client)
+	if err != nil {
+		http.Error(w, "Unable to get "+APIURL+err.Error(), http.StatusBadRequest)
+		return err
+	}
 
-	err := json.NewDecoder(r.Body).Decode(&ing)
+	err = json.NewDecoder(resp.Body).Decode(&ing)
 	if err != nil {
 		http.Error(w, "Could not decode response body "+err.Error(), http.StatusInternalServerError)
+		return err
 	}
 
 	return nil

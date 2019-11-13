@@ -9,21 +9,24 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 // DoRequest sends a new http request
-func DoRequest(url string, c *http.Client, w http.ResponseWriter) *http.Response {
+func DoRequest(url string, c *http.Client) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
+	var resp *http.Response
 	if err != nil {
-		http.Error(w, "Something went wrong: "+err.Error(), http.StatusBadRequest)
+		return resp, errors.Wrap(err, "Unable to request: "+url+err.Error())
 	}
 
-	resp, err := c.Do(req)
+	resp, err = c.Do(req)
 	if err != nil {
-		http.Error(w, "Something went wrong: "+err.Error(), http.StatusBadRequest)
+		return resp, errors.Wrap(err, "Unable to get: "+url+err.Error())
 	}
 
-	return resp
+	return resp, err
 }
 
 // QueryGet func to read  variable for link

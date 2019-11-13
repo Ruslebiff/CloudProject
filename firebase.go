@@ -37,7 +37,12 @@ func DBInit() error {
 
 // DBClose Close firebase connection
 func DBClose() {
-	FireBaseDB.Client.Close()
+	err := FireBaseDB.Client.Close()
+	if err != nil {
+		fmt.Println("Failed to close firebase client")
+	} else {
+		fmt.Println("Successfully closed firebase client")
+	}
 }
 
 // DBSaveRecipe saves recipe to database
