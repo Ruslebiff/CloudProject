@@ -96,7 +96,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				}
 				err = DBDelete(ing.ID, IngredientCollection, w)
 				if err != nil {
-					http.Error(w, "Failed to delete ingredient: "+err.Error(), StatusInternalServerError)
+					http.Error(w, "Failed to delete ingredient: "+err.Error(), http.StatusInternalServerError)
 				} else {
 					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
 				}
@@ -115,7 +115,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 				err = DBDelete(rec.ID, RecipeCollection, w)
 				if err != nil {
-					http.Error(w, "Failed to delete recipe: "+err.Error(), StatusInternalServerError)
+					http.Error(w, "Failed to delete recipe: "+err.Error(), http.StatusInternalServerError)
 				} else {
 					fmt.Fprintln(w, "Successfully deleted recipe"+rec.RecipeName, http.StatusOK)
 				}
@@ -239,7 +239,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 				found = true
 				unitOk = UnitCheck(rec.Ingredients[i].Unit, j.Unit)
 				if !unitOk {
-					http.Error(w, rec.Ingredients[i].Name+" can't be saved with unit "+j.Unit)
+					http.Error(w, rec.Ingredients[i].Name+" can't be saved with unit "+j.Unit, http.StatusBadRequest)
 				}
 				break
 			}
