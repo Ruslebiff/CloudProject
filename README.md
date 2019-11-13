@@ -2,7 +2,7 @@
 NTNU Cloud Technologies project 2019
 
 # Register
-Register Ingredient: 
+	Register Ingredient: 
 	{
 		"token":"",
 		"name":"Kardemomme",
@@ -29,7 +29,7 @@ Unit should be either "l" or "g". Please use "l" for ingredients measured by vol
 	}
 
 # Delete
-Delete Ingredient/Recipe: 
+	Delete Ingredient/Recipe: 
 	{
 		"token":"",
 		"name":""
@@ -77,7 +77,7 @@ Post is used to create new webhooks.
 Use endpoint:
 /cravings/webhooks/
 
-And send with body:
+	And send with body:
 	{
 	"event":"[Event name]",
 	"url":"[Url name]"
@@ -96,7 +96,7 @@ Delete is used to delete one webhook.
 Use endpoint:
 /cravings/webhooks/
 
-And send with body:
+	And send with body:
 	{
 	"id":"[ID]"
 	}
