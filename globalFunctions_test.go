@@ -41,9 +41,10 @@ func TestQueryGet(t *testing.T) {
 }
 
 func TestCallURL(t *testing.T) {
+	w := httptest.NewRecorder()                     // creates ResponsRecoder
 	TestRecipe := Recipe{RecipeName: "TestCallURl"} // create a struct with a name
 
-	err := CallURL(RecipeCollection, TestRecipe) // check that we can callUrl
+	err := CallURL(RecipeCollection, TestRecipe, w) // check that we can callUrl
 	if err != nil {
 		t.Error(err)
 	}

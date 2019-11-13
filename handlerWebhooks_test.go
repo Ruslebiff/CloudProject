@@ -48,7 +48,9 @@ func TestHandlerWebhooks(t *testing.T) {
 
 	// Test Get method for endpoint /cravings/webhooks/ID **************
 
-	wh, err := DBReadAllWebhooks() // reads all webhooks from database
+	w = httptest.NewRecorder() // creates ResponsRecorder
+
+	wh, err := DBReadAllWebhooks(w) // reads all webhooks from database
 	if err != nil {
 		t.Error(err)
 	}
@@ -58,7 +60,6 @@ func TestHandlerWebhooks(t *testing.T) {
 		t.Error(err)
 	}
 
-	w = httptest.NewRecorder()                  // creates ResponsRecorder
 	handler = http.HandlerFunc(HandlerWebhooks) // test handlerWebhooks
 	handler.ServeHTTP(w, r)
 
