@@ -27,7 +27,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 			ingredientsList = ReadIngredients(strings.Split(r.URL.Query().Get("ingredients"), "_"), w)
 		}
 	}
-	recipeList, err := DBReadAllRecipes() //list of all recipes from firebase
+	recipeList, err := DBReadAllRecipes(w) //list of all recipes from firebase
 	if err != nil {
 		http.Error(w, "Failed to retrieve recipes "+err.Error(), http.StatusInternalServerError)
 		return
