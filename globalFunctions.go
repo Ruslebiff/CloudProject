@@ -38,9 +38,9 @@ func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 }
 
 // CallURL post webhooks to webhooks.site
-func CallURL(event string, s interface{}) error {
+func CallURL(event string, s interface{}, w http.ResponseWriter) error {
 
-	webhooks, err := DBReadAllWebhooks() // gets all webhooks
+	webhooks, err := DBReadAllWebhooks(w) // gets all webhooks
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
@@ -51,14 +51,14 @@ func CallURL(event string, s interface{}) error {
 
 			requestBody, err := json.Marshal(request)
 			if err != nil {
-				fmt.Println("Can not encode: " + err.Error())
+				fmt.Fprintln(w, "Can not encode: "+err.Error(), http.StatusInternalServerError)
 			}
 
-			fmt.Println("Attempting invoation of URL " + webhooks[i].URL + "...")
+			fmt.Fprintln(w, "Attempting invoation of URL "+webhooks[i].URL+"...")
 
 			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader([]byte(requestBody))) // post webhook to webhooks.site
 			if err != nil {
-				fmt.Println("Error in HTTP request: " + err.Error())
+				fmt.Fprintln(w, "Error in HTTP request: "+err.Error(), http.StatusBadRequest)
 			}
 
 			defer resp.Body.Close() // close body
@@ -105,11 +105,42 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 	return IngredientList
 }
 
+//CalcRemaining calculates the nutritional value from one ingredient to another. If subtract is true, it also subtracts quantity from rec in ing
+func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
+	fmt.Println("Før: ", ing)
+	
+	if ing.Unit != rec.Unit { //if the ingredients measures in different units
+		if strings.Contains(rec.Unit, "spoon") { //if rec contains spoon unit
+			noOfSpoons := ing.Calories / (rec.Calories / rec.Quantity) //calculates number of spoons for ing
+			unitPerSpoon := ing.Quantity / noOfSpoons                  //how many calories in one spoon
+			rec.Quantity *= unitPerSpoon                               //spoons times with calories per spoon to get the same unit
+			rec.Unit = ing.Unit
+		} else {
+			ConvertUnit(&ing, rec.Unit) //convert ing to same unit as rec
+		}
+	}
+
+	if subtract {
+		ing.Quantity -= rec.Quantity
+	}
+
+	//calculates the values for 1 ingredient, then multiplies by ingredients quantity
+	ing.Calories = rec.Calories / rec.Quantity * ing.Quantity
+	ing.Weight = rec.Weight / rec.Quantity * ing.Quantity
+	ing.Nutrients.Carbohydrate.Quantity = rec.Nutrients.Carbohydrate.Quantity / rec.Quantity * ing.Quantity
+	ing.Nutrients.Energy.Quantity = rec.Nutrients.Energy.Quantity / rec.Quantity * ing.Quantity
+	ing.Nutrients.Fat.Quantity = rec.Nutrients.Fat.Quantity / rec.Quantity * ing.Quantity
+	ing.Nutrients.Protein.Quantity = rec.Nutrients.Protein.Quantity / rec.Quantity * ing.Quantity
+	ing.Nutrients.Sugar.Quantity = rec.Nutrients.Sugar.Quantity / rec.Quantity * ing.Quantity
+	fmt.Println("Ett: ", ing)
+	return ing
+}
+
 // CalcNutrition calculates nutritional info for given ingredient
 func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient {
-	temping, err := DBReadIngredientByName(ing.Name) //gets the ingredient with the same name from firebase
+	temping, err := DBReadIngredientByName(ing.Name, w) //gets the ingredient with the same name from firebase
 	if err != nil {
-		fmt.Println("Cound not read ingredient by name")
+		fmt.Fprintln(w, "Could not read ingredient by name "+err.Error(), http.StatusBadRequest)
 	}
 
 	ing.ID = temping.ID               // add ID to ing since it's a copy
@@ -210,7 +241,7 @@ func InitAPICredentials() error {
 	//  Opens local file which contains application id and key
 	file, err := os.Open("appIdAndKey.txt")
 	if err != nil {
-		fmt.Println("Error: Unable to open file")
+		fmt.Println("Error: Unable to open file " + err.Error())
 	}
 	defer file.Close()
 	//  Scans the lines of the file
@@ -221,7 +252,7 @@ func InitAPICredentials() error {
 	App_key = scanner.Text()
 
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error: Unable to read the application ID and key from file ")
+		fmt.Println("Error: Unable to read the application ID and key from file " + err.Error())
 	}
 	return nil
 }

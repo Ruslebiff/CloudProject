@@ -22,12 +22,12 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 		Wh.Event = strings.ToLower(Wh.Event)
 		Wh.Time = time.Now() // sets time stamp
 
-		err = DBSaveWebhook(&Wh) // saves webhook to firebase
+		err = DBSaveWebhook(&Wh, w) // saves webhook to firebase
 		if err != nil {
-			fmt.Println("Error: ", err)
+			fmt.Fprintln(w, "Error saving webhook ", http.StatusInternalServerError)
 		}
 
-		fmt.Println("Webhooks " + Wh.URL + " has been regstrerd")
+		fmt.Fprintln(w, "Webhooks "+Wh.URL+" has been regstrerd")
 
 	case http.MethodGet:
 		var webhooks []Webhook //Webhook DB
@@ -35,7 +35,7 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 
 		http.Header.Add(w.Header(), "Content-Type", "application/json")
 
-		webhooks, err := DBReadAllWebhooks() // reads all webhooks from database
+		webhooks, err := DBReadAllWebhooks(w) // reads all webhooks from database
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
@@ -66,7 +66,7 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
-		err = DBDelete(Wh.ID, WebhooksCollection) //Deletes webhook from id
+		err = DBDelete(Wh.ID, WebhooksCollection, w) //Deletes webhook from id
 		if err != nil {
 			fmt.Println("Error: ", err)
 		}
