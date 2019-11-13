@@ -103,10 +103,6 @@ func TestFirebase(t *testing.T) {
 
 }
 
-// type tToken struct {
-// 	Token string `json:"token"`
-// }
-
 func TestDBCheckAuthorization(t *testing.T) {
 
 	file, err := os.Open("testToken.txt") // opens text file
@@ -119,21 +115,21 @@ func TestDBCheckAuthorization(t *testing.T) {
 	scanner := bufio.NewScanner(file)
 
 	var testToken string
-	for scanner.Scan() {
+	for scanner.Scan() { // loop throue lengt of text file
 
-		testToken = scanner.Text()
+		testToken = scanner.Text() // sets testToken to the token read from file
 	}
 	fmt.Println("text: ", testToken)
 
-	testStruct := Token{AuthToken: testToken}
+	testStruct := Token{AuthToken: testToken} // creats test struct that will be sent as json body for GET request
 	request, _ := json.Marshal(testStruct)
 	requestTest := bytes.NewReader(request)
-	r, err := http.NewRequest("GET", "/cravings/food/", requestTest)
+	r, err := http.NewRequest("GET", "/cravings/food/", requestTest) // create request
 	if err != nil {
 		t.Error(err)
 	}
 
-	w := httptest.NewRecorder()
+	w := httptest.NewRecorder() // create ResponseRecorder
 
 	testBool, _ := DBCheckAuthorization(w, r) //test for vallid authorization with a vallid token
 	if testBool == false {
