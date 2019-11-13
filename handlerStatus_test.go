@@ -9,18 +9,18 @@ import (
 
 func TestHandlerStatus(t *testing.T) {
 
-	r, err := http.NewRequest("GET", "/cravings/status/", nil)
+	r, err := http.NewRequest("GET", "/cravings/status/", nil) // creats request
 	if err != nil {
 		t.Error(err)
 	}
 
-	w := httptest.NewRecorder()
-	handler := http.HandlerFunc(HandlerStatus)
-	handler.ServeHTTP(w, r)
+	w := httptest.NewRecorder()                // create ResponsRcorder
+	handler := http.HandlerFunc(HandlerStatus) // test handlerNil
+	handler.ServeHTTP(w, r)                    // sends with request and respons
 
 	resp := w.Result()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK { // check if handler worked ass it should
 		t.Error(resp.StatusCode)
 	}
 	fmt.Println("test handlerStatus")
