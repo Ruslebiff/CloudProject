@@ -27,14 +27,13 @@ func DoRequest(url string, c *http.Client, w http.ResponseWriter) *http.Response
 }
 
 // QueryGet func to read  variable for link
-func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
+func QueryGet(s string, def string, r *http.Request) string {
 
-	test := r.URL.Query().Get(s) // gets app key or app id
-	if test == "" {              // check if it is empty
-		fmt.Fprintln(w, s+" is missing")
+	query := r.URL.Query().Get(s) // gets app key or app id
+	if query == "" {              //if it is empty
+		query = def //set to default value
 	}
-	return test
-
+	return query
 }
 
 // CallURL post webhooks to webhooks.site
@@ -42,7 +41,8 @@ func CallURL(event string, s interface{}, w http.ResponseWriter) error {
 
 	webhooks, err := DBReadAllWebhooks(w) // gets all webhooks
 	if err != nil {
-		fmt.Println("Error: ", err)
+		fmt.Fprintln(w, "Could not retrieve documents from webhooks collection: "+err.Error(), http.StatusInternalServerError)
+		return err
 	}
 
 	for i := range webhooks { // loops true all webhooks
@@ -52,28 +52,27 @@ func CallURL(event string, s interface{}, w http.ResponseWriter) error {
 			requestBody, err := json.Marshal(request)
 			if err != nil {
 				fmt.Fprintln(w, "Can not encode: "+err.Error(), http.StatusInternalServerError)
+				return err
 			}
 
-			fmt.Fprintln(w, "Attempting invoation of URL "+webhooks[i].URL+"...")
+			fmt.Fprintln(w, "Attempting invocation of URL "+webhooks[i].URL+"...")
 
 			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader([]byte(requestBody))) // post webhook to webhooks.site
 			if err != nil {
 				fmt.Fprintln(w, "Error in HTTP request: "+err.Error(), http.StatusBadRequest)
+				return err
 			}
 
 			defer resp.Body.Close() // close body
-
 		}
-
 	}
-
 	return nil
 }
 
 // ReadIngredients splits up the ingredient name from the quantity from the URL
 func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 	IngredientList := []Ingredient{}
-	defVal := 1.0 //default value for quantity
+	defVal := 1.0 //default value for quantity if not set
 
 	for i := range ingredients {
 		ingredient := strings.Split(ingredients[i], "|") //splits up the string 'name|quantity|unit'
@@ -107,8 +106,7 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 
 //CalcRemaining calculates the nutritional value from one ingredient to another. If subtract is true, it also subtracts quantity from rec in ing
 func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
-	fmt.Println("Før: ", ing)
-	
+
 	if ing.Unit != rec.Unit { //if the ingredients measures in different units
 		if strings.Contains(rec.Unit, "spoon") { //if rec contains spoon unit
 			noOfSpoons := ing.Calories / (rec.Calories / rec.Quantity) //calculates number of spoons for ing
@@ -132,7 +130,6 @@ func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
 	ing.Nutrients.Fat.Quantity = rec.Nutrients.Fat.Quantity / rec.Quantity * ing.Quantity
 	ing.Nutrients.Protein.Quantity = rec.Nutrients.Protein.Quantity / rec.Quantity * ing.Quantity
 	ing.Nutrients.Sugar.Quantity = rec.Nutrients.Sugar.Quantity / rec.Quantity * ing.Quantity
-	fmt.Println("Ett: ", ing)
 	return ing
 }
 
@@ -242,6 +239,7 @@ func InitAPICredentials() error {
 	file, err := os.Open("appIdAndKey.txt")
 	if err != nil {
 		fmt.Println("Error: Unable to open file " + err.Error())
+		return err
 	}
 	defer file.Close()
 	//  Scans the lines of the file
@@ -253,8 +251,9 @@ func InitAPICredentials() error {
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error: Unable to read the application ID and key from file " + err.Error())
+		return err
 	}
-	return nil
+	return err
 }
 
 // UnitCheck func checks the unit measurements of two ingredients and checks if they are of the same type solid/liquid

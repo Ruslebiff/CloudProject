@@ -26,11 +26,13 @@ func DBInit() error {
 	app, err := firebase.NewApp(FireBaseDB.Ctx, nil, sa) //  Creates the application with its contents
 	if err != nil {
 		fmt.Println("Failed to initialize the firebase database when creating a new app: ", err)
+		return err
 	}
 	//  Sets the app created to our local struct's client
 	FireBaseDB.Client, err = app.Firestore(FireBaseDB.Ctx)
 	if err != nil {
 		fmt.Println("Failed to create app")
+		return err
 	}
 	return err
 }
@@ -47,6 +49,7 @@ func DBSaveRecipe(r *Recipe, w http.ResponseWriter) error { //  Creates a new do
 	_, err := ref.Set(FireBaseDB.Ctx, r) //  Set the context of the document to the one of the recipe
 	if err != nil {
 		fmt.Fprintln(w, "ERROR saving recipe to recipe collection: "+err.Error(), http.StatusInternalServerError)
+		return err
 	}
 	return nil
 }
@@ -58,6 +61,7 @@ func DBSaveIngredient(i *Ingredient, w http.ResponseWriter) error { //  Creates 
 	_, err := ref.Set(FireBaseDB.Ctx, i) //  Set the context of the document to the one of the ingredient
 	if err != nil {
 		fmt.Fprintln(w, "ERROR saving ingredient to ingredients collection: "+err.Error(), http.StatusInternalServerError)
+		return err
 	}
 	return nil
 }
@@ -69,6 +73,7 @@ func DBSaveWebhook(i *Webhook, w http.ResponseWriter) error {
 	_, err := ref.Set(FireBaseDB.Ctx, i) //  Set the context of the document to the one of the webhook
 	if err != nil {
 		fmt.Fprintln(w, "ERROR saving webhook to webhooks collection: "+err.Error(), http.StatusInternalServerError)
+		return err
 	}
 	return nil
 }
@@ -89,6 +94,7 @@ func DBReadRecipeByName(name string, w http.ResponseWriter) (Recipe, error) {
 	allrec, err := DBReadAllRecipes(w) //  Query all the recipes
 	if err != nil {
 		fmt.Fprintln(w, "Error retrieving recipes from database "+err.Error(), http.StatusInternalServerError)
+		return temp, err
 	}
 	//  Loops through all the recipes and checks if the parameter name is equal to one of the recipes
 	for _, i := range allrec {
@@ -109,6 +115,7 @@ func DBReadIngredientByName(name string, w http.ResponseWriter) (Ingredient, err
 	temp := Ingredient{}
 	if err != nil {
 		fmt.Fprintln(w, "Error retrieving recipes from database "+err.Error(), http.StatusInternalServerError)
+		return temp, err
 	}
 
 	for _, i := range alling {
@@ -136,10 +143,12 @@ func DBReadAllRecipes(w http.ResponseWriter) ([]Recipe, error) {
 		}
 		if err != nil {
 			fmt.Fprintln(w, "Failed to iterate "+err.Error(), http.StatusInternalServerError)
+			return temprecipes, err
 		}
 		err = doc.DataTo(&recipe) // put data into temp struct
 		if err != nil {
 			fmt.Fprintln(w, "Error when converting retrieved document to struct: "+err.Error(), http.StatusInternalServerError)
+			return temprecipes, err
 		}
 
 		temprecipes = append(temprecipes, recipe) // add to temp array
@@ -159,10 +168,12 @@ func DBReadAllIngredients(w http.ResponseWriter) ([]Ingredient, error) {
 		}
 		if err != nil {
 			fmt.Fprintln(w, "Failed to iterate "+err.Error(), http.StatusInternalServerError)
+			return tempingredients, err
 		}
 		err = doc.DataTo(&ingredient) // Put data into temp struct
 		if err != nil {
 			fmt.Fprintln(w, "Error when converting retrieved document to struct: "+err.Error(), http.StatusInternalServerError)
+			return tempingredients, err
 		}
 		tempingredients = append(tempingredients, ingredient) // Append to temp array
 	}
@@ -181,11 +192,13 @@ func DBReadAllWebhooks(w http.ResponseWriter) ([]Webhook, error) {
 		}
 		if err != nil {
 			fmt.Fprintln(w, "Failed to iterate: "+err.Error(), http.StatusInternalServerError)
+			return tempWebhooks, err
 		}
 
 		err = doc.DataTo(&Wh) // put data into temp struct
 		if err != nil {
 			fmt.Fprintln(w, "Error when converting retrieved document to struct: "+err.Error(), http.StatusInternalServerError)
+			return tempWebhooks, err
 		}
 
 		tempWebhooks = append(tempWebhooks, Wh)
@@ -218,7 +231,7 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte)
 			break
 		}
 		if err != nil {
-			fmt.Fprintln(w, "Couldn't iterate over document colleciton: "+err.Error(), http.StatusInternalServerError)
+			fmt.Fprintln(w, "Couldn't iterate over document collection: "+err.Error(), http.StatusInternalServerError)
 		}
 		err = doc.DataTo(&DBToken) // put data into temp struct
 		if err != nil {
