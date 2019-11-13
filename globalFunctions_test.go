@@ -76,12 +76,12 @@ func TestConvertUnit(t *testing.T) {
 	testUnitKG := "kg"
 	testUnitG := "g"
 
-	ConvertUnit(&testIngredient, testUnitKG)
+	ConvertUnit(&testIngredient, testUnitKG) // test convert from g to kg
 	fmt.Println("testIngredient: ", testIngredient)
 	if testIngredient.Quantity != 1 {
 		t.Error("quanity did not get converted")
 	}
-	ConvertUnit(&testIngredient, testUnitG)
+	ConvertUnit(&testIngredient, testUnitG) // test convert from kg to g
 	fmt.Println("testIngredient: ", testIngredient)
 	if testIngredient.Quantity != 1000 {
 		t.Error("quanity did not get converted")
