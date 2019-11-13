@@ -49,7 +49,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 					j = CalcNutrition(j, w) //calculates nutritional value
 
-					if strings.Contains(i.Unit, "spoon") { //if recipe uses tablespoon or teaspoon as unit
+					if strings.Contains(i.Unit, "spoon") { //specialcase: if recipe uses tablespoon or teaspoon as unit
 						noOfSpoons := j.Calories / (i.Calories / i.Quantity) //Amount we have/the value of calories from 1 spoon
 						unitPerSpoon := j.Quantity / noOfSpoons              //calculates the amount of units stored per spoon
 						if noOfSpoons <= i.Quantity {                        // if less of equal to what is needed from recipe
