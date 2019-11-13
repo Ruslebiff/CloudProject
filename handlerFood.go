@@ -25,7 +25,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		switch endpoint {
 		case "ingredient":
 			if name != "" { //  If ingredient name is specified in URL
-				ingr, err := DBReadIngredientByName(name) //  Get that ingredient
+				ingr, err := DBReadIngredientByName(name, w) //  Get that ingredient
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
 				}
@@ -43,7 +43,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		case "recipe":
 			if name != "" { //  If user wrote in query for name of recipe
 				re := Recipe{}
-				re, err := DBReadRecipeByName(name) //  Get that recipe
+				re, err := DBReadRecipeByName(name, w) //  Get that recipe
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
 				}
@@ -90,13 +90,13 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 				}
-				ing, err = DBReadIngredientByName(ing.Name) //  Get that ingredient
+				ing, err = DBReadIngredientByName(ing.Name, w) //  Get that ingredient
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
 				}
-				err = DBDelete(ing.ID, IngredientCollection)
+				err = DBDelete(ing.ID, IngredientCollection, w)
 				if err != nil {
-					fmt.Fprintln(w, "Failed to delete ingredient")
+					http.Error(w, "Failed to delete ingredient: "+err.Error(), StatusInternalServerError)
 				} else {
 					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
 				}
@@ -108,24 +108,24 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 				}
-				rec, err = DBReadRecipeByName(rec.RecipeName) //  Get that recipe
+				rec, err = DBReadRecipeByName(rec.RecipeName, w) //  Get that recipe
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
 				}
 
-				err = DBDelete(rec.ID, RecipeCollection)
+				err = DBDelete(rec.ID, RecipeCollection, w)
 				if err != nil {
-					fmt.Fprintln(w, "Failed to delete recipe")
+					http.Error(w, "Failed to delete recipe: "+err.Error(), StatusInternalServerError)
 				} else {
-					fmt.Fprintln(w, "Successfully deleted recipe", http.StatusOK)
+					fmt.Fprintln(w, "Successfully deleted recipe"+rec.RecipeName, http.StatusOK)
 				}
 
 			}
 		} else {
-			http.Error(w, "Not authorised to DELETE from DB: ", http.StatusBadRequest)
+			fmt.Fprintln(w, "Not authorised to DELETE from DB:", http.StatusBadRequest)
 		}
 	default:
-		http.Error(w, "Invalid method "+r.Method, http.StatusBadRequest)
+		fmt.Fprintln(w, "Invalid method "+r.Method, http.StatusBadRequest)
 	}
 
 }
@@ -156,14 +156,14 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 			} else {
 				unitParam = "l"
 			}
-		} else {
+		} else { //  Prints the allowed units for an ingridient
 			http.Error(w, "Unit has to be of one of the values ", http.StatusBadRequest)
 			for _, v := range AllowedUnit {
 				fmt.Fprintln(w, v) // Print allowed units
 			}
 		}
 
-		allIngredients, err := DBReadAllIngredients() // temporary list of all ingredients in database
+		allIngredients, err := DBReadAllIngredients(w) // temporary list of all ingredients in database
 		if err != nil {
 			http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 		}
@@ -183,13 +183,13 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 			if ing.Nutrients.Energy.Label == "" { // check if it got nutrients from db. All ingredients will get this label if GetNutrients is ok
 				http.Error(w, "ERROR: Failed to get nutrients for ingredient. Ingredient was not saved.", http.StatusInternalServerError)
 			} else {
-				err = DBSaveIngredient(&ing) // save it to database
-				if err != nil {              // if DBSaveIngredient return error
+				err = DBSaveIngredient(&ing, w) // save it to database
+				if err != nil {                 // if DBSaveIngredient return error
 					http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 				} else { // DBSaveIngredient did not return error
-					err := CallURL(IngredientCollection, &ing) // Call webhooks
+					err := CallURL(IngredientCollection, &ing, w) // Call webhooks
 					if err != nil {
-						fmt.Println("could not post to webhooks.site: ", err)
+						fmt.Fprintln(w, "Could not post to webhooks.site: "+err.Error(), http.StatusBadRequest)
 					}
 					fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.") // Success!
 				}
@@ -214,12 +214,12 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	recipeNameInUse := false
 
 	//  Retrieve all recipes and ingredients to see if the one the user is trying to register already exists
-	allRecipes, err := DBReadAllRecipes()
+	allRecipes, err := DBReadAllRecipes(w)
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 	//  Retrieves all the ingredients to get the ones missing for the recipe
-	allIngredients, err := DBReadAllIngredients()
+	allIngredients, err := DBReadAllIngredients(w)
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
@@ -239,7 +239,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 				found = true
 				unitOk = UnitCheck(rec.Ingredients[i].Unit, j.Unit)
 				if !unitOk {
-					fmt.Fprintln(w, rec.Ingredients[i].Name+" can't be saved with unit "+j.Unit)
+					http.Error(w, rec.Ingredients[i].Name+" can't be saved with unit "+j.Unit)
 				}
 				break
 			}
@@ -255,21 +255,21 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		if err != nil {
 			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
 		}
-		err = DBSaveRecipe(&rec) //  Saves the recipe
+		err = DBSaveRecipe(&rec, w) //  Saves the recipe
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 		} else {
-			err := CallURL(RecipeCollection, &rec) // Invokes the url
+			err := CallURL(RecipeCollection, &rec, w) // Invokes the url
 			if err != nil {
-				fmt.Println("could not post to webhooks.site: ", err)
+				fmt.Fprintln(w, "Could not post to webhooks.site: "+err.Error(), http.StatusBadRequest)
 			}
 			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
 		}
 
 	} else if ingredientsfound != recingredients {
 		// console print:
-		fmt.Println("Registration error: Recipe with name \"" + rec.RecipeName + "\" is missing " +
-			strconv.Itoa(recingredients-ingredientsfound) + " ingredient(s)")
+		fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" is missing "+
+			strconv.Itoa(recingredients-ingredientsfound)+" ingredient(s) "+err.Error(), http.StatusBadRequest)
 
 		// http response:
 		http.Error(w, "Cannot save recipe, missing ingredient(s) in database:", http.StatusBadRequest)
@@ -281,7 +281,8 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 
 	} else if recipeNameInUse == true {
 		// console print:
-		fmt.Println("Registration error: Recipe with name \"" + rec.RecipeName + "\" - name already in use.")
+		fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" - name already in use. "+
+			err.Error(), http.StatusBadRequest)
 
 		// http response:
 		http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
@@ -296,7 +297,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 // GetAllRecipes returns all recipes from database using the DBReadAllRecipes function
 func GetAllRecipes(w http.ResponseWriter, r *http.Request) ([]Recipe, error) {
 	var allRecipes []Recipe
-	allRecipes, err := DBReadAllRecipes()
+	allRecipes, err := DBReadAllRecipes(w)
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
@@ -306,7 +307,7 @@ func GetAllRecipes(w http.ResponseWriter, r *http.Request) ([]Recipe, error) {
 // GetAllIngredients returns all ingredients from database using the DBReadAllIngredients function
 func GetAllIngredients(w http.ResponseWriter, r *http.Request) ([]Ingredient, error) {
 	var allIngredients []Ingredient
-	allIngredients, err := DBReadAllIngredients()
+	allIngredients, err := DBReadAllIngredients(w)
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}

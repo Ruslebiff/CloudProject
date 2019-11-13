@@ -38,9 +38,9 @@ func QueryGet(s string, w http.ResponseWriter, r *http.Request) string {
 }
 
 // CallURL post webhooks to webhooks.site
-func CallURL(event string, s interface{}) error {
+func CallURL(event string, s interface{}, w http.ResponseWriter) error {
 
-	webhooks, err := DBReadAllWebhooks() // gets all webhooks
+	webhooks, err := DBReadAllWebhooks(w) // gets all webhooks
 	if err != nil {
 		fmt.Println("Error: ", err)
 	}
@@ -51,14 +51,14 @@ func CallURL(event string, s interface{}) error {
 
 			requestBody, err := json.Marshal(request)
 			if err != nil {
-				fmt.Println("Can not encode: " + err.Error())
+				fmt.Fprintln(w, "Can not encode: "+err.Error(), http.StatusInternalServerError)
 			}
 
-			fmt.Println("Attempting invoation of URL " + webhooks[i].URL + "...")
+			fmt.Fprintln(w, "Attempting invoation of URL "+webhooks[i].URL+"...")
 
 			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader([]byte(requestBody))) // post webhook to webhooks.site
 			if err != nil {
-				fmt.Println("Error in HTTP request: " + err.Error())
+				fmt.Fprintln(w, "Error in HTTP request: "+err.Error(), http.StatusBadRequest)
 			}
 
 			defer resp.Body.Close() // close body
@@ -138,9 +138,9 @@ func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
 
 // CalcNutrition calculates nutritional info for given ingredient
 func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient {
-	temping, err := DBReadIngredientByName(ing.Name) //gets the ingredient with the same name from firebase
+	temping, err := DBReadIngredientByName(ing.Name, w) //gets the ingredient with the same name from firebase
 	if err != nil {
-		fmt.Println("Cound not read ingredient by name")
+		fmt.Fprintln(w, "Could not read ingredient by name "+err.Error(), http.StatusBadRequest)
 	}
 
 	ing.ID = temping.ID               // add ID to ing since it's a copy
@@ -241,7 +241,7 @@ func InitAPICredentials() error {
 	//  Opens local file which contains application id and key
 	file, err := os.Open("appIdAndKey.txt")
 	if err != nil {
-		fmt.Println("Error: Unable to open file")
+		fmt.Println("Error: Unable to open file " + err.Error())
 	}
 	defer file.Close()
 	//  Scans the lines of the file
@@ -252,7 +252,7 @@ func InitAPICredentials() error {
 	App_key = scanner.Text()
 
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error: Unable to read the application ID and key from file ")
+		fmt.Println("Error: Unable to read the application ID and key from file " + err.Error())
 	}
 	return nil
 }

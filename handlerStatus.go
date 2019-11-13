@@ -35,14 +35,14 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 	S.Database = resp.StatusCode // sets status code for link
 
 	// Sets total of recipes *****************************************
-	statusRecipe, err := DBReadAllRecipes() // gets all recipes from database
+	statusRecipe, err := DBReadAllRecipes(w) // gets all recipes from database
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
 	S.TotalRecipe = len(statusRecipe) // sets totat for recipes
 
 	// Sets status for Ingredients ***********************************
-	statusIngredients, err := DBReadAllIngredients() // gets all ingredients from database
+	statusIngredients, err := DBReadAllIngredients(w) // gets all ingredients from database
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
