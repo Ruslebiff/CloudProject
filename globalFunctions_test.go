@@ -41,9 +41,10 @@ func TestQueryGet(t *testing.T) {
 }
 
 func TestCallURL(t *testing.T) {
+	w := httptest.NewRecorder()                     // creates ResponsRecoder
 	TestRecipe := Recipe{RecipeName: "TestCallURl"} // create a struct with a name
 
-	err := CallURL(RecipeCollection, TestRecipe) // check that we can callUrl
+	err := CallURL(RecipeCollection, TestRecipe, w) // check that we can callUrl
 	if err != nil {
 		t.Error(err)
 	}
@@ -76,12 +77,12 @@ func TestConvertUnit(t *testing.T) {
 	testUnitKG := "kg"
 	testUnitG := "g"
 
-	ConvertUnit(&testIngredient, testUnitKG)
+	ConvertUnit(&testIngredient, testUnitKG) // test convert from g to kg
 	fmt.Println("testIngredient: ", testIngredient)
 	if testIngredient.Quantity != 1 {
 		t.Error("quanity did not get converted")
 	}
-	ConvertUnit(&testIngredient, testUnitG)
+	ConvertUnit(&testIngredient, testUnitG) // test convert from kg to g
 	fmt.Println("testIngredient: ", testIngredient)
 	if testIngredient.Quantity != 1000 {
 		t.Error("quanity did not get converted")

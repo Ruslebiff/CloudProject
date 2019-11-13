@@ -48,12 +48,12 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 					found = true       //found ingredient
 					tempUnit := i.Unit //saves the unit the recipe is based on
 
-					j = CalcNutrition(j, w) //calculates nutritional value
+					j = CalcRemaining(j, i, false) //calculates nutritional value for j
 
-					if strings.Contains(i.Unit, "spoon") { //if recipe uses tablespoon or teaspoon as unit
+					if strings.Contains(i.Unit, "spoon") { //specialcase: if recipe uses tablespoon or teaspoon as unit
 						noOfSpoons := j.Calories / (i.Calories / i.Quantity) //Amount we have/the value of calories from 1 spoon
 						unitPerSpoon := j.Quantity / noOfSpoons              //calculates the amount of units stored per spoon
-						if noOfSpoons <= i.Quantity {                        // if less of equal to what is needed from recipe
+						if noOfSpoons <= i.Quantity {                        // if less or equal to what is needed from recipe
 							tempOriginalUnit := j.Unit
 							j.Unit = i.Unit         //set unit to recipes unit (...spoon)
 							j.Quantity = noOfSpoons //Quantity to number of spoons
@@ -64,17 +64,15 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 							if i.Quantity > 0 {      //  If the recipe still needs more of the ingredient we have
 
 								i.Unit = tempOriginalUnit
-								i.Quantity *= unitPerSpoon //total units for spoons
-								CalcNutrition(i, w)        //calculate nutrition with new quantity
+								i.Quantity *= unitPerSpoon     //total units for spoons
+								i = CalcRemaining(i, j, false) //calculate nutrition with new quantity
 								i.Unit = tempUnit
 								i.Quantity /= unitPerSpoon //calculates back to spoon quantity
 								recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 							}
 						} else {
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
-							j.Quantity -= i.Quantity * unitPerSpoon //calculates 'remaining' quantities after we made the recipe
-							CalcNutrition(j, w)
-							ConvertUnit(&j, tempUnit)
+							j = CalcRemaining(j, i, true)
 							recipeTemp.Ingredients.Remaining[n] = j
 						}
 					} else {
@@ -88,22 +86,21 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 							i.Quantity -= j.Quantity //calculates the 'missing' quantities
 							if i.Quantity > 0 {
-								CalcNutrition(i, w)       //calculate nutrition with new quantity
-								ConvertUnit(&i, tempUnit) //set unit back to recipes unit
+								i = CalcRemaining(i, j, false) //calculate nutrition with new quantity
+								ConvertUnit(&i, tempUnit)      //set unit back to recipes unit
 								recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 							}
 						} else {
 
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
 							j.Quantity -= i.Quantity //calculates 'remaining' quantities
-							CalcNutrition(j, w)
+							j = CalcRemaining(j, i, false)
 							ConvertUnit(&j, tempUnit)
 							recipeTemp.Ingredients.Remaining[n] = j
 						}
 						break //break out after finding matching name
 					}
 				}
-
 			}
 			if !found { //adds the ingredient to 'missing' if not found
 				recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
