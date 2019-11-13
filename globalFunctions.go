@@ -105,6 +105,37 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 	return IngredientList
 }
 
+//CalcRemaining calculates the nutritional value from one ingredient to another. If subtract is true, it also subtracts quantity from rec in ing
+func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
+	fmt.Println("Før: ", ing)
+	
+	if ing.Unit != rec.Unit { //if the ingredients measures in different units
+		if strings.Contains(rec.Unit, "spoon") { //if rec contains spoon unit
+			noOfSpoons := ing.Calories / (rec.Calories / rec.Quantity) //calculates number of spoons for ing
+			unitPerSpoon := ing.Quantity / noOfSpoons                  //how many calories in one spoon
+			rec.Quantity *= unitPerSpoon                               //spoons times with calories per spoon to get the same unit
+			rec.Unit = ing.Unit
+		} else {
+			ConvertUnit(&ing, rec.Unit) //convert ing to same unit as rec
+		}
+	}
+
+	if subtract {
+		ing.Quantity -= rec.Quantity
+	}
+
+	//calculates the values for 1 ingredient, then multiplies by ingredients quantity
+	ing.Calories = rec.Calories / rec.Quantity * ing.Quantity
+	ing.Weight = rec.Weight / rec.Quantity * ing.Quantity
+	ing.Nutrients.Carbohydrate.Quantity = rec.Nutrients.Carbohydrate.Quantity / rec.Quantity * ing.Quantity
+	ing.Nutrients.Energy.Quantity = rec.Nutrients.Energy.Quantity / rec.Quantity * ing.Quantity
+	ing.Nutrients.Fat.Quantity = rec.Nutrients.Fat.Quantity / rec.Quantity * ing.Quantity
+	ing.Nutrients.Protein.Quantity = rec.Nutrients.Protein.Quantity / rec.Quantity * ing.Quantity
+	ing.Nutrients.Sugar.Quantity = rec.Nutrients.Sugar.Quantity / rec.Quantity * ing.Quantity
+	fmt.Println("Ett: ", ing)
+	return ing
+}
+
 // CalcNutrition calculates nutritional info for given ingredient
 func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient {
 	temping, err := DBReadIngredientByName(ing.Name) //gets the ingredient with the same name from firebase
