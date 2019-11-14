@@ -12,22 +12,31 @@ import (
 	"time"
 )
 
-func TestFirebase(t *testing.T) {
-
-	w := httptest.NewRecorder() // creates ResponsRecoder
+func TestDBInit(t *testing.T) {
 
 	err := DBInit() // check that the database initalises
 	if err != nil {
 		t.Error(err) // failed to initalise
 	}
 
+	fmt.Println("testing DBInit")
+
+}
+
+func TestDBIngredient(t *testing.T) {
+
 	// testing of Ingredients functions for database **************
+
+	w := httptest.NewRecorder() // creates ResponsRecoder
+
 	i := Ingredient{Name: "TestIngredient"}
 
-	err = DBSaveIngredient(&i, w) //test saving Ingredient
+	err := DBSaveIngredient(&i, w) //test saving Ingredient
 	if err != nil {
 		t.Error(err)
 	}
+
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
 
 	var ingredients []Ingredient
 	ingredients, err = DBReadAllIngredients(w) // test read all ingredients
@@ -36,10 +45,14 @@ func TestFirebase(t *testing.T) {
 	}
 	fmt.Println("Ingredients: ", len(ingredients))
 
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func testw = httptest.NewRecorder() // resets ResponsRecoder for next func test
+
 	i2, err := DBReadIngredientByName(i.Name, w) // test read ingredients by name
 	if err != nil {
 		t.Error(err)
 	}
+
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
 
 	fmt.Println("test ingredient", i2)
 	err = DBDelete(i2.ID, IngredientCollection, w) // test delete and delete test ingredient
@@ -47,14 +60,24 @@ func TestFirebase(t *testing.T) {
 		t.Error(err)
 	}
 
+	fmt.Println("testing DBIngredient")
+
+}
+
+func TestDBRecipe(t *testing.T) {
+
 	// testing of Recipe functions for database ****************************
+
+	w := httptest.NewRecorder() // creates ResponsRecoder
 
 	r := Recipe{RecipeName: "TestRecipe"}
 
-	err = DBSaveRecipe(&r, w) // test saving recipe
+	err := DBSaveRecipe(&r, w) // test saving recipe
 	if err != nil {
 		t.Error(err)
 	}
+
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
 
 	var Recipes []Recipe
 	Recipes, err = DBReadAllRecipes(w) // test reading all recipes
@@ -63,10 +86,14 @@ func TestFirebase(t *testing.T) {
 	}
 	fmt.Println("Recipe: ", len(Recipes))
 
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
+
 	r2, err := DBReadRecipeByName(r.RecipeName, w) // test reading recipe by name
 	if err != nil {
 		t.Error(err)
 	}
+
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
 
 	fmt.Println("test recipe ", r2)
 	err = DBDelete(r2.ID, RecipeCollection, w) // Delets test recipe
@@ -74,19 +101,31 @@ func TestFirebase(t *testing.T) {
 		t.Error(err)
 	}
 
+	fmt.Println("testing DBRecipe")
+}
+
+func TestDBWebhook(t *testing.T) {
+
 	// testing of Webhooks functions for database *****************************
+
+	w := httptest.NewRecorder() // creates ResponsRecoder
+
 	testWh := Webhook{Event: "Test", URL: "www.Test.no", Time: time.Now()}
 
-	err = DBSaveWebhook(&testWh, w) // test saving webhook
+	err := DBSaveWebhook(&testWh, w) // test saving webhook
 	if err != nil {
 		t.Error(err)
 	}
+
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
 
 	var wh []Webhook
 	wh, err = DBReadAllWebhooks(w) // test reading all webhooks
 	if err != nil {
 		t.Error(err)
 	}
+
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
 
 	for i := range wh {
 		if wh[i].Event == testWh.Event {
@@ -98,10 +137,14 @@ func TestFirebase(t *testing.T) {
 		}
 	}
 
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
+
 	err = DBDelete("", WebhooksCollection, w) // test deleting somthing that dont exist, error is suposed to be sendt
 	if err == nil {
 		t.Error(err)
 	}
+
+	fmt.Println("testing DBWebhook")
 
 }
 
