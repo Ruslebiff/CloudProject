@@ -15,15 +15,9 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("content-type", "application/json") // JSON http header
 	parts := strings.Split(r.URL.Path, "/")
 	endpoint := parts[3] // Store the query which represents either recipe or ingredient
-	switch endpoint {
-	case "ingredient":
-	case "recipe":
-	default:
-		HandlerNil(w, r)
-	}
 	name := ""
 	if len(parts) > 4 {
-		name = parts[4] // The name of the ingredient or recipe
+		name = parts[4]
 	}
 
 	switch r.Method {
@@ -76,7 +70,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		// Post either recipes or ingredients to firebase DB
 	case http.MethodPost: //  Func DBCheck checks if the user has posted a valid token, returns a bool
 		authorised, resp := DBCheckAuthorization(w, r)
-
+		fmt.Println("REEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE")
 		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
 		//  and include the authorization token given by the developers through mail inside the body
 		//  Detailed instructions for registering is in the readme
