@@ -24,7 +24,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		}
 	case http.MethodGet:
 		{ //  Case get reads the ingredients which is in the URL query, each ingredient is separated by '_'
-			ingredientsList = ReadIngredients(strings.Split(r.URL.Query().Get("ingredients"), "_"), w)
+			ingredientsList = ReadIngredients(strings.Split(QueryGet("ingredients", "", r), "_"), w)
 		}
 	}
 	recipeList, err := DBReadAllRecipes(w) //list of all recipes from firebase
@@ -117,6 +117,12 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	sort.Slice(recipeCount, func(i, j int) bool {
 		return len(recipeCount[i].Ingredients.Missing) < len(recipeCount[j].Ingredients.Missing)
 	})
-
+	limit, err := strconv.Atoi(QueryGet("limit", "5", r))
+	if err != nil {
+		limit = 5
+	}
+	if limit < len(recipeCount) {
+		recipeCount = recipeCount[:limit]
+	}
 	json.NewEncoder(w).Encode(recipeCount)
 }
