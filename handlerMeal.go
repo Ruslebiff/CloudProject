@@ -2,7 +2,6 @@ package cravings
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
@@ -40,7 +39,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	//  Contains all the recipes the user can make with ingredients at hand,, including the ones which the user
 	//  potentially could make
 	recipeCount := []RecipePrint{}
-	fmt.Println(ingredientsList)
+
 	for _, list := range recipeList { //Goes through all recipes
 		recipeTemp := RecipePrint{}
 		recipeTemp.RecipeName = list.RecipeName //  Appends the remaining ingrediens to a list
@@ -49,7 +48,6 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
 			found := false                                       //sets found to true if ingredient is in recipe
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
-				fmt.Println(j)
 				if j.Name == i.Name { //if it matches ingredient from recipe
 					found = true       //found ingredient
 					tempUnit := i.Unit //saves the unit the recipe is based on
@@ -81,7 +79,6 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 							j = CalcRemaining(j, i, true)
 							recipeTemp.Ingredients.Remaining[n] = j
 						}
-						fmt.Println("\tETT: ", j)
 					} else {
 
 						ConvertUnit(&j, tempUnit)     //sets both ingredients to the recipes unit
