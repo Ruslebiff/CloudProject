@@ -121,9 +121,13 @@ Test coverage can be tested by entering following command in termina: go test -c
 A Dockerfile is included in this repository. This is tested to work with our build and the following commands. 
 
 Example command for building docker image: 
+
 	docker build -t cravings .
+
 (working directory should be in the repository when executing the build command)
 
 Example command for running the container: 
+
 	docker run -i -t -p 8081:8080 cravings
+
 (this will run it on port 8081 on the host machine)
