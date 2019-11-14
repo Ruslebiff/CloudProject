@@ -29,7 +29,10 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
 				}
-				json.NewEncoder(w).Encode(&ingr)
+				err = json.NewEncoder(w).Encode(&ingr)
+				if err != nil {
+					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+				}
 			} else {
 				ingredients, err := GetAllIngredients(w, r) //  Else retireve all ingredients
 				if err != nil {
@@ -38,7 +41,10 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 				totalIngredients := strconv.Itoa(len(ingredients)) // With the number of total ingredients
 				fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
-				json.NewEncoder(w).Encode(&ingredients)
+				err = json.NewEncoder(w).Encode(&ingredients)
+				if err != nil {
+					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+				}
 			}
 		case "recipe":
 			if name != "" { //  If user wrote in query for name of recipe
@@ -48,7 +54,10 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
 				}
 
-				json.NewEncoder(w).Encode(&re)
+				err = json.NewEncoder(w).Encode(&re)
+				if err != nil {
+					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+				}
 			} else {
 				recipes, err := GetAllRecipes(w, r) //  Else get all recipes
 				if err != nil {
@@ -56,7 +65,10 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				}
 				totalRecipes := strconv.Itoa(len(recipes))
 				fmt.Fprintln(w, "Total recipes: "+totalRecipes) // With the number of total recipes
-				json.NewEncoder(w).Encode(&recipes)
+				err = json.NewEncoder(w).Encode(&recipes)
+				if err != nil {
+					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+				}
 			}
 		}
 
