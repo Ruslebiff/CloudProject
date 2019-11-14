@@ -56,5 +56,8 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 
 	http.Header.Add(w.Header(), "Content-Type", "application/json") // makes the print look good
 
-	json.NewEncoder(w).Encode(S)
+	err = json.NewEncoder(w).Encode(S)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }

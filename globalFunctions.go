@@ -155,7 +155,7 @@ func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient {
 		// check nutrition for it in API. No conversion needed
 		err := GetNutrients(&ing, w)
 		if err != nil {
-
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 	}
 
