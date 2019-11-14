@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestHandlerMeal(t *testing.T) {
+func TestHandlerMealPost(t *testing.T) {
 
 	w := httptest.NewRecorder() // create ResponsRecorder for all test
 
@@ -40,20 +40,26 @@ func TestHandlerMeal(t *testing.T) {
 	}
 	fmt.Println("testing handlerMeal POST method")
 
+}
+
+func TestHandlerMealGet(t *testing.T) {
+
 	// test GET method for Meal
 
-	r, err = http.NewRequest("GET", "/cravings/meal/?ingredients=milk|2|l_olive oil|1|l", nil) // create request
+	r, err := http.NewRequest("GET", "/cravings/meal/?ingredients=milk|2|l_olive oil|1|l", nil) // create request
 	if err != nil {
 		t.Error(err)
 	}
 
-	handler = http.HandlerFunc(HandlerMeal) // test HandlerMeal
+	w := httptest.NewRecorder() // create ResponsRecorder for all test
+
+	handler := http.HandlerFunc(HandlerMeal) // test HandlerMeal
 	handler.ServeHTTP(w, r)
 
-	resp = w.Result()
+	resp := w.Result()
 
 	if resp.StatusCode != http.StatusOK { // check that everything is ok
 		t.Error(resp.StatusCode)
 	}
-	fmt.Println("testeing handlerMeal GET method")
+	fmt.Println("testing handlerMeal GET method")
 }

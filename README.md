@@ -104,3 +104,7 @@ Use endpoint:
 	{
 	"id":"[ID]"
 	}
+
+# Test
+Test cover = %
+Test coverage can be tested by entering following command in termina: go test -cover
