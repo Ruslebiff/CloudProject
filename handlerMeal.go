@@ -124,5 +124,8 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	if limit < len(recipeCount) {
 		recipeCount = recipeCount[:limit]
 	}
-	json.NewEncoder(w).Encode(recipeCount)
+	err = json.NewEncoder(w).Encode(recipeCount)
+	if err != nil {
+		http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+	}
 }

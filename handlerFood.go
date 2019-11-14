@@ -27,11 +27,11 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 			if name != "" { //  If ingredient name is specified in URL
 				ingr, err := DBReadIngredientByName(name, w) //  Get that ingredient
 				if err != nil {
-					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
+					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusInternalServerError)
 				}
 				err = json.NewEncoder(w).Encode(&ingr)
 				if err != nil {
-					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
 				}
 			} else {
 				ingredients, err := GetAllIngredients(w, r) //  Else retireve all ingredients
@@ -43,7 +43,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
 				err = json.NewEncoder(w).Encode(&ingredients)
 				if err != nil {
-					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
 				}
 			}
 		case "recipe":
@@ -56,7 +56,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 				err = json.NewEncoder(w).Encode(&re)
 				if err != nil {
-					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
 				}
 			} else {
 				recipes, err := GetAllRecipes(w, r) //  Else get all recipes
@@ -67,7 +67,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintln(w, "Total recipes: "+totalRecipes) // With the number of total recipes
 				err = json.NewEncoder(w).Encode(&recipes)
 				if err != nil {
-					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
+					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
 				}
 			}
 		}
@@ -187,10 +187,13 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 				break
 			}
 		}
-		if found == false { // if ingredient is not found in database
+		if !found { // if ingredient is not found in database
 			ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
 			ing.Quantity = 1             // force quantity to 1
-			GetNutrients(&ing, w)        // get nutrients for the ingredient
+			err = GetNutrients(&ing, w)  // get nutrients for the ingredient
+			if err != nil {
+				http.Error(w, "Couldn't get nutritional values: "+err.Error(), http.StatusInternalServerError)
+			}
 
 			if ing.Nutrients.Energy.Label == "" { // check if it got nutrients from db. All ingredients will get this label if GetNutrients is ok
 				http.Error(w, "ERROR: Failed to get nutrients for ingredient. Ingredient was not saved.", http.StatusInternalServerError)
@@ -256,7 +259,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 				break
 			}
 		}
-		if found == false {
+		if !found {
 			missingingredients = append(missingingredients, rec.Ingredients[i].Name)
 		}
 	}
@@ -290,8 +293,8 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 			fmt.Fprintln(w, "- "+missingingredients[i])
 		}
 		fmt.Fprintf(w, "\n Register these ingredients first!")
-
-	} else if recipeNameInUse == true {
+		//  If the name is in use
+	} else if recipeNameInUse {
 		// console print:
 		fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" - name already in use. "+
 			err.Error(), http.StatusBadRequest)
