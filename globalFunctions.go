@@ -101,7 +101,7 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 		}
 
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
-		ingredientTemp = CalcNutrition(ingredientTemp, w)
+		//ingredientTemp = CalcNutrition(ingredientTemp, w)
 		IngredientList = append(IngredientList, ingredientTemp)
 	}
 	return IngredientList
@@ -124,15 +124,14 @@ func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
 	if subtract {
 		ing.Quantity -= rec.Quantity
 	}
-
 	//calculates the values for 1 ingredient, then multiplies by ingredients quantity
-	ing.Calories = rec.Calories / rec.Quantity * ing.Quantity
-	ing.Weight = rec.Weight / rec.Quantity * ing.Quantity
-	ing.Nutrients.Carbohydrate.Quantity = rec.Nutrients.Carbohydrate.Quantity / rec.Quantity * ing.Quantity
-	ing.Nutrients.Energy.Quantity = rec.Nutrients.Energy.Quantity / rec.Quantity * ing.Quantity
-	ing.Nutrients.Fat.Quantity = rec.Nutrients.Fat.Quantity / rec.Quantity * ing.Quantity
-	ing.Nutrients.Protein.Quantity = rec.Nutrients.Protein.Quantity / rec.Quantity * ing.Quantity
-	ing.Nutrients.Sugar.Quantity = rec.Nutrients.Sugar.Quantity / rec.Quantity * ing.Quantity
+	ing.Calories = (rec.Calories / rec.Quantity) * ing.Quantity
+	ing.Weight = (rec.Weight / rec.Quantity) * ing.Quantity
+	ing.Nutrients.Carbohydrate.Quantity = (rec.Nutrients.Carbohydrate.Quantity / rec.Quantity) * ing.Quantity
+	ing.Nutrients.Energy.Quantity = (rec.Nutrients.Energy.Quantity / rec.Quantity) * ing.Quantity
+	ing.Nutrients.Fat.Quantity = (rec.Nutrients.Fat.Quantity / rec.Quantity) * ing.Quantity
+	ing.Nutrients.Protein.Quantity = (rec.Nutrients.Protein.Quantity / rec.Quantity) * ing.Quantity
+	ing.Nutrients.Sugar.Quantity = (rec.Nutrients.Sugar.Quantity / rec.Quantity) * ing.Quantity
 	return ing
 }
 
