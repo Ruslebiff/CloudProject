@@ -345,6 +345,10 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 		return err
 	}
 
+	if resp != nil {
+		defer resp.Body.Close()
+	}
+
 	err = json.NewDecoder(resp.Body).Decode(&ing)
 	if err != nil {
 		http.Error(w, "Could not decode response body "+err.Error(), http.StatusInternalServerError)

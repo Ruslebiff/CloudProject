@@ -22,6 +22,9 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 
 	S.Edamam = resp.StatusCode // sets status code for api
 
@@ -30,6 +33,9 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+	if resp != nil {
+		defer resp.Body.Close()
 	}
 
 	S.Database = resp.StatusCode // sets status code for link

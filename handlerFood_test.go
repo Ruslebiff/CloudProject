@@ -63,7 +63,7 @@ func TestHandlerFood(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-	fmt.Println("testeing handlerFood POST method ingredient")
+	fmt.Println("testing handlerFood POST method ingredient")
 
 	// Testing methon POST for Recipe ***********************************************
 	ingredient1 := Ingredient{Name: "milk", Quantity: 5, Unit: "ml"}
@@ -90,7 +90,7 @@ func TestHandlerFood(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-	fmt.Println("testeing handlerFood POST method recipe")
+	fmt.Println("testing handlerFood POST method recipe")
 
 	// Testing method GET for all ingredients  ***********************************************
 	r, err = http.NewRequest("GET", "/cravings/food/ingredient/", nil) // creates request
@@ -107,7 +107,7 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(resp.StatusCode)
 	}
 
-	fmt.Println("testeing handlerFood GET method for all ingredient")
+	fmt.Println("testing handlerFood GET method for all ingredient")
 
 	// Testing method GET for one ingredient  ***********************************************
 
@@ -125,7 +125,7 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(resp.StatusCode)
 	}
 
-	fmt.Println("testeing handlerFood GET method for one ingredient")
+	fmt.Println("testing handlerFood GET method for one ingredient")
 
 	// Testing method GET for all recipes  ***********************************************
 
@@ -143,7 +143,7 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(resp.StatusCode)
 	}
 
-	fmt.Println("testeing handlerFood GET method for all recipe")
+	fmt.Println("testing handlerFood GET method for all recipe")
 
 	// Testing method GET for one recipe  ***********************************************
 
@@ -161,7 +161,7 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(resp.StatusCode)
 	}
 
-	fmt.Println("testeing handlerFood GET method for one recipe")
+	fmt.Println("testing handlerFood GET method for one recipe")
 
 	// Testing method DELETE for ingredient ***********************************************
 	test := testIngredient{Token: testToken, Name: "turmeric"}
@@ -182,7 +182,7 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(resp.StatusCode)
 	}
 
-	fmt.Println("testeing handlerFood DELETE method ingredient")
+	fmt.Println("testing handlerFood DELETE method ingredient")
 
 	// Testing method DELETE for ingredient **********************************************
 	test2 := testRecipe{Token: testToken, RecipeName: "TestRecipePOST"}
@@ -203,7 +203,7 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(resp.StatusCode)
 	}
 
-	fmt.Println("testeing handlerFood DELETE method recipe")
+	fmt.Println("testing handlerFood DELETE method recipe")
 
 }
 
