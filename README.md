@@ -42,15 +42,18 @@ Unit should be either "l" or "g". Please use "l" for ingredients measured by vol
 			URL: http://localhost:8080/cravings/meal/?ingredients=cheese_milk|{70}_cardamom|{500}|{g}	{:} = optional
 			'_' splits up the different ingredients
 			'|' splits up the ingredient, quantity and unit (in this given order)
-			if quantity is not set or is not valid, it is put to a default value
+			if quantity is not set or is not valid, it is put to a default value (but it is highly recomended to write in all the information)
 
 		Post method:
 	[	
 		{
-			"name": "cheese",
-			"unit": "g"
-			"quantity": 1
-		},
+			"name": "[ingredient name]",
+			"unit": "[ingredient unit]",
+			"quantity": [ingredient quantity]
+		}
+	]
+	ex:
+	[
 		{
 			"name": "cardamom",
 			"unit": "g",
