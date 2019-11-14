@@ -10,11 +10,13 @@ import (
 func TestDoRequest(t *testing.T) {
 	TestURL := "http://www.google.com"
 	TestClient := http.DefaultClient
-	w := httptest.NewRecorder() // create ResponseRecorder
 
-	test := DoRequest(TestURL, TestClient, w) // test func with a test url
+	test, err := DoRequest(TestURL, TestClient) // test func with a test url
 	if test.StatusCode != http.StatusOK {
 		t.Error(test)
+	}
+	if err != nil {
+		t.Error(err)
 	}
 
 	fmt.Println("TestDoRequest")
@@ -27,11 +29,9 @@ func TestQueryGet(t *testing.T) {
 		t.Error(err)
 	}
 
-	w := httptest.NewRecorder() // create ResponseRecorder
-
 	Test := "app_id"
 
-	test := QueryGet(Test, w, r) // test to read app_id and expecting it to return an empty string
+	test := QueryGet(Test, "", r) // test to read app_id and expecting it to return an empty string
 	if test != "" {
 		t.Error("not found")
 	}

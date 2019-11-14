@@ -25,6 +25,8 @@ type testRecipe struct {
 
 func TestHandlerFood(t *testing.T) {
 
+	w := httptest.NewRecorder() // creates ResponsRecorder for all tests
+
 	// Reads token from text file
 
 	var testToken string
@@ -53,7 +55,6 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(err)
 	}
 
-	w := httptest.NewRecorder()              // creates ResponsRecorder
 	handler := http.HandlerFunc(HandlerFood) // test handlerFood
 	handler.ServeHTTP(w, r)
 
@@ -80,7 +81,7 @@ func TestHandlerFood(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	w = httptest.NewRecorder()              // creates ResponsRecorder
+
 	handler = http.HandlerFunc(HandlerFood) // test handlerFood
 	handler.ServeHTTP(w, r)
 
@@ -97,7 +98,6 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(err)
 	}
 
-	w = httptest.NewRecorder()              // creates ResponsRecorder
 	handler = http.HandlerFunc(HandlerFood) // test handlerFood
 	handler.ServeHTTP(w, r)
 
@@ -116,7 +116,6 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(err)
 	}
 
-	w = httptest.NewRecorder()              // creates ResponsRecorder
 	handler = http.HandlerFunc(HandlerFood) // test handlerFood
 	handler.ServeHTTP(w, r)
 
@@ -135,7 +134,6 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(err)
 	}
 
-	w = httptest.NewRecorder()              // creates ResponsRecorder
 	handler = http.HandlerFunc(HandlerFood) // test handlerFood
 	handler.ServeHTTP(w, r)
 
@@ -154,7 +152,6 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(err)
 	}
 
-	w = httptest.NewRecorder()              // creates ResponsRecorder
 	handler = http.HandlerFunc(HandlerFood) // test handlerFood
 	handler.ServeHTTP(w, r)
 
@@ -176,7 +173,6 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(err)
 	}
 
-	w = httptest.NewRecorder()              // creates ResponsRecorder
 	handler = http.HandlerFunc(HandlerFood) // test handlerFood
 	handler.ServeHTTP(w, r)
 
@@ -198,7 +194,6 @@ func TestHandlerFood(t *testing.T) {
 		t.Error(err)
 	}
 
-	w = httptest.NewRecorder()              // creates ResponsRecorder
 	handler = http.HandlerFunc(HandlerFood) // test handlerFood
 	handler.ServeHTTP(w, r)
 

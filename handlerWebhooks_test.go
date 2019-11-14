@@ -11,6 +11,8 @@ import (
 
 func TestHandlerWebhooks(t *testing.T) {
 
+	w := httptest.NewRecorder() // creates ResponseRecorder for all tests
+
 	// Test Post method for endpoint /cravings/webhooks/ ******************'
 	webH := Webhook{Event: "testevent", URL: "www.testurl.com"} // create a webhook with event and url to send as body
 	req, _ := json.Marshal(webH)
@@ -19,7 +21,7 @@ func TestHandlerWebhooks(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	w := httptest.NewRecorder()                  // creates ResponseRecorder
+
 	handler := http.HandlerFunc(HandlerWebhooks) // test handlerWebhooks
 	handler.ServeHTTP(w, r)
 
@@ -35,7 +37,7 @@ func TestHandlerWebhooks(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	w = httptest.NewRecorder()                  // creates ResponsRecorder
+
 	handler = http.HandlerFunc(HandlerWebhooks) // test handlerWebhooks
 	handler.ServeHTTP(w, r)
 
@@ -47,8 +49,6 @@ func TestHandlerWebhooks(t *testing.T) {
 	fmt.Println("testeing webhooks GET method for all webhooks")
 
 	// Test Get method for endpoint /cravings/webhooks/ID **************
-
-	w = httptest.NewRecorder() // creates ResponsRecorder
 
 	wh, err := DBReadAllWebhooks(w) // reads all webhooks from database
 	if err != nil {
@@ -92,7 +92,7 @@ func TestHandlerWebhooks(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	w = httptest.NewRecorder()                  // creates ResponsRecorder
+
 	handler = http.HandlerFunc(HandlerWebhooks) // test handlerWebhooks
 	handler.ServeHTTP(w, r)
 
