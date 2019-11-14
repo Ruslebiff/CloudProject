@@ -96,13 +96,10 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 						} else {
 
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
-							j.Quantity -= i.Quantity //calculates 'remaining' quantities
-							j = CalcRemaining(j, i, false)
-							ConvertUnit(&j, tempUnit)
+							j = CalcRemaining(j, i, true)
 							recipeTemp.Ingredients.Remaining[n] = j
 						}
 						break //break out after finding matching name
-
 					}
 				}
 			}
@@ -117,17 +114,33 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 { //appends the recipe if it is allowed to be missing, or there are no ingredients missing
 			recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 		}
-	} //  Sorts the recipes in an ascending order of the least"missing" to most "missing" ingredients in the recipes
-	sort.Slice(recipeCount, func(i, j int) bool {
-		return len(recipeCount[i].Ingredients.Missing) < len(recipeCount[j].Ingredients.Missing)
-	})
+	}
+
+	sortBy := strings.ToLower(QueryGet("sortBy", "missing", r))
+
+	switch sortBy {
+	case "have": //  Sorts the recipes in an descending order of the most ingredients in "have" to least in the recipes
+		sort.Slice(recipeCount, func(i, j int) bool {
+			return len(recipeCount[i].Ingredients.Have) > len(recipeCount[j].Ingredients.Have)
+		})
+	case "remaining": //  Sorts the recipes in an ascending order of the least ingredients in "remaining" to most in the recipes
+		sort.Slice(recipeCount, func(i, j int) bool {
+			return len(recipeCount[i].Ingredients.Remaining) < len(recipeCount[j].Ingredients.Remaining)
+		})
+	default: //sorts by missing if not defined
+		//  Sorts the recipes in an ascending order of the least ingredients in "missing" to most in the recipes
+		sort.Slice(recipeCount, func(i, j int) bool {
+			return len(recipeCount[i].Ingredients.Missing) < len(recipeCount[j].Ingredients.Missing)
+		})
+	}
+
 	limit, err := strconv.Atoi(QueryGet("limit", "5", r)) //reads limit if sendt, else set it to 5
 	if err != nil {
 		limit = 5
 	}
 
-	if limit < len(recipeCount) {
-		recipeCount = recipeCount[:limit] //sets recipecount to be the first 'limit'
+	if limit < len(recipeCount) { //if there are more than limit
+		recipeCount = recipeCount[:limit] //sets recipecount to cut off all recipes after the value of limit
 	}
 	err = json.NewEncoder(w).Encode(recipeCount)
 	if err != nil {
