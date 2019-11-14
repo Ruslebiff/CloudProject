@@ -11,8 +11,6 @@ import (
 
 func TestHandlerMealPost(t *testing.T) {
 
-	w := httptest.NewRecorder() // create ResponsRecorder for all test
-
 	// test POST method for Meal
 
 	var tempstruct []Ingredient // creat a tempstruct for testing
@@ -29,6 +27,8 @@ func TestHandlerMealPost(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	w := httptest.NewRecorder() // create ResponsRecorder
 
 	handler := http.HandlerFunc(HandlerMeal) // test handlerMeal
 	handler.ServeHTTP(w, r)
