@@ -1,7 +1,10 @@
 # CloudProject
 NTNU Cloud Technologies project 2019
 
-# Register
+# Food 
+To register you have to post the body in a json format 
+
+	# Register ingredient: cravings/food/ingredient
 	Register Ingredient: 
 	{
 		"token":"",
@@ -11,6 +14,9 @@ NTNU Cloud Technologies project 2019
 
 Unit should be either "l" or "g". Please use "l" for ingredients measured by volume and "g" for ingredients measured by weight
 
+
+	# Register recipe: cravings/food/recipe
+	
 	Register Recipe:
 	{
 		"token":"",
@@ -30,6 +36,8 @@ Unit should be either "l" or "g". Please use "l" for ingredients measured by vol
 	}
 
 # Delete
+	cravings/food/... 
+
 	Delete Ingredient/Recipe: 
 	{
 		"token":"",
@@ -104,3 +112,7 @@ Use endpoint:
 	{
 	"id":"[ID]"
 	}
+
+# Test
+Test cover = %
+Test coverage can be tested by entering following command in termina: go test -cover

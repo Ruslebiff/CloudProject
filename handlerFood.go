@@ -38,9 +38,6 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredients: "+err.Error(), http.StatusBadRequest)
 				}
-
-				totalIngredients := strconv.Itoa(len(ingredients)) // With the number of total ingredients
-				fmt.Fprintln(w, "Total ingredients: "+totalIngredients)
 				err = json.NewEncoder(w).Encode(&ingredients)
 				if err != nil {
 					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
@@ -63,8 +60,6 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipes: "+err.Error(), http.StatusBadRequest)
 				}
-				totalRecipes := strconv.Itoa(len(recipes))
-				fmt.Fprintln(w, "Total recipes: "+totalRecipes) // With the number of total recipes
 				err = json.NewEncoder(w).Encode(&recipes)
 				if err != nil {
 					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
@@ -348,6 +343,10 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	if err != nil {
 		http.Error(w, "Unable to get "+APIURL+err.Error(), http.StatusBadRequest)
 		return err
+	}
+
+	if resp != nil {
+		defer resp.Body.Close()
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&ing)
