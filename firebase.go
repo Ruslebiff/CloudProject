@@ -212,10 +212,10 @@ func DBReadAllWebhooks(w http.ResponseWriter) ([]Webhook, error) {
 	return tempWebhooks, nil
 }
 
-//	DBCheckAuthorization func is used in the register functions to see if the user has authorization to upload data to the DB
-//  The authorization token is one which we the creators of the program has created and saved manually
-//  For security purposes we have chosen not to include code which saves the token, and the token itself can be given
-//  to the reviewers of this project by mail which can be found in the readme
+// DBCheckAuthorization func is used in the register functions to see if the user has authorization to upload data to the DB
+// The authorization token is one which we the creators of the program has created and saved manually
+// For security purposes we have chosen not to include code which saves the token, and the token itself can be given
+// to the reviewers of this project by mail which can be found in the readme
 func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte) {
 	tempToken := Token{}                //  Loop through collection of authorization tokens
 	resp, err := ioutil.ReadAll(r.Body) //  Read the body of the json posted with the authentication token
