@@ -3,11 +3,13 @@ NTNU Cloud Technologies project 2019
 
 # Register
 	Register Ingredient: 
+	```
 	{
 		"token":"",
 		"name":"Kardemomme",
 		"unit":""
 	}
+	```
 Unit should be either "l" or "g". Please use "l" for ingredients measured by volume and "g" for ingredients measured by weight
 
 	Register Recipe:
