@@ -17,6 +17,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		{ //  case Post posts a meal and decodes it
 			err := json.NewDecoder(r.Body).Decode(&ingredientsList)
+
 			if err != nil {
 				http.Error(w, "Failed to post meal "+err.Error(), http.StatusBadRequest)
 				return
@@ -28,6 +29,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	recipeList, err := DBReadAllRecipes(w) //list of all recipes from firebase
+
 	if err != nil {
 		http.Error(w, "Failed to retrieve recipes "+err.Error(), http.StatusInternalServerError)
 		return
@@ -42,7 +44,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 	for _, list := range recipeList { //Goes through all recipes
 		recipeTemp := RecipePrint{}
-		recipeTemp.RecipeName = list.RecipeName //  Appends the remaining ingrediens to a list
+		recipeTemp.RecipeName = list.RecipeName //  Appends the remaining ingredients to a list
 		recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining, ingredientsList...)
 
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
@@ -57,16 +59,16 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 					if strings.Contains(i.Unit, "spoon") { //specialcase: if recipe uses tablespoon or teaspoon as unit
 						noOfSpoons := j.Calories / (i.Calories / i.Quantity) //Amount we have/the value of calories from 1 spoon
 						unitPerSpoon := j.Quantity / noOfSpoons              //calculates the amount of units stored per spoon
-						if noOfSpoons <= i.Quantity {                        // if less or equal to what is needed from recipe
+
+						if noOfSpoons <= i.Quantity { // if less or equal to what is needed from recipe
 							tempOriginalUnit := j.Unit
 							j.Unit = i.Unit         //set unit to recipes unit (...spoon)
 							j.Quantity = noOfSpoons //Quantity to number of spoons
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)
 							recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
+							i.Quantity -= j.Quantity                                                                                                   //  Calculates the amount the recipe needs after subtracting what we have
 
-							i.Quantity -= j.Quantity //  Calculates the amount the recipe needs after subtracting what we have
-							if i.Quantity > 0 {      //  If the recipe still needs more of the ingredient we have
-
+							if i.Quantity > 0 { //  If the recipe still needs more of the ingredient we have
 								i.Unit = tempOriginalUnit
 								i.Quantity *= unitPerSpoon     //total units for spoons
 								i = CalcRemaining(i, j, false) //calculate nutrition with new quantity
@@ -81,13 +83,15 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 						}
 					} else {
 
-						ConvertUnit(&j, tempUnit)     //sets both ingredients to the recipes unit
+						ConvertUnit(&j, tempUnit) //sets both ingredients to the recipes unit
+
 						if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
 
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
 							recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
 
 							i.Quantity -= j.Quantity //calculates the 'missing' quantities
+
 							if i.Quantity > 0 {
 								i = CalcRemaining(i, j, false) //calculate nutrition with new quantity
 								ConvertUnit(&i, tempUnit)      //set unit back to recipes unit
@@ -108,9 +112,11 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 			}
 		} //  Allow missing determines if we want to see the recipes we can make even though we're missing some ingredients
 		allowMissing, err := strconv.ParseBool(r.URL.Query().Get("allowMissing")) //reads the allowMissing bool from query
+
 		if err != nil {
 			allowMissing = true //sets to true if not set or set to non-boolean
 		}
+
 		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 { //appends the recipe if it is allowed to be missing, or there are no ingredients missing
 			recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 		}
@@ -143,6 +149,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		recipeCount = recipeCount[:limit] //sets recipecount to cut off all recipes after the value of limit
 	}
 	err = json.NewEncoder(w).Encode(recipeCount)
+
 	if err != nil {
 		http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusBadRequest)
 	}

@@ -247,9 +247,9 @@ func InitAPICredentials() error {
 	//  Scans the lines of the file
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
-	App_id = scanner.Text()
+	AppID = scanner.Text()
 	scanner.Scan()
-	App_key = scanner.Text()
+	AppKey = scanner.Text()
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error: Unable to read the application ID and key from file " + err.Error())

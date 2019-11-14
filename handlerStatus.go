@@ -11,9 +11,9 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 	var S Status
 
 	APIURL := "https://api.edamam.com/api/nutrition-data?app_id="
-	APIURL += App_id
+	APIURL += AppID
 	APIURL += "&app_key="
-	APIURL += App_key
+	APIURL += AppKey
 	APIURL += "&ingr=1%20large%20apple"
 
 	// Sets status for Edamam ***************************************
