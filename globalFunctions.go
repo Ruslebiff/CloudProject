@@ -29,7 +29,7 @@ func DoRequest(url string, c *http.Client) (*http.Response, error) {
 	return resp, err
 }
 
-// QueryGet func to read  variable for link
+// QueryGet func to read query with name s, sets to def value if not defined
 func QueryGet(s string, def string, r *http.Request) string {
 
 	query := r.URL.Query().Get(s) // gets app key or app id
