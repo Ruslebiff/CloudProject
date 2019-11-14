@@ -48,7 +48,7 @@ func CallURL(event string, s interface{}, w http.ResponseWriter) error {
 		return err
 	}
 
-	for i := range webhooks { // loops true all webhooks
+	for i := range webhooks { // loops through all webhooks
 		if webhooks[i].Event == event { // see if webhooks.event is same as event
 			var request = s
 

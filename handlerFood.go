@@ -15,6 +15,12 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("content-type", "application/json") // JSON http header
 	parts := strings.Split(r.URL.Path, "/")
 	endpoint := parts[3] // Store the query which represents either recipe or ingredient
+	switch endpoint {
+	case "ingredient":
+	case "recipe":
+	default:
+		HandlerNil(w, r)
+	}
 	name := ""
 	if len(parts) > 4 {
 		name = parts[4] // The name of the ingredient or recipe
