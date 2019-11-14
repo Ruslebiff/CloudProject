@@ -360,7 +360,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 
 // GetRecipeNutrients calculates total nutritients in a recipe
 func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
-	//  Set all the labels for the recipe
+	// Set all the labels for the recipe
 	rec.AllNutrients.Energy.Label = "Energy"
 	rec.AllNutrients.Energy.Unit = "kcal"
 	rec.AllNutrients.Fat.Label = "Fat"
