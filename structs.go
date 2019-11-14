@@ -86,3 +86,17 @@ type Status struct {
 	Uptime           float64 `json:"uptime"`
 	Version          string  `json:"version"`
 }
+
+// TestIngredient struct for testing handlerFood
+type TestIngredient struct {
+	Token string `json:"token"`
+	Name  string `json:"name"`
+	Unit  string `json:"unit"`
+}
+
+// TestRecipe struct for testing handlerFood
+type TestRecipe struct {
+	Token       string       `json:"token"`
+	RecipeName  string       `json:"recipeName"`
+	Ingredients []Ingredient `json:"ingredients"`
+}

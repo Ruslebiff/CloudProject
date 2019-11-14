@@ -11,18 +11,6 @@ import (
 	"testing"
 )
 
-type testIngredient struct {
-	Token string `json:"token"`
-	Name  string `json:"name"`
-	Unit  string `json:"unit"`
-}
-
-type testRecipe struct {
-	Token       string       `json:"token"`
-	RecipeName  string       `json:"recipeName"`
-	Ingredients []Ingredient `json:"ingredients"`
-}
-
 func TempToken() (s string) {
 	// Reads token from text file
 
@@ -53,7 +41,7 @@ func TestHandlerFoodPostI(t *testing.T) {
 		t.Error("Token was not read from file")
 	}
 
-	i := testIngredient{Token: testToken, Name: "turmeric", Unit: "g"} // creates test ingredient
+	i := TestIngredient{Token: testToken, Name: "turmeric", Unit: "g"} // creates test ingredient
 	req, _ := json.Marshal(i)
 	reqTest := bytes.NewReader(req)                                         // convert struct to *Reader
 	r, err := http.NewRequest("POST", "/cravings/food/ingredient", reqTest) // creates request with body
@@ -92,7 +80,7 @@ func TestHandlerFoodPostR(t *testing.T) {
 	testI = append(testI, ingredient2)
 	testI = append(testI, ingredient3)
 
-	re := testRecipe{Token: testToken, RecipeName: "TestRecipePOST", Ingredients: testI} // creates test recipe
+	re := TestRecipe{Token: testToken, RecipeName: "TestRecipePOST", Ingredients: testI} // creates test recipe
 	req, _ := json.Marshal(re)
 	reqTest := bytes.NewReader(req)                                     // convert struct to *Reader
 	r, err := http.NewRequest("POST", "/cravings/food/recipe", reqTest) // creates request with body
@@ -218,7 +206,7 @@ func TestHandlerFoodDeleteI(t *testing.T) {
 		t.Error("Token was not read from file")
 	}
 
-	test := testIngredient{Token: testToken, Name: "turmeric"}
+	test := TestIngredient{Token: testToken, Name: "turmeric"}
 	req, _ := json.Marshal(test)
 	reqTest := bytes.NewReader(req) // convert struct to *Reader
 
@@ -251,7 +239,7 @@ func TestHandlerFoodDeleteR(t *testing.T) {
 		t.Error("Token was not read from file")
 	}
 
-	test2 := testRecipe{Token: testToken, RecipeName: "TestRecipePOST"}
+	test2 := TestRecipe{Token: testToken, RecipeName: "TestRecipePOST"}
 	req, _ := json.Marshal(test2)
 	reqTest := bytes.NewReader(req) // convert struct to *Reader
 
