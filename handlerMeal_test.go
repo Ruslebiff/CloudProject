@@ -10,9 +10,7 @@ import (
 )
 
 func TestHandlerMealPost(t *testing.T) {
-
 	// test POST method for Meal
-
 	var tempstruct []Ingredient // creat a tempstruct for testing
 
 	temp1 := Ingredient{Name: "milk", Unit: "l", Quantity: 2}      // create ingredient for test
@@ -24,6 +22,7 @@ func TestHandlerMealPost(t *testing.T) {
 	req, _ := json.Marshal(tempstruct)
 	reqTest := bytes.NewReader(req)                               // convert struct over to a *reader
 	r, err := http.NewRequest("POST", "/cravings/meal/", reqTest) // creats a Request with a struct
+
 	if err != nil {
 		t.Error(err)
 	}
@@ -39,15 +38,14 @@ func TestHandlerMealPost(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that everything is ok
 		t.Error(resp.StatusCode)
 	}
-	fmt.Println("testing handlerMeal POST method")
 
+	fmt.Println("testing handlerMeal POST method")
 }
 
 func TestHandlerMealGet(t *testing.T) {
-
 	// test GET method for Meal
-
 	r, err := http.NewRequest("GET", "/cravings/meal/?ingredients=milk|2|l_olive oil|1|l", nil) // create request
+
 	if err != nil {
 		t.Error(err)
 	}
@@ -63,5 +61,6 @@ func TestHandlerMealGet(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that everything is ok
 		t.Error(resp.StatusCode)
 	}
+
 	fmt.Println("testing handlerMeal GET method")
 }
