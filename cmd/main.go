@@ -9,11 +9,9 @@ import (
 	"time"
 )
 
-// StartTime sets start time
-var startTime = time.Now()
-
 func main() {
-	cravings.StartTime = startTime // sends start time to cravins.StartTime
+	cravings.StartTime = time.Now() // sets StartTime
+
 	err := cravings.DBInit()
 
 	if err != nil {

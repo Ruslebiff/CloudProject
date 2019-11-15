@@ -62,6 +62,7 @@ func TestReadIngredients(t *testing.T) {
 	w := httptest.NewRecorder() // create ResponseRecorder
 
 	var testIngredient []string
+
 	a1 := "cheese"
 	a2 := "milk|70"
 	a3 := "cardamom|500|g"
