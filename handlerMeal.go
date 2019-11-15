@@ -69,8 +69,10 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 							j.Unit = i.Unit         //set unit to recipes unit (...spoon)
 							j.Quantity = noOfSpoons //Quantity to number of spoons
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)
-							recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
-							i.Quantity -= j.Quantity                                                                                                   //  Calculates the amount the recipe needs after subtracting what we have
+							// Delete the ingredient from remaining:
+							recipeTemp.Ingredients.Remaining =
+								append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...)
+							i.Quantity -= j.Quantity //  Calculates the amount the recipe needs after subtracting what we have
 
 							if i.Quantity > 0 { //  If the recipe still needs more of the ingredient we have
 								i.Unit = tempOriginalUnit
@@ -88,9 +90,12 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 					} else {
 						ConvertUnit(&j, tempUnit) //sets both ingredients to the recipes unit
 
-						if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
-							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
-							recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
+						if j.Quantity <= i.Quantity { //If recipe needs more than what was sent
+							//adds the ingredients sent to 'have'
+							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)
+							//deletes the ingredient from remaining:
+							recipeTemp.Ingredients.Remaining =
+								append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...)
 
 							i.Quantity -= j.Quantity //calculates the 'missing' quantities
 
@@ -120,7 +125,8 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 			allowMissing = true //sets to true if not set or set to non-boolean
 		}
 
-		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 { //appends the recipe if it is allowed to be missing, or there are no ingredients missing
+		if allowMissing || len(recipeTemp.Ingredients.Missing) == 0 {
+			//appends the recipe if it is allowed to be missing, or there are no ingredients missing
 			recipeCount = append(recipeCount, recipeTemp) //adds recipeTemp in the recipeCount
 		}
 	}
@@ -132,7 +138,8 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		sort.Slice(recipeCount, func(i, j int) bool {
 			return len(recipeCount[i].Ingredients.Have) > len(recipeCount[j].Ingredients.Have)
 		})
-	case "remaining": //  Sorts the recipes in an ascending order of the least ingredients in "remaining" to most in the recipes
+	case "remaining":
+		//  Sorts the recipes in an ascending order of the least ingredients in "remaining" to most in the recipes
 		sort.Slice(recipeCount, func(i, j int) bool {
 			return len(recipeCount[i].Ingredients.Remaining) < len(recipeCount[j].Ingredients.Remaining)
 		})

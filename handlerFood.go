@@ -279,19 +279,17 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	}
 	//  If the name of the one created matches any of the ones in the DB
 	for i := range allRecipes {
-
 		if allRecipes[i].RecipeName == rec.RecipeName {
 			http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
 			return
 		}
 	}
+
 	for i := range rec.Ingredients { // Loops through all the ingredients
 		found := false // Reset if current ingredient is found or not
 
 		for _, j := range allIngredients { // If the ingredient is found the loop breaks and found is set to true
-
 			if rec.Ingredients[i].Name == j.Name {
-
 				found = true
 				// Check to see if user has posted with the equivalent unit as the ingredient has in the DB
 				if !UnitCheck(rec.Ingredients[i].Unit, j.Unit) {
@@ -334,7 +332,6 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		}
 
 		fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
-
 	} else {
 		http.Error(w, "Cannot save recipe, missing ingredient(s) in database:", http.StatusBadRequest)
 
