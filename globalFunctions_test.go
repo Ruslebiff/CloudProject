@@ -12,7 +12,6 @@ func TestDoRequest(t *testing.T) {
 	TestClient := http.DefaultClient
 
 	test, err := DoRequest(TestURL, TestClient) // test func with a test url
-	defer test.Body.Close()
 
 	if test.StatusCode != http.StatusOK {
 		t.Error(test)
@@ -21,6 +20,8 @@ func TestDoRequest(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	defer test.Body.Close()
 
 	fmt.Println("TestDoRequest")
 }
