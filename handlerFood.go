@@ -39,13 +39,14 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				err = json.NewEncoder(w).Encode(&ingr)
 
 				if err != nil {
-					http.Error(w, "Couldn't encode response of ingredient: "+err.Error(), http.StatusInternalServerError)
+					http.Error(w, "Couldn't encode response of ingredient: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 			} else {
 				ingredients, err := GetAllIngredients(w, r) // Else retrieve all ingredients
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredients: "+err.Error(), http.StatusBadRequest)
+					return
 				}
 
 				err = json.NewEncoder(w).Encode(&ingredients)
@@ -61,21 +62,25 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				re, err := DBReadRecipeByName(name, w) // Get that recipe
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
+					return
 				}
 
 				err = json.NewEncoder(w).Encode(&re)
 				if err != nil {
 					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
+					return
 				}
 			} else {
 				recipes, err := GetAllRecipes(w, r) // Else get all recipes
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipes: "+err.Error(), http.StatusBadRequest)
+					return
 				}
 
 				err = json.NewEncoder(w).Encode(&recipes)
 				if err != nil {
 					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
+					return
 				}
 			}
 		}
@@ -97,6 +102,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 			}
 		} else {
 			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
+			return
 		}
 	case http.MethodDelete:
 		authorised, resp := DBCheckAuthorization(w, r)
@@ -109,16 +115,19 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				err := json.Unmarshal(resp, &ing)
 				if err != nil {
 					http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
+					return
 				}
 
 				ing, err = DBReadIngredientByName(ing.Name, w) //  Get that ingredient
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
+					return
 				}
 
 				err = DBDelete(ing.ID, IngredientCollection, w)
 				if err != nil {
 					http.Error(w, "Failed to delete ingredient: "+err.Error(), http.StatusInternalServerError)
+					return
 				} else {
 					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
 				}
@@ -129,16 +138,19 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				err := json.Unmarshal(resp, &rec)
 				if err != nil {
 					http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
+					return
 				}
 
 				rec, err = DBReadRecipeByName(rec.RecipeName, w) //  Get that recipe
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
+					return
 				}
 
 				err = DBDelete(rec.ID, RecipeCollection, w)
 				if err != nil {
 					http.Error(w, "Failed to delete recipe: "+err.Error(), http.StatusInternalServerError)
+					return
 				} else {
 					fmt.Fprintln(w, "Successfully deleted recipe"+rec.RecipeName, http.StatusOK)
 				}
@@ -159,11 +171,13 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	err := json.Unmarshal(respo, &ing)
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
+		return
 	}
 	ing.Name = strings.ToLower(ing.Name) // force lowercase ingredient name
 
 	if ing.Unit == "" {
 		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
+		return
 	} else {
 		unitParam := ing.Unit //  Checks if the posted unit is one of the legal measurements
 		inList := false
@@ -184,19 +198,21 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 			for _, v := range AllowedUnit {
 				fmt.Fprintln(w, v) // Print allowed units
 			}
+			return
 		}
 
 		allIngredients, err := DBReadAllIngredients(w) // temporary list of all ingredients in database
 		if err != nil {
 			http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+
 				err.Error(), http.StatusInternalServerError)
+			return
 		}
 		//  Check to see if the ingredient is already in the DB
 		for i := range allIngredients {
 			if ing.Name == allIngredients[i].Name {
 				found = true // found ingredient in database
 				http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
-				break
+				return
 			}
 		}
 		if !found { // if ingredient is not found in database
@@ -205,6 +221,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 			err = GetNutrients(&ing, w)  // get nutrients for the ingredient
 			if err != nil {
 				http.Error(w, "Couldn't get nutritional values: "+err.Error(), http.StatusInternalServerError)
+				return
 			}
 
 			if ing.Nutrients.Energy.Label == "" {
@@ -212,11 +229,13 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 				//All ingredients will get this label if GetNutrients is ok
 				http.Error(w, "ERROR: Failed to get nutrients for ingredient."+
 					"Ingredient was not saved.", http.StatusInternalServerError)
+				return
 			} else {
 				err = DBSaveIngredient(&ing, w) // save it to database
 				if err != nil {                 // if DBSaveIngredient return error
 					http.Error(w, "Could not save document to collection "+
 						IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+					return
 				} else { // DBSaveIngredient did not return error
 					err := CallURL(IngredientCollection, &ing, w) // Call webhooks
 					if err != nil {
@@ -262,6 +281,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	for i := range allRecipes {
 		if allRecipes[i].RecipeName == rec.RecipeName {
 			recipeNameInUse = true
+			break
 		}
 	}
 
@@ -309,25 +329,28 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 			}
 			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
 		}
-	} else if ingredientsfound != recingredients {
-		fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" is missing "+
-			strconv.Itoa(recingredients-ingredientsfound)+" ingredient(s) "+err.Error(), http.StatusBadRequest)
-
-		http.Error(w, "Cannot save recipe, missing ingredient(s) in database:", http.StatusBadRequest)
-		for i := range missingingredients {
-			fmt.Fprintln(w, "- "+missingingredients[i]) // print all missing ingredients in http response
-		}
-		fmt.Fprintf(w, "\n Register these ingredients first!")
-	} else if recipeNameInUse {
-		fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" - name already in use. "+
-			err.Error(), http.StatusBadRequest)
-
-		http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
-	} else if !unitOk {
-		//  Error message when posting with mismatched units, i.e liquid with kg or solid with ml
-		http.Error(w, "Couldn't save recipe due to unit mismatch", http.StatusBadRequest)
 	} else {
-		http.Error(w, "Cannot save recipe, internal server error.", http.StatusInternalServerError)
+		if ingredientsfound != recingredients {
+			fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" is missing "+
+				strconv.Itoa(recingredients-ingredientsfound)+" ingredient(s) "+err.Error(), http.StatusBadRequest)
+
+			http.Error(w, "Cannot save recipe, missing ingredient(s) in database:", http.StatusBadRequest)
+			for i := range missingingredients {
+				fmt.Fprintln(w, "- "+missingingredients[i]) // print all missing ingredients in http response
+			}
+			fmt.Fprintf(w, "\n Register these ingredients first!")
+		}
+		if recipeNameInUse {
+			fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" - name already in use. "+
+				err.Error(), http.StatusBadRequest)
+
+			http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
+		}
+		if !unitOk {
+			//  Error message when posting with mismatched units, i.e liquid with kg or solid with ml
+			http.Error(w, "Couldn't save recipe due to unit mismatch", http.StatusBadRequest)
+		}
+
 	}
 }
 
