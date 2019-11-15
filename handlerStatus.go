@@ -22,6 +22,7 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -34,6 +35,7 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -45,6 +47,7 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
+
 	S.TotalRecipe = len(statusRecipe) // sets totat for recipes
 
 	// Sets status for Ingredients ***********************************
@@ -52,6 +55,7 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 	}
+
 	S.TotalIngredients = len(statusIngredients) // sers total for ingredients
 
 	// Sets status for uptime ****************************************

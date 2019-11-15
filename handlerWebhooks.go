@@ -31,6 +31,7 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 
 	case http.MethodGet:
 		var webhooks []Webhook //Webhook DB
+
 		parts := strings.Split(r.URL.Path, "/")
 
 		http.Header.Add(w.Header(), "Content-Type", "application/json")

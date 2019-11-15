@@ -9,12 +9,9 @@ import (
 	"time"
 )
 
-// StartTime sets start time
-var StartTime = time.Now()
-
 func main() {
+	cravings.StartTime = time.Now() // sets StartTime
 
-	cravings.StartTime = StartTime // sends start time to cravins.StartTime
 	err := cravings.DBInit()
 
 	if err != nil {
@@ -22,6 +19,7 @@ func main() {
 	} else {
 		fmt.Println("Database init OK")
 	}
+
 	err = cravings.InitAPICredentials()
 
 	if err != nil {
