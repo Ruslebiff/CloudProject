@@ -223,4 +223,4 @@ Wednesday 13/11-19 group work from 10:00 - 17:00
 
 Thursday 14/11 - 19 group work from 12:00 - 16:00
 
-Friday 15/11 - 19 group work from 11:00 - 
+Friday 15/11 - 19 group work from 11:00 - 16:30

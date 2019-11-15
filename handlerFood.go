@@ -280,8 +280,6 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	//  If the name of the one created matches any of the ones in the DB
 	for i := range allRecipes {
 		if allRecipes[i].RecipeName == rec.RecipeName {
-			/*fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" - name already in use. "+
-			err.Error(), http.StatusBadRequest)*/
 
 			http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
 			return
