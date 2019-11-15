@@ -300,3 +300,10 @@ func UnitCheck(firstIngredient string, secondIngredient string) bool {
 
 	return false
 }
+
+// ErrorCheck checks if error != nil, and makes a http error if so
+func ErrorCheck(w http.ResponseWriter, err error, printstring string, httpstatus int) {
+	if err != nil {
+		http.Error(w, printstring+err.Error(), httpstatus)
+	}
+}
