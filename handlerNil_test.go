@@ -8,8 +8,8 @@ import (
 )
 
 func TestHandlerNil(t *testing.T) {
-
 	r, err := http.NewRequest("GET", "/", nil) // creats request
+
 	if err != nil {
 		t.Error(err)
 	}
@@ -24,5 +24,6 @@ func TestHandlerNil(t *testing.T) {
 	if resp.StatusCode == http.StatusOK { // check if handler worked ass it should
 		t.Error(resp.StatusCode)
 	}
+
 	fmt.Println("test handlerNil")
 }
