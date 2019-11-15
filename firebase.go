@@ -267,6 +267,7 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte)
 	for {
 		DBToken := Token{}
 		doc, err := iter.Next()
+
 		if err == iterator.Done {
 			break
 		}
