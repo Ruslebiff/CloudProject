@@ -107,6 +107,7 @@ func TestHandlerWebhooksDelete(t *testing.T) {
 
 	for i := range wh { // loops throue all webhooks
 		fmt.Println("event: ", wh[i].Event)
+
 		if wh[i].Event == webH.Event { // check if webhook is same ass the test webhook we made earlyer
 			temp = wh[i].ID // sets temp to be the same as the id for temp webhook
 			fmt.Println("tempStruct: ", wh[i])

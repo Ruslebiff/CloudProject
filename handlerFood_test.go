@@ -14,6 +14,7 @@ import (
 func TempToken() (s string) {
 	// Reads token from text file
 	var testToken string
+
 	file, err := os.Open("testToken.txt") // opens text file
 
 	if err != nil {
@@ -76,7 +77,9 @@ func TestHandlerFoodPostR(t *testing.T) {
 	ingredient1 := Ingredient{Name: "milk", Quantity: 5, Unit: "ml"}
 	ingredient2 := Ingredient{Name: "salt", Quantity: 2, Unit: "tablespoon"}
 	ingredient3 := Ingredient{Name: "flour", Quantity: 1, Unit: "kg"}
+
 	var testI []Ingredient
+
 	testI = append(testI, ingredient1)
 	testI = append(testI, ingredient2)
 	testI = append(testI, ingredient3)
@@ -277,6 +280,7 @@ func TestGetAllRecipes(t *testing.T) {
 	if len(testRecipe) == 0 { // check that it dident return an empty slice
 		t.Error("Cant read recipes from database")
 	}
+
 	if err != nil {
 		t.Error(err)
 	}
@@ -296,6 +300,7 @@ func TestGetAllIngredients(t *testing.T) {
 	if len(testRecipe) == 0 { // check that it dident return an empty slice
 		t.Error("Cant read ingredients from database")
 	}
+
 	if err != nil {
 		t.Error(err)
 	}
