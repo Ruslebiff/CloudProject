@@ -47,10 +47,8 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						http.Error(w, "Something went wrong"+err.Error(), http.StatusInternalServerError)
 					}
-
 				}
 			}
-
 		} else {
 			err = json.NewEncoder(w).Encode(webhooks) // encode all webhooks
 			if err != nil {
@@ -74,5 +72,4 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 	default:
 		http.Error(w, "Method is invalid "+r.Method, http.StatusBadRequest)
 	}
-
 }

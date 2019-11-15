@@ -34,6 +34,7 @@ func TestHandlerMealPost(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that everything is ok
 		t.Error(resp.StatusCode)
@@ -57,6 +58,7 @@ func TestHandlerMealGet(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that everything is ok
 		t.Error(resp.StatusCode)

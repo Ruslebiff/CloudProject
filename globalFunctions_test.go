@@ -23,6 +23,10 @@ func TestDoRequest(t *testing.T) {
 
 }
 
+func TestDoRequestFail(t *testing.T) {
+
+}
+
 func TestQueryGet(t *testing.T) {
 	r, err := http.NewRequest("GET", "/cravings/food/", nil) //creat a request without anny body
 	if err != nil {

@@ -8,8 +8,8 @@ import (
 )
 
 func TestHandlerStatus(t *testing.T) {
-
 	r, err := http.NewRequest("GET", "/cravings/status/", nil) // creats request
+
 	if err != nil {
 		t.Error(err)
 	}
@@ -23,5 +23,6 @@ func TestHandlerStatus(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check if handler worked ass it should
 		t.Error(resp.StatusCode)
 	}
+
 	fmt.Println("test handlerStatus")
 }

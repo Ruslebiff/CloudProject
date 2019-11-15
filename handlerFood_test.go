@@ -55,6 +55,7 @@ func TestHandlerFoodPostI(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -94,6 +95,7 @@ func TestHandlerFoodPostR(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -116,6 +118,7 @@ func TestHandlerFoodGetAI(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -140,6 +143,7 @@ func TestHandlerFoodGetOI(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -164,6 +168,7 @@ func TestHandlerFoodGetAR(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -188,6 +193,7 @@ func TestHandlerFoodGetOR(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -221,6 +227,7 @@ func TestHandlerFoodDeleteI(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -254,6 +261,7 @@ func TestHandlerFoodDeleteR(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
