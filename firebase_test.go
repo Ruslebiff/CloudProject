@@ -14,9 +14,9 @@ import (
 
 func TestDBInit(t *testing.T) {
 
-	err := DBInit() // check that the database initalises
+	err := DBInit() // check that the database initialises
 	if err != nil {
-		t.Error(err) // failed to initalise
+		t.Error(err) // failed to initialise
 	}
 
 	fmt.Println("testing DBInit")
@@ -139,7 +139,7 @@ func TestDBWebhook(t *testing.T) {
 
 	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
 
-	err = DBDelete("", WebhooksCollection, w) // test deleting somthing that dont exist, error is suposed to be sendt
+	err = DBDelete("", WebhooksCollection, w) // test deleting somthing that dont exist, error is supposed to be sendt
 	if err == nil {
 		t.Error(err)
 	}

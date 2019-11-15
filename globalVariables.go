@@ -15,17 +15,21 @@ const RecipeCollection = "recipes"
 
 // IngredientCollection is the name of the ingredients collection in the database
 const IngredientCollection = "ingredients"
+
+// TokenCollection is the name of the tokens collection in the database
 const TokenCollection = "tokens"
 
 // WebhooksCollection is the name of the webhooks collection in the database
 const WebhooksCollection = "webhooks"
 
-//  Units of measurement: kilogram, gram, liter, deciliter, mililiter, piece, teaspoon
+// AllowedUnit = list of units of measurement: kilogram, gram, liter, deciliter, mililiter, piece, teaspoon etc.
 var AllowedUnit = [8]string{"kg", "g", "l", "dl", "ml", "pc", "tablespoon", "teaspoon"}
 
 // URLRegistration is the url to edamam api for getting nutrition details when registering an ingredient or recipe
 var URLRegistration = "https://api.edamam.com/api/nutrition-details"
 
-//  Application API ID and Key
-var App_id = ""
-var App_key = ""
+// AppID is Application ID for external API
+var AppID = ""
+
+// AppKey is Key for external API
+var AppKey = ""

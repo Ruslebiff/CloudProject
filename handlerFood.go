@@ -330,9 +330,9 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	client := http.DefaultClient
 
 	APIURL := "http://api.edamam.com/api/nutrition-data?app_id="
-	APIURL += App_id
+	APIURL += AppID
 	APIURL += "&app_key="
-	APIURL += App_key
+	APIURL += AppKey
 	APIURL += "&ingr="
 	APIURL += strings.ReplaceAll(ing.Name, " ", "%20") // substitute spaces with "%20" so URL to API works with spaces in ingredient name
 	if ing.Unit != "pc" {

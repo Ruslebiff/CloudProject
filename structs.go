@@ -61,6 +61,7 @@ type TotalNutrients struct {
 	Energy       Nutrient `json:"ENERC_KCAL"`
 }
 
+// RecipeAnalysisPost struct for ..
 type RecipeAnalysisPost struct {
 	Title       string   `json:"title"`
 	Ingredients []string `json:"ingr"`
@@ -72,6 +73,7 @@ type FirestoreDatabase struct {
 	Client *firestore.Client
 }
 
+// Token for access to modification in our database. Needed for POST and DELETE
 type Token struct {
 	ID        string `json:"id"`
 	AuthToken string `json:"token"`
