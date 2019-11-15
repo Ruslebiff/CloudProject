@@ -43,6 +43,7 @@ func TestDBIngredient(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	fmt.Println("Ingredients: ", len(ingredients))
 
 	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
@@ -84,6 +85,7 @@ func TestDBRecipe(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	fmt.Println("Recipe: ", len(Recipes))
 
 	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
