@@ -45,7 +45,7 @@ func TestDBIngredient(t *testing.T) {
 	}
 	fmt.Println("Ingredients: ", len(ingredients))
 
-	w = httptest.NewRecorder() // resets ResponsRecoder for next func testw = httptest.NewRecorder() // resets ResponsRecoder for next func test
+	w = httptest.NewRecorder() // resets ResponsRecoder for next func test
 
 	i2, err := DBReadIngredientByName(i.Name, w) // test read ingredients by name
 	if err != nil {
