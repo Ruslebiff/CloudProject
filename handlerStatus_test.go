@@ -17,6 +17,7 @@ func TestHandlerStatus(t *testing.T) {
 	w := httptest.NewRecorder()                // create ResponsRcorder
 	handler := http.HandlerFunc(HandlerStatus) // test handlerNil
 	handler.ServeHTTP(w, r)                    // sends with request and respons
+
 	resp := w.Result()
 	defer resp.Body.Close()
 
