@@ -16,12 +16,14 @@ func main() {
 
 	cravings.StartTime = StartTime // sends start time to cravins.StartTime
 	err := cravings.DBInit()
+
 	if err != nil {
 		fmt.Println("Failed to initialize database")
 	} else {
 		fmt.Println("Database init OK")
 	}
 	err = cravings.InitAPICredentials()
+
 	if err != nil {
 		fmt.Println("Failed to initialize the api credentials for edamam's API")
 	}
@@ -29,6 +31,7 @@ func main() {
 	defer cravings.DBClose()
 
 	port := os.Getenv("PORT")
+
 	if port == "" {
 		port = "8080"
 	}
