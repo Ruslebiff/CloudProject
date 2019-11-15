@@ -13,6 +13,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	http.Header.Add(w.Header(), "Content-Type", "application/json")
 
 	ingredientsList := []Ingredient{}
+
 	switch r.Method { //sets the list of remaining ingredients from either a post or get request
 	case http.MethodPost:
 		{ //  case Post posts a meal and decodes it
@@ -34,6 +35,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to retrieve recipes "+err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	for i := range ingredientsList {
 		ingredientsList[i] = CalcNutrition(ingredientsList[i], w)
 	}
@@ -86,7 +88,6 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 						ConvertUnit(&j, tempUnit) //sets both ingredients to the recipes unit
 
 						if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
-
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, j)                                                       //adds the ingredients sendt to 'have'
 							recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining[:n], recipeTemp.Ingredients.Remaining[n+1:]...) //deletes the ingredient from remaining
 
@@ -98,7 +99,6 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 								recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 							}
 						} else {
-
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
 							j = CalcRemaining(j, i, true)
 							recipeTemp.Ingredients.Remaining[n] = j
