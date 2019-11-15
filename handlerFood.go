@@ -30,10 +30,18 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		case caseing:
 			if name != "" { // If ingredient name is specified in URL
 				ingr, err := DBReadIngredientByName(name, w) // Get that ingredient
-				ErrorCheck(w, err, "Couldn't read ingredient by name", http.StatusInternalServerError)
+
+				if err != nil {
+					http.Error(w, "Couldn't read ingredient by name: "+err.Error(), http.StatusInternalServerError)
+					return
+				}
 
 				err = json.NewEncoder(w).Encode(&ingr)
-				ErrorCheck(w, err, "Couldn't encode response of ingredient", http.StatusInternalServerError)
+
+				if err != nil {
+					http.Error(w, "Couldn't encode response of ingredient: "+err.Error(), http.StatusInternalServerError)
+					return
+				}
 			} else {
 				ingredients, err := GetAllIngredients(w, r) // Else retrieve all ingredients
 				if err != nil {
@@ -43,6 +51,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				err = json.NewEncoder(w).Encode(&ingredients)
 				if err != nil {
 					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
+					return
 				}
 			}
 		case caserec:
