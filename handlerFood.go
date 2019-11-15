@@ -280,9 +280,6 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	//  If the name of the one created matches any of the ones in the DB
 	for i := range allRecipes {
 		if allRecipes[i].RecipeName == rec.RecipeName {
-			/*fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" - name already in use. "+
-			err.Error(), http.StatusBadRequest)*/
-
 			http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
 			return
 		}
@@ -295,19 +292,11 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 			if rec.Ingredients[i].Name == j.Name {
 
 				found = true
-<<<<<<< HEAD
-
-				unitOk = UnitCheck(rec.Ingredients[i].Unit, j.Unit)
-				if !unitOk {
-					http.Error(w, "Can't save "+rec.Ingredients[i].Name+
-						" with unit "+rec.Ingredients[i].Unit, http.StatusBadRequest)
-=======
 				// Check to see if user has posted with the equivalent unit as the ingredient has in the DB
 				if !UnitCheck(rec.Ingredients[i].Unit, j.Unit) {
 					//  Error message when posting with mismatched units, i.e liquid with kg or solid with ml
 					http.Error(w, "Couldn't save recipe due to unit mismatch", http.StatusBadRequest)
 					return
->>>>>>> 52c8ba2f3bca8f9bbcb88a62745e0c14aedec927
 				}
 
 				break
