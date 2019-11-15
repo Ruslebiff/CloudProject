@@ -133,7 +133,6 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	default:
 		fmt.Fprintln(w, "Invalid method "+r.Method, http.StatusBadRequest)
 	}
-
 }
 
 // RegisterIngredient func saves the ingredient to its respective collection in our firestore DB
@@ -189,24 +188,27 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 				http.Error(w, "Couldn't get nutritional values: "+err.Error(), http.StatusInternalServerError)
 			}
 
-			if ing.Nutrients.Energy.Label == "" { // check if it got nutrients from db. All ingredients will get this label if GetNutrients is ok
-				http.Error(w, "ERROR: Failed to get nutrients for ingredient. Ingredient was not saved.", http.StatusInternalServerError)
+			if ing.Nutrients.Energy.Label == "" {
+				// check if it got nutrients from db.
+				//All ingredients will get this label if GetNutrients is ok
+				http.Error(w, "ERROR: Failed to get nutrients for ingredient."+
+					"Ingredient was not saved.", http.StatusInternalServerError)
 			} else {
 				err = DBSaveIngredient(&ing, w) // save it to database
 				if err != nil {                 // if DBSaveIngredient return error
-					http.Error(w, "Could not save document to collection "+IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+					http.Error(w, "Could not save document to collection "+
+						IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
 				} else { // DBSaveIngredient did not return error
 					err := CallURL(IngredientCollection, &ing, w) // Call webhooks
 					if err != nil {
-						fmt.Fprintln(w, "Could not post to webhooks.site: "+err.Error(), http.StatusBadRequest)
+						fmt.Fprintln(w, "Could not post to webhooks.site: "+
+							err.Error(), http.StatusBadRequest)
 					}
 					fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.") // Success!
 				}
-
 			}
 		}
 	}
-
 }
 
 // RegisterRecipe func saves the recipe to its respective collection in our firestore DB
@@ -244,7 +246,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		found := false                     // Reset if current ingredient is found or not
 		for _, j := range allIngredients { // If the ingredient is found the loop breaks and found is set to true
 			if rec.Ingredients[i].Name == j.Name {
-				ingredientsfound = ingredientsfound + 1
+				ingredientsfound++
 				found = true
 				unitOk = UnitCheck(rec.Ingredients[i].Unit, j.Unit)
 				if !unitOk {
