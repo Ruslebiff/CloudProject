@@ -187,6 +187,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 		for _, v := range AllowedUnit { //  Loops through the allowed units
 			if unitParam == v {
 				inList = true
+				break
 			}
 		} //  If it is one of the allowed units, cast it into g or l
 		if inList {
