@@ -302,8 +302,8 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 
 				unitOk = UnitCheck(rec.Ingredients[i].Unit, j.Unit)
 				if !unitOk {
-					http.Error(w, rec.Ingredients[i].Name+
-						" can't be saved with unit "+j.Unit, http.StatusBadRequest)
+					http.Error(w, "Can't save "+rec.Ingredients[i].Name+
+						" with unit "+rec.Ingredients[i].Unit, http.StatusBadRequest)
 				}
 
 				break
