@@ -16,7 +16,9 @@ const caserec = "recipe"
 // to register food, one has to post the .json body
 func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("content-type", "application/json") // JSON http header
+
 	parts := strings.Split(r.URL.Path, "/")
+
 	endpoint := parts[3] // Store the query which represents either recipe or ingredient
 	name := ""
 
@@ -160,6 +162,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if err != nil {
 		http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
 	}
+
 	ing.Name = strings.ToLower(ing.Name) // force lowercase ingredient name
 
 	if ing.Unit == "" {
@@ -274,6 +277,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		for _, j := range allIngredients { // If the ingredient is found the loop breaks and found is set to true
 			if rec.Ingredients[i].Name == j.Name {
 				ingredientsfound++
+
 				found = true
 
 				unitOk = UnitCheck(rec.Ingredients[i].Unit, j.Unit)
@@ -302,13 +306,16 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		if err != nil {
 			http.Error(w, "Could not save document to collection "+
 				RecipeCollection+" "+err.Error(), http.StatusInternalServerError)
-		} else {
-			err := CallURL(RecipeCollection, &rec, w) // Invokes the url
-			if err != nil {
-				fmt.Fprintln(w, "Could not post to webhooks.site: "+err.Error(), http.StatusBadRequest)
-			}
-			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
+			return
 		}
+
+		err = CallURL(RecipeCollection, &rec, w) // Invokes the url
+		if err != nil {
+			fmt.Fprintln(w, "Could not post to webhooks.site: "+err.Error(), http.StatusBadRequest)
+		}
+
+		fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
+
 	} else if ingredientsfound != recingredients {
 		fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" is missing "+
 			strconv.Itoa(recingredients-ingredientsfound)+" ingredient(s) "+err.Error(), http.StatusBadRequest)
@@ -340,6 +347,7 @@ func GetAllRecipes(w http.ResponseWriter, r *http.Request) ([]Recipe, error) {
 		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+
 			err.Error(), http.StatusInternalServerError)
 	}
+
 	return allRecipes, err
 }
 
@@ -371,6 +379,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 		APIURL += "%20"
 		APIURL += ing.Unit
 	}
+
 	resp, err := DoRequest(APIURL, client)
 	if err != nil {
 		http.Error(w, "Unable to get "+APIURL+err.Error(), http.StatusBadRequest)
@@ -424,5 +433,6 @@ func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 		rec.Ingredients[i].Calories = temptotalnutrients.Nutrients.Energy.Quantity
 		rec.Ingredients[i].ID = temptotalnutrients.ID
 	}
+
 	return nil
 }
