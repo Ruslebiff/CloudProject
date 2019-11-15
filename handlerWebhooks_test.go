@@ -24,6 +24,7 @@ func TestHandlerWebhooksPost(t *testing.T) {
 
 	handler := http.HandlerFunc(HandlerWebhooks) // test handlerWebhooks
 	handler.ServeHTTP(w, r)
+
 	resp := w.Result()
 	defer resp.Body.Close()
 
