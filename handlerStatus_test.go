@@ -19,6 +19,7 @@ func TestHandlerStatus(t *testing.T) {
 	handler.ServeHTTP(w, r)                    // sends with request and respons
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check if handler worked ass it should
 		t.Error(resp.StatusCode)

@@ -26,6 +26,7 @@ func TestHandlerWebhooksPost(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -48,6 +49,7 @@ func TestHandlerWebhooksGetA(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -78,6 +80,7 @@ func TestHandlerWebhooksGetO(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -128,6 +131,7 @@ func TestHandlerWebhooksDelete(t *testing.T) {
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
