@@ -53,7 +53,6 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 			found := false //sets found to true if ingredient is in recipe
 
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
-
 				if j.Name == i.Name { //if it matches ingredient from recipe
 					found = true       //found ingredient
 					tempUnit := i.Unit //saves the unit the recipe is based on
@@ -86,7 +85,6 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 							recipeTemp.Ingredients.Remaining[n] = j
 						}
 					} else {
-
 						ConvertUnit(&j, tempUnit) //sets both ingredients to the recipes unit
 
 						if j.Quantity <= i.Quantity { //If recipe needs more than what was sendt
