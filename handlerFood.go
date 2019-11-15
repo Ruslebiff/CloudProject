@@ -187,6 +187,7 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 		for _, v := range AllowedUnit { //  Loops through the allowed units
 			if unitParam == v {
 				inList = true
+				break
 			}
 		} //  If it is one of the allowed units, cast it into g or l
 		if inList {
@@ -279,8 +280,8 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 	}
 	//  If the name of the one created matches any of the ones in the DB
 	for i := range allRecipes {
-		if allRecipes[i].RecipeName == rec.RecipeName {
 
+		if allRecipes[i].RecipeName == rec.RecipeName {
 			http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
 			return
 		}
