@@ -42,7 +42,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 
 	for _, list := range recipeList { //Goes through all recipes
 		recipeTemp := RecipePrint{}
-		recipeTemp.RecipeName = list.RecipeName //  Appends the remaining ingrediens to a list
+		recipeTemp.RecipeName = list.RecipeName //  Appends the remaining ingredients to a list
 		recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining, ingredientsList...)
 
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
