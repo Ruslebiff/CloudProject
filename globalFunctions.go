@@ -60,7 +60,7 @@ func CallURL(event string, s interface{}, w http.ResponseWriter) error {
 
 			fmt.Fprintln(w, "Attempting invocation of URL "+webhooks[i].URL+"...")
 
-			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader([]byte(requestBody))) // post webhook to webhooks.site
+			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader(requestBody)) // post webhook to webhooks.site
 			if err != nil {
 				fmt.Fprintln(w, "Error in HTTP request: "+err.Error(), http.StatusBadRequest)
 				return err
@@ -77,9 +77,10 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 	IngredientList := []Ingredient{}
 	defVal := 1.0 //default value for quantity if not set
 
+	var err error
+
 	for i := range ingredients {
 		ingredient := strings.Split(ingredients[i], "|") //splits up the string 'name|quantity|unit'
-		var err error
 		ingredientTemp := Ingredient{}
 		ingredientTemp.Quantity = defVal //sets to defVal
 
@@ -232,7 +233,6 @@ func ConvertUnit(ing *Ingredient, unitConvertTo string) {
 		}
 		ing.Unit = unitConvertTo
 	}
-
 }
 
 // InitAPICredentials func opens up local file and reads the application id and key from that file
