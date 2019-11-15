@@ -50,8 +50,10 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		recipeTemp.Ingredients.Remaining = append(recipeTemp.Ingredients.Remaining, ingredientsList...)
 
 		for _, i := range list.Ingredients { //i is the ingredient needed for the recipe
-			found := false                                       //sets found to true if ingredient is in recipe
+			found := false //sets found to true if ingredient is in recipe
+
 			for n, j := range recipeTemp.Ingredients.Remaining { //Name|quantity of ingredients from query
+
 				if j.Name == i.Name { //if it matches ingredient from recipe
 					found = true       //found ingredient
 					tempUnit := i.Unit //saves the unit the recipe is based on
@@ -107,6 +109,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
+
 			if !found { //adds the ingredient to 'missing' if not found
 				recipeTemp.Ingredients.Missing = append(recipeTemp.Ingredients.Missing, i)
 			}
@@ -141,6 +144,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	limit, err := strconv.Atoi(QueryGet("limit", "5", r)) //reads limit if sendt, else set it to 5
+
 	if err != nil {
 		limit = 5
 	}
@@ -148,6 +152,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	if limit < len(recipeCount) { //if there are more than limit
 		recipeCount = recipeCount[:limit] //sets recipecount to cut off all recipes after the value of limit
 	}
+
 	err = json.NewEncoder(w).Encode(recipeCount)
 
 	if err != nil {
