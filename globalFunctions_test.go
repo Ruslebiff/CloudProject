@@ -20,7 +20,6 @@ func TestDoRequest(t *testing.T) {
 	}
 
 	fmt.Println("TestDoRequest")
-
 }
 
 func TestDoRequestFail(t *testing.T) {
@@ -41,7 +40,6 @@ func TestQueryGet(t *testing.T) {
 	}
 
 	fmt.Println("TestQueryGet")
-
 }
 
 func TestCallURL(t *testing.T) {
@@ -72,7 +70,6 @@ func TestReadIngredients(t *testing.T) {
 	if len(test) == 0 {                        // check that it dont return an empty slice
 		t.Error("somthing went wrong")
 	}
-
 }
 
 func TestConvertUnit(t *testing.T) {
@@ -169,7 +166,6 @@ func TestConvertUnit(t *testing.T) {
 	if testIngredient2.Quantity != 1000 {
 		t.Error("quanity did not get converted")
 	}
-
 }
 
 func TestInitAPICredentials(t *testing.T) {
