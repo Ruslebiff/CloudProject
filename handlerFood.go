@@ -30,48 +30,32 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		case caseing:
 			if name != "" { // If ingredient name is specified in URL
 				ingr, err := DBReadIngredientByName(name, w) // Get that ingredient
-				if err != nil {
-					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusInternalServerError)
-				}
+				ErrorCheck(w, err, "Couldn't retrieve "+caseing+": ", http.StatusBadRequest)
 
 				err = json.NewEncoder(w).Encode(&ingr)
-				if err != nil {
-					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
-				}
+				ErrorCheck(w, err, "Couldn't encode response", http.StatusInternalServerError)
 			} else {
 				ingredients, err := GetAllIngredients(w, r) // Else retrieve all ingredients
-				if err != nil {
-					http.Error(w, "Couldn't retrieve ingredients: "+err.Error(), http.StatusBadRequest)
-				}
+				ErrorCheck(w, err, "Couldn't retrieve all "+caseing+"s: ", http.StatusInternalServerError)
 
 				err = json.NewEncoder(w).Encode(&ingredients)
-				if err != nil {
-					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
-				}
+				ErrorCheck(w, err, "Couldn't encode response: ", http.StatusInternalServerError)
 			}
 		case caserec:
 			if name != "" { // If user wrote in query for name of recipe
 				re := Recipe{}
 
 				re, err := DBReadRecipeByName(name, w) // Get that recipe
-				if err != nil {
-					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
-				}
+				ErrorCheck(w, err, "Couldn't retrieve "+caserec+": ", http.StatusBadRequest)
 
 				err = json.NewEncoder(w).Encode(&re)
-				if err != nil {
-					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
-				}
+				ErrorCheck(w, err, "Couldn't encode response", http.StatusInternalServerError)
 			} else {
 				recipes, err := GetAllRecipes(w, r) // Else get all recipes
-				if err != nil {
-					http.Error(w, "Couldn't retrieve recipes: "+err.Error(), http.StatusBadRequest)
-				}
+				ErrorCheck(w, err, "Couldn't retrieve all "+caserec+"s: ", http.StatusInternalServerError)
 
 				err = json.NewEncoder(w).Encode(&recipes)
-				if err != nil {
-					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
-				}
+				ErrorCheck(w, err, "Couldn't encode response: ", http.StatusInternalServerError)
 			}
 		}
 
@@ -102,22 +86,17 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				ing := Ingredient{}
 
 				err := json.Unmarshal(resp, &ing)
-				if err != nil {
-					http.Error(w, "Could not unmarshal body of request"+err.Error(), http.StatusBadRequest)
-				}
+				ErrorCheck(w, err, "Couldn't unmarshal request body: ", http.StatusBadRequest)
 
 				ing, err = DBReadIngredientByName(ing.Name, w) //  Get that ingredient
-				if err != nil {
-					http.Error(w, "Couldn't retrieve ingredient: "+err.Error(), http.StatusBadRequest)
-				}
+				ErrorCheck(w, err, "Couldn't retrieve "+caserec+": ", http.StatusBadRequest)
 
 				err = DBDelete(ing.ID, IngredientCollection, w)
-				if err != nil {
-					http.Error(w, "Failed to delete ingredient: "+err.Error(), http.StatusInternalServerError)
-				} else {
+				ErrorCheck(w, err, "Failed to delete ingredient: ", http.StatusInternalServerError)
+
+				if err == nil {
 					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
 				}
-
 			case caserec:
 				rec := Recipe{}
 
@@ -286,8 +265,9 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		}
 	}
 
-	//  If the ingredient found matchets that of the recipe, the name is available and the unit of legal value
-	if ingredientsfound == recingredients && !recipeNameInUse && unitOk {
+	switch {
+	case ingredientsfound == recingredients && !recipeNameInUse && unitOk:
+		// The ingredient found matchets that of the recipe, the name is available and the unit of legal value
 		err = GetRecipeNutrients(&rec, w) //  Collect the nutrients of that recipe
 		if err != nil {
 			http.Error(w, "Could not get nutrients for recipe", http.StatusInternalServerError)
@@ -304,24 +284,26 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 			}
 			fmt.Fprintln(w, "Recipe \""+rec.RecipeName+"\" saved successfully to database.")
 		}
-	} else if ingredientsfound != recingredients {
+	case ingredientsfound != recingredients:
 		fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" is missing "+
 			strconv.Itoa(recingredients-ingredientsfound)+" ingredient(s) "+err.Error(), http.StatusBadRequest)
 
 		http.Error(w, "Cannot save recipe, missing ingredient(s) in database:", http.StatusBadRequest)
+
 		for i := range missingingredients {
 			fmt.Fprintln(w, "- "+missingingredients[i]) // print all missing ingredients in http response
 		}
+
 		fmt.Fprintf(w, "\n Register these ingredients first!")
-	} else if recipeNameInUse {
+	case recipeNameInUse:
 		fmt.Fprintln(w, "Registration error: Recipe with name \""+rec.RecipeName+"\" - name already in use. "+
 			err.Error(), http.StatusBadRequest)
 
 		http.Error(w, "Cannot save recipe, name already in use.", http.StatusBadRequest)
-	} else if !unitOk {
+	case !unitOk:
 		//  Error message when posting with mismatched units, i.e liquid with kg or solid with ml
 		http.Error(w, "Couldn't save recipe due to unit mismatch", http.StatusBadRequest)
-	} else {
+	default:
 		http.Error(w, "Cannot save recipe, internal server error.", http.StatusInternalServerError)
 	}
 }
@@ -366,6 +348,7 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 		APIURL += "%20"
 		APIURL += ing.Unit
 	}
+
 	resp, err := DoRequest(APIURL, client)
 	if err != nil {
 		http.Error(w, "Unable to get "+APIURL+err.Error(), http.StatusBadRequest)
