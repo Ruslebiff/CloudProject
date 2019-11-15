@@ -49,7 +49,6 @@ func HandlerWebhooks(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
-
 		} else {
 			err = json.NewEncoder(w).Encode(webhooks) // encode all webhooks
 			if err != nil {
