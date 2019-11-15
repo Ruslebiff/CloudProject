@@ -17,7 +17,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	endpoint := parts[3] // Store the query which represents either recipe or ingredient
 	name := ""
 	if len(parts) > 4 {
-		name = parts[4] // The name of the ingredient or recipe
+		name = parts[4]
 	}
 
 	switch r.Method {
