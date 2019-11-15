@@ -24,13 +24,11 @@ func TestHandlerWebhooksPost(t *testing.T) {
 
 	handler := http.HandlerFunc(HandlerWebhooks) // test handlerWebhooks
 	handler.ServeHTTP(w, r)
-
 	resp := w.Result()
-
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-	fmt.Println("testeing webhooks POST method")
+	fmt.Println("testing webhooks POST method")
 
 }
 

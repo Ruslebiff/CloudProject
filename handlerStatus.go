@@ -22,6 +22,7 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -34,6 +35,7 @@ func HandlerStatus(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	if resp != nil {
 		defer resp.Body.Close()
 	}
