@@ -34,7 +34,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					http.Error(w, "Couldn't encode response: "+err.Error(), http.StatusInternalServerError)
 				}
 			} else {
-				ingredients, err := GetAllIngredients(w, r) //  Else retireve all ingredients
+				ingredients, err := GetAllIngredients(w, r) //  Else retrieve all ingredients
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredients: "+err.Error(), http.StatusBadRequest)
 				}
