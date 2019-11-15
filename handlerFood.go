@@ -129,9 +129,10 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Failed to delete ingredient: "+err.Error(), http.StatusInternalServerError)
 					return
-				} else {
-					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
 				}
+
+				fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
+
 			case caserec:
 				rec := Recipe{}
 
@@ -151,9 +152,9 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					http.Error(w, "Failed to delete recipe: "+err.Error(), http.StatusInternalServerError)
 					return
-				} else {
-					fmt.Fprintln(w, "Successfully deleted recipe"+rec.RecipeName, http.StatusOK)
 				}
+
+				fmt.Fprintln(w, "Successfully deleted recipe"+rec.RecipeName, http.StatusOK)
 			}
 		} else {
 			fmt.Fprintln(w, "Not authorised to DELETE from DB:", http.StatusBadRequest)
@@ -179,73 +180,77 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if ing.Unit == "" {
 		http.Error(w, "Could not save ingredient, missing \"unit\"", http.StatusBadRequest)
 		return
-	} else {
-		unitParam := ing.Unit //  Checks if the posted unit is one of the legal measurements
-		inList := false
+	}
 
-		for _, v := range AllowedUnit { //  Loops through the allowed units
-			if unitParam == v {
-				inList = true
-				break
-			}
-		} //  If it is one of the allowed units, cast it into g or l
-		if inList {
-			if strings.Contains(unitParam, "g") {
-				unitParam = "g"
-			} else {
-				unitParam = "l"
-			}
-		} else { //  Prints the allowed units for an ingridient
-			http.Error(w, "Unit has to be of one of the values ", http.StatusBadRequest)
-			for _, v := range AllowedUnit {
-				fmt.Fprintln(w, v) // Print allowed units
-			}
+	unitParam := ing.Unit //  Checks if the posted unit is one of the legal measurements
+	inList := false
+
+	for _, v := range AllowedUnit { //  Loops through the allowed units
+		if unitParam == v {
+			inList = true
+			break
+		}
+	} //  If it is one of the allowed units, cast it into g or l
+
+	if inList {
+		if strings.Contains(unitParam, "g") {
+			unitParam = "g"
+		} else {
+			unitParam = "l"
+		}
+	} else { //  Prints the allowed units for an ingridient
+		http.Error(w, "Unit has to be of one of the values ", http.StatusBadRequest)
+		for _, v := range AllowedUnit {
+			fmt.Fprintln(w, v) // Print allowed units
+		}
+		return
+	}
+
+	allIngredients, err := DBReadAllIngredients(w) // temporary list of all ingredients in database
+
+	if err != nil {
+		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+
+			err.Error(), http.StatusInternalServerError)
+		return
+	}
+	//  Check to see if the ingredient is already in the DB
+	for i := range allIngredients {
+		if ing.Name == allIngredients[i].Name {
+			found = true // found ingredient in database
+
+			http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
+
 			return
 		}
+	}
 
-		allIngredients, err := DBReadAllIngredients(w) // temporary list of all ingredients in database
+	if !found { // if ingredient is not found in database
+		ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
+		ing.Quantity = 1             // force quantity to 1
+
+		err = GetNutrients(&ing, w) // get nutrients for the ingredient
 		if err != nil {
-			http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+
-				err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Couldn't get nutritional values: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		//  Check to see if the ingredient is already in the DB
-		for i := range allIngredients {
-			if ing.Name == allIngredients[i].Name {
-				found = true // found ingredient in database
-				http.Error(w, "Ingredient \""+ing.Name+"\" already in database.", http.StatusBadRequest)
-				return
-			}
-		}
-		if !found { // if ingredient is not found in database
-			ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
-			ing.Quantity = 1             // force quantity to 1
-			err = GetNutrients(&ing, w)  // get nutrients for the ingredient
-			if err != nil {
-				http.Error(w, "Couldn't get nutritional values: "+err.Error(), http.StatusInternalServerError)
-				return
-			}
 
-			if ing.Nutrients.Energy.Label == "" {
-				// check if it got nutrients from db.
-				//All ingredients will get this label if GetNutrients is ok
-				http.Error(w, "ERROR: Failed to get nutrients for ingredient."+
-					"Ingredient was not saved.", http.StatusInternalServerError)
-				return
-			} else {
-				err = DBSaveIngredient(&ing, w) // save it to database
-				if err != nil {                 // if DBSaveIngredient return error
-					http.Error(w, "Could not save document to collection "+
-						IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
-					return
-				} else { // DBSaveIngredient did not return error
-					err := CallURL(IngredientCollection, &ing, w) // Call webhooks
-					if err != nil {
-						fmt.Fprintln(w, "Could not post to webhooks.site: "+
-							err.Error(), http.StatusBadRequest)
-					}
-					fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.") // Success!
+		if ing.Nutrients.Energy.Label == "" {
+			// check if it got nutrients from db.
+			//All ingredients will get this label if GetNutrients is ok
+			http.Error(w, "ERROR: Failed to get nutrients for ingredient."+
+				"Ingredient was not saved.", http.StatusInternalServerError)
+		} else {
+			err = DBSaveIngredient(&ing, w) // save it to database
+			if err != nil {                 // if DBSaveIngredient return error
+				http.Error(w, "Could not save document to collection "+
+					IngredientCollection+" "+err.Error(), http.StatusInternalServerError)
+			} else { // DBSaveIngredient did not return error
+				err := CallURL(IngredientCollection, &ing, w) // Call webhooks
+				if err != nil {
+					fmt.Fprintln(w, "Could not post to webhooks.site: "+
+						err.Error(), http.StatusBadRequest)
 				}
+				fmt.Fprintln(w, "Ingredient \""+ing.Name+"\" saved successfully to database.") // Success!
 			}
 		}
 	}

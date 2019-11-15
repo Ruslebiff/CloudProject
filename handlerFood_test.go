@@ -29,13 +29,13 @@ func TempToken() (s string) {
 		testToken = scanner.Text() // sets testToken to be Token read from file
 	}
 
-	fmt.Println(testToken)
-
 	return testToken
 }
 
 func TestHandlerFoodPostI(t *testing.T) {
-	// Testing methon POST for Ingredient ***********************************************
+	// Testing method POST for Ingredient
+	fmt.Println("testing handlerFood POST method ingredient")
+
 	testToken := TempToken()
 
 	if testToken == "" {
@@ -62,12 +62,12 @@ func TestHandlerFoodPostI(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	fmt.Println("testing handlerFood POST method ingredient")
 }
 
 func TestHandlerFoodPostR(t *testing.T) {
-	// Testing methon POST for Recipe ***********************************************
+	// Testing method POST for Recipe
+	fmt.Println("testing handlerFood POST method recipe")
+
 	testToken := TempToken()
 
 	if testToken == "" {
@@ -104,12 +104,12 @@ func TestHandlerFoodPostR(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	fmt.Println("testing handlerFood POST method recipe")
 }
 
 func TestHandlerFoodGetAI(t *testing.T) {
-	// Testing method GET for all ingredients  ***********************************************
+	// Testing method GET for all ingredients
+	fmt.Println("testing handlerFood GET method for all ingredient")
+
 	r, err := http.NewRequest("GET", "/cravings/food/ingredient/", nil) // creates request
 
 	if err != nil {
@@ -127,12 +127,12 @@ func TestHandlerFoodGetAI(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	fmt.Println("testing handlerFood GET method for all ingredient")
 }
 
 func TestHandlerFoodGetOI(t *testing.T) {
-	// Testing method GET for one ingredient  ***********************************************
+	// Testing method GET for one ingredient
+	fmt.Println("testing handlerFood GET method for one ingredient")
+
 	r, err := http.NewRequest("GET", "/cravings/food/ingredient/turmeric", nil) // creates request
 
 	if err != nil {
@@ -150,12 +150,12 @@ func TestHandlerFoodGetOI(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	fmt.Println("testing handlerFood GET method for one ingredient")
 }
 
 func TestHandlerFoodGetAR(t *testing.T) {
-	// Testing method GET for all recipes  ***********************************************
+	// Testing method GET for all recipes
+	fmt.Println("testing handlerFood GET method for all recipe")
+
 	r, err := http.NewRequest("GET", "/cravings/food/recipe/", nil) // creates request
 
 	if err != nil {
@@ -173,12 +173,12 @@ func TestHandlerFoodGetAR(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	fmt.Println("testing handlerFood GET method for all recipe")
 }
 
 func TestHandlerFoodGetOR(t *testing.T) {
-	// Testing method GET for one recipe  ***********************************************
+	// Testing method GET for one recipe
+	fmt.Println("testing handlerFood GET method for one recipe")
+
 	r, err := http.NewRequest("GET", "/cravings/food/recipe/TestRecipePOST", nil) // creates request
 
 	if err != nil {
@@ -196,12 +196,12 @@ func TestHandlerFoodGetOR(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	fmt.Println("testing handlerFood GET method for one recipe")
 }
 
 func TestHandlerFoodDeleteI(t *testing.T) {
-	// Testing method DELETE for ingredient ***********************************************
+	// Testing method DELETE for ingredient
+	fmt.Println("testing handlerFood DELETE method ingredient")
+
 	testToken := TempToken()
 
 	if testToken == "" {
@@ -229,12 +229,12 @@ func TestHandlerFoodDeleteI(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	fmt.Println("testing handlerFood DELETE method ingredient")
 }
 
 func TestHandlerFoodDeleteR(t *testing.T) {
-	// Testing method DELETE for ingredient **********************************************
+	// Testing method DELETE for ingredient
+	fmt.Println("testing handlerFood DELETE method recipe")
+
 	testToken := TempToken()
 
 	if testToken == "" {
@@ -262,8 +262,6 @@ func TestHandlerFoodDeleteR(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	fmt.Println("testing handlerFood DELETE method recipe")
 }
 
 func TestGetAllRecipes(t *testing.T) {
