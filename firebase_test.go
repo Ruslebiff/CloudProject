@@ -104,9 +104,7 @@ func TestDBRecipe(t *testing.T) {
 }
 
 func TestDBWebhook(t *testing.T) {
-
 	// testing of Webhooks functions for database *****************************
-
 	w := httptest.NewRecorder() // creates ResponsRecoder
 
 	testWh := Webhook{Event: "Test", URL: "www.Test.no", Time: time.Now()}
@@ -132,6 +130,7 @@ func TestDBWebhook(t *testing.T) {
 		if wh[i].Event == testWh.Event {
 			fmt.Println("test webhooks ", wh[i].ID)
 			err = DBDelete(wh[i].ID, WebhooksCollection, w) // delets test webhook
+
 			if err != nil {
 				t.Error(err)
 			}
@@ -150,7 +149,6 @@ func TestDBWebhook(t *testing.T) {
 }
 
 func TestDBCheckAuthorization(t *testing.T) {
-
 	file, err := os.Open("testToken.txt") // opens text file
 
 	if err != nil {
@@ -163,7 +161,6 @@ func TestDBCheckAuthorization(t *testing.T) {
 
 	var testToken string
 	for scanner.Scan() { // loop throue lengt of text file
-
 		testToken = scanner.Text() // sets testToken to the token read from file
 	}
 	fmt.Println("text: ", testToken)
@@ -172,6 +169,7 @@ func TestDBCheckAuthorization(t *testing.T) {
 	request, _ := json.Marshal(testStruct)
 	requestTest := bytes.NewReader(request)
 	r, err := http.NewRequest("GET", "/cravings/food/", requestTest) // create request
+
 	if err != nil {
 		t.Error(err)
 	}
