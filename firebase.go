@@ -95,7 +95,7 @@ func DBSaveWebhook(i *Webhook, w http.ResponseWriter) error {
 func DBDelete(id string, collection string, w http.ResponseWriter) error {
 	_, err := fireBaseDB.Client.Collection(collection).Doc(id).Delete(fireBaseDB.Ctx)
 	if err != nil {
-		fmt.Fprintln(w, "ERROR deleting from collection: "+collection+err.Error(), http.StatusBadRequest)
+		fmt.Fprintln(w, "ERROR deleting from collection: "+collection, http.StatusBadRequest)
 		return errors.Wrap(err, "Error in FirebaseDatabase.Delete()")
 	}
 
@@ -122,6 +122,8 @@ func DBReadRecipeByName(name string, w http.ResponseWriter) (Recipe, error) {
 		}
 	}
 
+	err = errors.New("No recipe named " + name + " in database")
+	fmt.Fprintln(w, ""+err.Error(), http.StatusBadRequest)
 	return temp, err
 }
 
@@ -147,6 +149,8 @@ func DBReadIngredientByName(name string, w http.ResponseWriter) (Ingredient, err
 		}
 	}
 
+	err = errors.New("No ingredient named " + name + " in database")
+	fmt.Fprintln(w, ""+err.Error(), http.StatusBadRequest)
 	return temp, err
 }
 
@@ -187,11 +191,12 @@ func DBReadAllRecipes(w http.ResponseWriter) ([]Recipe, error) {
 func DBReadAllIngredients(w http.ResponseWriter) ([]Ingredient, error) {
 	var tempingredients []Ingredient
 
-	ingredient := Ingredient{} //  Collects the entire collection
+	//  Collects the entire collection
 	iter := fireBaseDB.Client.Collection(IngredientCollection).Documents(fireBaseDB.Ctx)
 
 	for {
-		doc, err := iter.Next() //  Iterates over each document
+		ingredient := Ingredient{} // Creates a struct for each document
+		doc, err := iter.Next()    // Iterates over each document
 		if err == iterator.Done {
 			break
 		}

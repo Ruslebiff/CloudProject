@@ -44,7 +44,8 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			} else {
-				ingredients, err := GetAllIngredients(w, r) // Else retrieve all ingredients
+
+				ingredients, err := DBReadAllIngredients(w) // Else retrieve all ingredients
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredients: "+err.Error(), http.StatusBadRequest)
 					return
@@ -72,7 +73,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			} else {
-				recipes, err := GetAllRecipes(w, r) // Else get all recipes
+				recipes, err := DBReadAllRecipes(w) // Else get all recipes
 				if err != nil {
 					http.Error(w, "Couldn't retrieve recipes: "+err.Error(), http.StatusBadRequest)
 					return
@@ -344,34 +345,6 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 			fmt.Fprintln(w, "- "+missingingredients[i]) // print all missing ingredients in http response
 		}
 	}
-}
-
-// GetAllRecipes returns all recipes from database using the DBReadAllRecipes function
-func GetAllRecipes(w http.ResponseWriter, r *http.Request) ([]Recipe, error) {
-	var allRecipes []Recipe
-
-	allRecipes, err := DBReadAllRecipes(w)
-
-	if err != nil {
-		http.Error(w, "Could not retrieve collection "+RecipeCollection+" "+
-			err.Error(), http.StatusInternalServerError)
-	}
-
-	return allRecipes, err
-}
-
-// GetAllIngredients returns all ingredients from database using the DBReadAllIngredients function
-func GetAllIngredients(w http.ResponseWriter, r *http.Request) ([]Ingredient, error) {
-	var allIngredients []Ingredient
-
-	allIngredients, err := DBReadAllIngredients(w)
-
-	if err != nil {
-		http.Error(w, "Could not retrieve collection "+IngredientCollection+" "+
-			err.Error(), http.StatusInternalServerError)
-	}
-
-	return allIngredients, err
 }
 
 // GetNutrients gets nutritional info from external API for the ingredient. Returns http error if it fails
