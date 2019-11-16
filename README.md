@@ -84,7 +84,6 @@ The user can send a post request with the payload of the 'remaining' struct of a
 	sortBy: "have"|"missing"|"remaining". have sorts in a descending order, missing and remaining sorts in an ascending order
 
 # Webhooks
-
 Webhooks endpoint: /cravings/webhooks/
 Here you can get information about webhooks for this website
 
@@ -138,8 +137,6 @@ Example command for running the container:
 
 
 # Original project plan
-
-Short description:
 We will make an API that can be used to get meal ideas from what ingredients you already have. This API could for example be used by a website or app providing a GUI to the users.
 
 We have a database containing ingredients and recipes, including nutritional info. Each request to our API reads data from the database. When registering new recipes or ingredients to the database, it will get the nutritional info from an external API (Edamam). 
@@ -156,11 +153,11 @@ Getting recipes:
 What ingredients you have is provided either via URL or preferrably using POST request with a JSON body. Recipes that can be made using the ingredients you already have will be returned. These will also include nutritional info for the recipe.
 
 Registration: 
-You will need an auth token provided by us to get access to register new recipes or ingredients to the database. Tokens are stored in our database in a separate collection. 
+You will need an auth token provided by us to get access to register and delete recipes or ingredients to the database. Tokens are stored in our database in a separate collection. 
 
-Registration is done by sending a POST request to our registration handler for ingredients or recipe, including a JSON structure in body. We will provide templates for this. 
+Registration is done by sending a POST request to our registration handler for ingredients or recipe, including a JSON structure in body. We will provide templates for this. If this is used from an app or website with GUI, this JSON structure will not be shown to the end users, but rather the developers of the app/website to make functionality in the GUI, and probably autofill it from some text fields etc.
 
-When something new is registered, we get the nutritional info for it from the Edamam API.
+When a new ingredient is registered, we get the nutritional info for it from the Edamam API. New recipes get its nutritional info calculated from our database to avoid hitting any limits on the Edamam API. The only exception is recipes having ingredients specified with the unit "teaspoon" or "tablespoon". Then the ingredient with spoons as unit is checked against Edamam, but all the rest is still calculated from our database. 
 
 Webhooks: 
 Webhooks for seeing what’s registered into the database through the /register/ handler. This includes both recipes and ingredients.
@@ -179,24 +176,21 @@ User requests a recipe, inserts what it has of ingredients. The system provides 
 
 
 # What went well and wrong 
-reflection of what went well and what went wrong with the project  
-After about an hour into our first meeting we had layed out a project plan of what our final product should look like.
-We had good working routines, meeting as a group everyday to work.
+After about an hour into our first meeting we had layed out a project plan of what our final product should look like. We had good working routines, meeting as a group every day to work together.
 
 We managed to reach all of our main goals, and added some of the potential expansions for the project.
 
-When the user 'uses' a recipe, there is a list of all ingredients he/she has for the recipe(have), needs to complete the recipe(missing) and ingredients after making the recipe(remaining). To find recipes for the next day, the application just posts a new request with the remaining list.
-We also different queries to handlerMeal (look at #handlerMeal for more information)
+When the user 'uses' a recipe, there is a list of all ingredients he/she has for the recipe(have), what he/she needs to complete the recipe(missing) and ingredients after making the recipe(remaining). To find recipes for the next day, the application just posts a new request with the remaining ingredients list.
+We also do different queries to handlerMeal (look at #handlerMeal for more information)
 
 
 # Hard aspects of the project
-reflection on the hard aspects of the project   
-Recipes that has units in teaspoon or tablespoon values became a bigger problem fixing than expected. The solution we decided to go for was calculating how many calories there was per spoon and from there get the quantity per unit. This lead to extra lines of code only for handling spoon units.
+Recipes that has units in teaspoon or tablespoon values became a bigger problem fixing than expected, since ingredients are saved in grams or litres in the database. This would not have been a problem if we simply could calculate all ingredients by volume, but we don't know how many grams x volume of each ingredient is. We did not want to enforce recipes to use weight instead of spoons, so to go around this, the nutritional value for each spoon when registering a recipe is being checked against the external API.
+The solution we decided to go for in the meal-handler was calculating how many calories there was per spoon and from there get the quantity per unit. This lead to extra lines of code only for handling spoon units, but we still manage to only read from our own database every time a recipe is read, and we avoid storing duplicate ingredients with different units.
 
 
 # What we learned
-what new has the group learned
-We got a deeper insight in how it is to make an API database that is meant to be used by other applications. 
+We got a deeper insight in how it is to make an API with a database, that is meant to be used by other applications. We got a better understanding of everything we have learnt so far in this course. 
 
 
 # Work log
