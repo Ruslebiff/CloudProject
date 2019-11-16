@@ -296,10 +296,15 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 		for _, j := range allIngredients { // If the ingredient is found the loop breaks and found is set to true
 			if rec.Ingredients[i].Name == j.Name {
 				found = true
+
 				// Check to see if user has posted with the equivalent unit as the ingredient has in the DB
 				if !UnitCheck(rec.Ingredients[i].Unit, j.Unit) {
 					//  Error message when posting with mismatched units, i.e liquid with kg or solid with ml
-					http.Error(w, "Couldn't save recipe due to unit mismatch", http.StatusBadRequest)
+					http.Error(w, "Couldn't save recipe due to unit mismatch: "+
+						rec.Ingredients[i].Name+" has unit "+j.Unit+
+						" in database, and can not be registered with "+
+						rec.Ingredients[i].Unit, http.StatusBadRequest)
+
 					return
 				}
 
