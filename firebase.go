@@ -124,6 +124,7 @@ func DBReadRecipeByName(name string, w http.ResponseWriter) (Recipe, error) {
 
 	err = errors.New("No recipe named " + name + " in database")
 	fmt.Fprintln(w, ""+err.Error(), http.StatusBadRequest)
+
 	return temp, err
 }
 
@@ -151,6 +152,7 @@ func DBReadIngredientByName(name string, w http.ResponseWriter) (Ingredient, err
 
 	err = errors.New("No ingredient named " + name + " in database")
 	fmt.Fprintln(w, ""+err.Error(), http.StatusBadRequest)
+
 	return temp, err
 }
 
@@ -197,6 +199,7 @@ func DBReadAllIngredients(w http.ResponseWriter) ([]Ingredient, error) {
 	for {
 		ingredient := Ingredient{} // Creates a struct for each document
 		doc, err := iter.Next()    // Iterates over each document
+
 		if err == iterator.Done {
 			break
 		}

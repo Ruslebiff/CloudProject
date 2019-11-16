@@ -44,7 +44,6 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			} else {
-
 				ingredients, err := DBReadAllIngredients(w) // Else retrieve all ingredients
 				if err != nil {
 					http.Error(w, "Couldn't retrieve ingredients: "+err.Error(), http.StatusBadRequest)
