@@ -298,5 +298,9 @@ func UnitCheck(firstIngredient string, secondIngredient string) bool {
 		return true
 	}
 
+	if strings.Contains(firstIngredient, "pc") {
+		return true
+	}
+
 	return false
 }

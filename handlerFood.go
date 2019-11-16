@@ -195,8 +195,10 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	if inList {
 		if strings.Contains(unitParam, "g") {
 			unitParam = "g"
-		} else {
+		} else if strings.Contains(unitParam, "l") {
 			unitParam = "l"
+		} else {
+			unitParam = "pc"
 		}
 	} else { //  Prints the allowed units for an ingridient
 		http.Error(w, "Unit has to be of one of the values ", http.StatusBadRequest)
@@ -225,8 +227,10 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 	}
 
 	if !found { // if ingredient is not found in database
-		ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
-		ing.Quantity = 1             // force quantity to 1
+		if unitParam != "pc" {
+			ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
+		}
+		ing.Quantity = 1 // force quantity to 1
 
 		err = GetNutrients(&ing, w) // get nutrients for the ingredient
 		if err != nil {
@@ -302,7 +306,7 @@ func RegisterRecipe(w http.ResponseWriter, respo []byte) {
 					//  Error message when posting with mismatched units, i.e liquid with kg or solid with ml
 					http.Error(w, "Couldn't save recipe due to unit mismatch: "+
 						rec.Ingredients[i].Name+" has unit "+j.Unit+
-						" in database, and can not be registered with "+
+						" in database, and can not be saved with "+
 						rec.Ingredients[i].Unit, http.StatusBadRequest)
 
 					return
@@ -365,6 +369,9 @@ func GetNutrients(ing *Ingredient, w http.ResponseWriter) error {
 	if ing.Unit != "pc" {
 		APIURL += "%20"
 		APIURL += ing.Unit
+	} else if ing.Unit == "pc" {
+		APIURL += "%20"
+		APIURL += "piece"
 	}
 
 	resp, err := DoRequest(APIURL, client)
