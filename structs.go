@@ -61,12 +61,6 @@ type TotalNutrients struct {
 	Energy       Nutrient `json:"ENERC_KCAL"`
 }
 
-// RecipeAnalysisPost struct for ..
-type RecipeAnalysisPost struct {
-	Title       string   `json:"title"`
-	Ingredients []string `json:"ingr"`
-}
-
 // FirestoreDatabase implements our Database access through Firestore
 type FirestoreDatabase struct {
 	Ctx    context.Context
