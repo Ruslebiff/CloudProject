@@ -112,6 +112,8 @@ func DBReadRecipeByName(name string, w http.ResponseWriter) (Recipe, error) {
 			temp.ID = i.ID
 			temp.RecipeName = i.RecipeName
 			temp.Ingredients = i.Ingredients
+			temp.Description = i.Description
+			temp.AllNutrients = i.AllNutrients
 
 			return temp, err
 		}
@@ -138,6 +140,9 @@ func DBReadIngredientByName(name string, w http.ResponseWriter) (Ingredient, err
 			temp.Nutrients = i.Nutrients
 			temp.Calories = i.Calories
 			temp.Weight = i.Weight
+			temp.Unit = i.Unit
+			temp.Weight = i.Weight
+			temp.Quantity = i.Quantity
 
 			return temp, err
 		}

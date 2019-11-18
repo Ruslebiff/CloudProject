@@ -91,7 +91,8 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		authorised, resp, err := DBCheckAuthorization(w, r) // Check for valid token
 
 		if err != nil {
-			http.Error(w, "Error: "+err.Error(), http.StatusBadRequest)
+			http.Error(w, "Authorization failed!\nError: "+err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
@@ -105,14 +106,14 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 			case caserec: // Posts recipe
 				RegisterRecipe(w, resp)
 			}
-		} else {
-			http.Error(w, "Error: Not authorized", http.StatusBadRequest)
+		} else if err == nil {
+			http.Error(w, "Error: Not authorized! Please use a valid token.", http.StatusUnauthorized)
 		}
 
 	case http.MethodDelete:
 		authorised, resp, err := DBCheckAuthorization(w, r) // Check for valid token
 		if err != nil {
-			http.Error(w, "Not authorized to post to DB: ", http.StatusBadRequest)
+			http.Error(w, "Authorization failed!\nError: "+err.Error(), http.StatusBadRequest)
 		}
 
 		if authorised {
@@ -144,9 +145,9 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					fmt.Fprintln(w, "Successfully deleted ingredient ", http.StatusOK)
+					fmt.Fprintln(w, "Successfully deleted ingredient "+ing.Name)
 				} else {
-					fmt.Fprintln(w, "Can't delete ingredient in a recipe", http.StatusBadRequest)
+					http.Error(w, "Can't delete ingredient"+ing.Name+" because it is used in a recipe.", http.StatusForbidden)
 				}
 
 			case caserec:
@@ -170,13 +171,13 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				fmt.Fprintln(w, "Successfully deleted recipe "+rec.RecipeName, http.StatusOK)
+				fmt.Fprintln(w, "Successfully deleted recipe "+rec.RecipeName)
 			}
-		} else {
-			fmt.Fprintln(w, "Not authorised to DELETE from DB:", http.StatusBadRequest)
+		} else if err == nil {
+			http.Error(w, "Not authorised to delete! Please use a valid token.", http.StatusUnauthorized)
 		}
 	default:
-		fmt.Fprintln(w, "Invalid method "+r.Method, http.StatusBadRequest)
+		http.Error(w, "Invalid method "+r.Method, http.StatusBadRequest)
 	}
 }
 
