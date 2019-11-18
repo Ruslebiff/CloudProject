@@ -176,10 +176,14 @@ func TestDBCheckAuthorization(t *testing.T) {
 
 	w := httptest.NewRecorder() // create ResponseRecorder
 
-	testBool, _ := DBCheckAuthorization(w, r) //test for vallid authorization with a vallid token
+	testBool, _, err := DBCheckAuthorization(w, r) //test for vallid authorization with a vallid token
 
 	if testBool == false {
 		t.Error("Token was not vallid")
+	}
+
+	if err != nil {
+		t.Error(err)
 	}
 
 	fmt.Println("test DBCheckAuthorization")
