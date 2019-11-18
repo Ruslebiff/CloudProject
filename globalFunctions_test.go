@@ -74,10 +74,14 @@ func TestReadIngredients(t *testing.T) {
 
 	fmt.Println("testIngredient", testIngredient)
 
-	test := ReadIngredients(testIngredient, w) // test to read ingredients
+	test, err := ReadIngredients(testIngredient, w) // test to read ingredients
 
 	if len(test) == 0 { // check that it dont return an empty slice
 		t.Error("somthing went wrong")
+	}
+
+	if err != nil {
+		t.Error(err)
 	}
 }
 
