@@ -193,8 +193,7 @@ Use endpoint:
 
 # Test
 Test cover = 76,0%
-Test coverage can be tested by entering following command in termina: go test -cover
-You need to be connected to a stabel wifi to run the test
+Test coverage can be tested by entering following command in terminal: go test -cover
 
 # Docker
 A Dockerfile is included in this repository. This is tested to work with our build and the following commands. 
