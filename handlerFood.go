@@ -25,6 +25,10 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 		name = parts[4]
 	}
 
+	if endpoint == "" {
+		HandlerNil(w, r)
+	}
+
 	switch r.Method {
 	case http.MethodGet: // Gets either recipes or ingredients
 		switch endpoint {
