@@ -56,7 +56,6 @@ func DBSaveRecipe(r *Recipe, w http.ResponseWriter) error { //  Creates a new do
 	_, err := ref.Set(fireBaseDB.Ctx, r) //  Set the context of the document to the one of the recipe
 
 	if err != nil {
-		fmt.Fprintln(w, "ERROR saving recipe to recipe collection: "+err.Error(), http.StatusInternalServerError)
 		return err
 	}
 
@@ -70,7 +69,6 @@ func DBSaveIngredient(i *Ingredient, w http.ResponseWriter) error { //  Creates 
 	_, err := ref.Set(fireBaseDB.Ctx, i) //  Set the context of the document to the one of the ingredient
 
 	if err != nil {
-		fmt.Fprintln(w, "ERROR saving ingredient to ingredients collection: "+err.Error(), http.StatusInternalServerError)
 		return err
 	}
 
@@ -84,7 +82,6 @@ func DBSaveWebhook(i *Webhook, w http.ResponseWriter) error {
 	_, err := ref.Set(fireBaseDB.Ctx, i) //  Set the context of the document to the one of the webhook
 
 	if err != nil {
-		fmt.Fprintln(w, "ERROR saving webhook to webhooks collection: "+err.Error(), http.StatusInternalServerError)
 		return err
 	}
 
@@ -95,7 +92,6 @@ func DBSaveWebhook(i *Webhook, w http.ResponseWriter) error {
 func DBDelete(id string, collection string, w http.ResponseWriter) error {
 	_, err := fireBaseDB.Client.Collection(collection).Doc(id).Delete(fireBaseDB.Ctx)
 	if err != nil {
-		fmt.Fprintln(w, "ERROR deleting from collection: "+collection, http.StatusBadRequest)
 		return errors.Wrap(err, "Error in FirebaseDatabase.Delete()")
 	}
 
@@ -108,7 +104,6 @@ func DBReadRecipeByName(name string, w http.ResponseWriter) (Recipe, error) {
 	allrec, err := DBReadAllRecipes(w) //  Query all the recipes
 
 	if err != nil {
-		fmt.Fprintln(w, "Error retrieving recipes from database "+err.Error(), http.StatusInternalServerError)
 		return temp, err
 	}
 	//  Loops through all the recipes and checks if the parameter name is equal to one of the recipes
@@ -123,7 +118,6 @@ func DBReadRecipeByName(name string, w http.ResponseWriter) (Recipe, error) {
 	}
 
 	err = errors.New("No recipe named " + name + " in database")
-	fmt.Fprintln(w, ""+err.Error(), http.StatusBadRequest)
 
 	return temp, err
 }
@@ -134,7 +128,6 @@ func DBReadIngredientByName(name string, w http.ResponseWriter) (Ingredient, err
 	temp := Ingredient{}
 
 	if err != nil {
-		fmt.Fprintln(w, "Error retrieving recipes from database "+err.Error(), http.StatusInternalServerError)
 		return temp, err
 	}
 
@@ -151,7 +144,6 @@ func DBReadIngredientByName(name string, w http.ResponseWriter) (Ingredient, err
 	}
 
 	err = errors.New("No ingredient named " + name + " in database")
-	fmt.Fprintln(w, ""+err.Error(), http.StatusBadRequest)
 
 	return temp, err
 }
@@ -171,15 +163,12 @@ func DBReadAllRecipes(w http.ResponseWriter) ([]Recipe, error) {
 		}
 
 		if err != nil {
-			fmt.Fprintln(w, "Failed to iterate "+err.Error(), http.StatusInternalServerError)
 			return temprecipes, err
 		}
 
 		err = doc.DataTo(&recipe) // put data into temp struct
 
 		if err != nil {
-			fmt.Fprintln(w, "Error when converting retrieved document to struct: "+err.Error(), http.StatusInternalServerError)
-
 			return temprecipes, err
 		}
 
@@ -205,13 +194,11 @@ func DBReadAllIngredients(w http.ResponseWriter) ([]Ingredient, error) {
 		}
 
 		if err != nil {
-			fmt.Fprintln(w, "Failed to iterate "+err.Error(), http.StatusInternalServerError)
 			return tempingredients, err
 		}
 
 		err = doc.DataTo(&ingredient) // Put data into temp struct
 		if err != nil {
-			fmt.Fprintln(w, "Error when converting retrieved document to struct: "+err.Error(), http.StatusInternalServerError)
 			return tempingredients, err
 		}
 
@@ -236,13 +223,11 @@ func DBReadAllWebhooks(w http.ResponseWriter) ([]Webhook, error) {
 		}
 
 		if err != nil {
-			fmt.Fprintln(w, "Failed to iterate: "+err.Error(), http.StatusInternalServerError)
 			return tempWebhooks, err
 		}
 
 		err = doc.DataTo(&Wh) // put data into temp struct
 		if err != nil {
-			fmt.Fprintln(w, "Error when converting retrieved document to struct: "+err.Error(), http.StatusInternalServerError)
 			return tempWebhooks, err
 		}
 
@@ -257,18 +242,19 @@ func DBReadAllWebhooks(w http.ResponseWriter) ([]Webhook, error) {
 // The authorization token is one which we the creators of the program has created and saved manually
 // For security purposes we have chosen not to include code which saves the token, and the token itself can be given
 // to the reviewers of this project by mail which can be found in the readme
-func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte) {
+func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte, error) {
 	tempToken := Token{}                //  Loop through collection of authorization tokens
 	resp, err := ioutil.ReadAll(r.Body) //  Read the body of the json posted with the authentication token
 
 	if err != nil {
-		fmt.Fprintln(w, "Couldn't read request: "+err.Error(), http.StatusBadRequest)
+		return false, resp, errors.Wrap(err, "Couldn't read request: "+err.Error())
 	}
 
 	err = json.Unmarshal(resp, &tempToken)
 	if err != nil {
-		fmt.Fprintln(w, "Unable to unmarshal request body: "+err.Error(), http.StatusBadRequest)
+		return false, resp, errors.Wrap(err, "Unable to unmarshal request body: "+err.Error())
 	}
+
 	//  Loop through the collection of documents containing approved tokens
 	iter := fireBaseDB.Client.Collection(TokenCollection).Documents(fireBaseDB.Ctx)
 
@@ -281,18 +267,20 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte)
 		}
 
 		if err != nil {
-			fmt.Fprintln(w, "Couldn't iterate over document collection: "+err.Error(), http.StatusInternalServerError)
+			return false, resp, errors.Wrap(err, "Couldn't iterate over document collection: "+err.Error())
 		}
 
 		err = doc.DataTo(&DBToken) // put data into temp struct
 		if err != nil {
-			fmt.Fprintln(w, "Couldn't retrieve document from collection: "+err.Error(), http.StatusInternalServerError)
+			return false, resp, errors.Wrap(err, "Couldn't retrieve document from collection: "+err.Error())
 		}
+
 		//  If the token the user posted is in the collection, return true
 		if tempToken.AuthToken == DBToken.AuthToken {
-			return true, resp
+			return true, resp, err
 		}
+
 	}
 
-	return false, resp
+	return false, resp, errors.Wrap(err, "Failed to find token")
 }

@@ -88,7 +88,10 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 	// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
-		authorised, resp := DBCheckAuthorization(w, r) // Check for valid token
+		authorised, resp, err := DBCheckAuthorization(w, r) // Check for valid token
+		if err != nil {
+			http.Error(w, "Not authorized to post to DB: ", http.StatusBadRequest)
+		}
 
 		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
 		//  and include the authorization token given by the developers through mail inside the body
@@ -102,11 +105,14 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				RegisterRecipe(w, resp)
 			}
 		} else {
-			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
 			return
 		}
+
 	case http.MethodDelete:
-		authorised, resp := DBCheckAuthorization(w, r)
+		authorised, resp, err := DBCheckAuthorization(w, r) // Check for valid token
+		if err != nil {
+			http.Error(w, "Not authorized to post to DB: ", http.StatusBadRequest)
+		}
 
 		if authorised {
 			switch endpoint {
@@ -125,13 +131,24 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				err = DBDelete(ing.ID, IngredientCollection, w)
+				insideARecipe, err := inRecipe(&ing, w) // Checks if the ingredient is in a recipe
 				if err != nil {
-					http.Error(w, "Failed to delete ingredient: "+err.Error(), http.StatusInternalServerError)
-					return
+					http.Error(w, "Failed to check if ingredient is in recipe: "+err.Error(), http.StatusInternalServerError)
 				}
 
-				fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
+				if !insideARecipe { // If it is not in a recipe, attempt to delete
+					err = DBDelete(ing.ID, IngredientCollection, w)
+					if err != nil {
+						http.Error(w, "Failed to delete ingredient: "+err.Error(), http.StatusInternalServerError)
+						return
+					}
+
+					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
+
+				} else {
+
+					fmt.Fprintln(w, "Can't delete ingredient in a recipe", http.StatusBadRequest)
+				}
 
 			case caserec:
 				rec := Recipe{}
@@ -144,7 +161,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 				rec, err = DBReadRecipeByName(rec.RecipeName, w) //  Get that recipe
 				if err != nil {
-					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
+					http.Error(w, "Couldn't retrieve rec ipe: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 
@@ -431,4 +448,26 @@ func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 	}
 
 	return nil
+}
+
+// inRecipe is a check to see if an ingredient is present in a recipe
+func inRecipe(ing *Ingredient, w http.ResponseWriter) (bool, error) {
+	//  Get all recipes
+	recipes, err := DBReadAllRecipes(w) // Else get all recipes
+	if err != nil {
+		http.Error(w, "Couldn't retrieve recipes: "+err.Error(), http.StatusBadRequest)
+		return false, err
+	}
+
+	for _, r := range recipes {
+
+		for _, i := range r.Ingredients {
+
+			if i.Name == ing.Name {
+				return true, err
+			}
+		}
+	}
+
+	return false, err
 }
