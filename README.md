@@ -69,7 +69,9 @@ The difference where ingredient has "name" and recipe has "recipeName" is to pre
 # HandlerMeal
 	mealHandler:
 		Get method:
-			URL: ./cravings/meal/?ingredients=cheese_milk|{70}_cardamom|{500}|{g}	{:} = optional
+			URL: /cravings/meal
+			example: /cravings/meal/?ingredients=cheese_milk|{70}_cardamom|{500}|{g}	
+			{:} = optional
 			'_' splits up the different ingredients
 			'|' splits up the ingredient, quantity and unit (in this given order)
 			if quantity is not set or is not valid, it is put to a default value (but it is highly recomended to write in all the information)
@@ -95,7 +97,6 @@ The difference where ingredient has "name" and recipe has "recipeName" is to pre
 			"name": "milk",
 			"unit": "l",
 			"quantity": 70
-				
 		}
 	]
 list as many ingredients with quantity and unit as you want
