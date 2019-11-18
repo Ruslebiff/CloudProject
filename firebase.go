@@ -281,6 +281,5 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte,
 		}
 
 	}
-
-	return false, resp, errors.Wrap(err, "Failed to find token")
+	return false, resp, errors.Wrap(err, "Failed to find valid token")
 }

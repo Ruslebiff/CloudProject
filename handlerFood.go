@@ -90,7 +90,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		authorised, resp, err := DBCheckAuthorization(w, r) // Check for valid token
 		if err != nil {
-			http.Error(w, "Not authorized to post to DB: ", http.StatusBadRequest)
+			http.Error(w, "Error: "+err.Error(), http.StatusBadRequest)
 		}
 
 		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
@@ -105,7 +105,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				RegisterRecipe(w, resp)
 			}
 		} else {
-			return
+			http.Error(w, "Error: Not authorized", http.StatusBadRequest)
 		}
 
 	case http.MethodDelete:
