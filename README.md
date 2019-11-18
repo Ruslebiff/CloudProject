@@ -5,15 +5,22 @@ NTNU Cloud Technologies project 2019
 To register you have to post the body in a json format 
 
 	# Register ingredient: cravings/food/ingredient
+	
 	Register Ingredient: 
 	{
 		"token":"",
-		"name":"Kardemomme",
+		"name":"",
 		"unit":""
 	}
 
 Unit should be either "l" or "g", with exception of "teaspoon" and "tablespoon". Please use "l" for ingredients measured by volume and "g" for ingredients measured by weight if possible, otherwise "teaspoon" or "tablespoon" can be used.
 
+Example ingredient: 
+	{
+		"token":"YourToken",
+		"name":"cinnamon",
+		"unit":"g"
+	}
 
 	# Register recipe: cravings/food/recipe
 	
@@ -23,14 +30,14 @@ Unit should be either "l" or "g", with exception of "teaspoon" and "tablespoon".
 		"recipeName":"",
 		"ingredients":[
 			{
-				"name":"cardamom",
-				"quantity":5,
-				"unit":"kg"
+				"name":"",
+				"quantity":,
+				"unit":""
 			},
 			{
-				"name":"milk",
-				"quantity":69,
-				"unit":"l"
+				"name":"",
+				"quantity":,
+				"unit":""
 			}
 		],
 		"description":[
@@ -45,6 +52,41 @@ Unit should be either "l" or "g", with exception of "teaspoon" and "tablespoon".
 
 Each string will have its own line automatically. No linebreaks are needed in the strings.
 
+	Example recipe: 
+	{
+		"token":"YourToken",
+		"recipeName":"The Best Recipe Ever Made",
+		"ingredients":[
+			{
+				"name":"milk",
+				"quantity":1,
+				"unit":"dl"
+			},
+			{
+				"name":"flour",
+				"quantity":500,
+				"unit":"g"
+			},
+			{
+				"name":"butter",
+				"quantity":200,
+				"unit":"g"
+			},
+			{
+				"name":"cinnamon",
+				"quantity":2,
+				"unit":"teaspoon"
+			}
+		],
+		"description":[
+			{
+				"Mix it good.",
+				"Make it tight.",
+				"Bake the food.",
+				"Eat at night."
+			}
+		]
+	}
 
 # Delete
 	Send a DELETE request to either: 
