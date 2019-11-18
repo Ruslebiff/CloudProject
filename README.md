@@ -70,7 +70,7 @@ The difference where ingredient has "name" and recipe has "recipeName" is to pre
 	mealHandler:
 		Get method:
 			URL: /cravings/meal
-			example: /cravings/meal/?ingredients=cheese_milk|{70}_cardamom|{500}|{g}	
+			example: /cravings/meal/?ingredients=cheese|4|kg_milk|70|l_cardamom|500|g
 			{:} = optional
 			'_' splits up the different ingredients
 			'|' splits up the ingredient, quantity and unit (in this given order)
