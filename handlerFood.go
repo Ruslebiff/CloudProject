@@ -423,7 +423,10 @@ func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 	//  Loops through each ingredient in the recipe and adds up the nutritional information from each
 	//  to a total amount of nutrients for the recipe as a whol
 	for i := range rec.Ingredients {
-		temptotalnutrients := CalcNutrition(rec.Ingredients[i], w)
+		temptotalnutrients, err := CalcNutrition(rec.Ingredients[i], w)
+		if err != nil {
+			return err
+		}
 
 		rec.AllNutrients.Energy.Quantity += temptotalnutrients.Nutrients.Energy.Quantity
 		rec.AllNutrients.Fat.Quantity += temptotalnutrients.Nutrients.Fat.Quantity
