@@ -10,7 +10,6 @@ import (
 )
 
 func TestHandlerWebhooks(t *testing.T) {
-
 	Post := "POST"
 	Get := "GET"
 	Delete := "DELETE"
@@ -25,15 +24,6 @@ func TestHandlerWebhooks(t *testing.T) {
 	resp := ALLMethodWebhook(Post, URL, webH, t)
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
-		t.Error(resp.StatusCode)
-	}
-
-	// Test Post method for error
-	fmt.Println("Testing webhooks POST methot without body")
-
-	resp = ALLMethodWebhook(Post, URL, s, t)
-
-	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
 
@@ -63,15 +53,6 @@ func TestHandlerWebhooks(t *testing.T) {
 		t.Error(resp.StatusCode)
 	}
 
-	// Test Get method with id for error
-	fmt.Println("Testing webhooks method for one webhook error")
-
-	resp = ALLMethodWebhook(Get, URL+"something", s, t)
-
-	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
-		t.Error(resp.StatusCode)
-	}
-
 	// Test Delete method for endpoint /cravings/webhooks/
 	fmt.Println("testing webhooks DELETE method")
 
@@ -97,20 +78,9 @@ func TestHandlerWebhooks(t *testing.T) {
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
-	// Test Delete method for endpoint for error
-	fmt.Println("testing webhooks DELETE method with out id")
-
-	resp = ALLMethodWebhook(Delete, URL, s, t)
-
-	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
-		t.Error(resp.StatusCode)
-	}
-
 }
 
 func ALLMethodWebhook(m string, url string, s Webhook, t *testing.T) *http.Response {
-
 	r, err := http.NewRequest(m, url, nil) // creates request with body
 
 	if err != nil {
@@ -141,5 +111,4 @@ func ALLMethodWebhook(m string, url string, s Webhook, t *testing.T) *http.Respo
 	defer resp.Body.Close()
 
 	return resp
-
 }

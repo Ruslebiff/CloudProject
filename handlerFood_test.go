@@ -33,7 +33,6 @@ func TempToken() (s string) {
 }
 
 func TestHandlerFood(t *testing.T) {
-
 	Post := "POST"
 	Get := "GET"
 	Delete := "DELETE"
@@ -193,7 +192,6 @@ func TestHandlerFood(t *testing.T) {
 	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
-
 }
 
 func ALLMethodIngredient(m string, url string, s TestIngredient, t *testing.T) *http.Response {
@@ -228,7 +226,6 @@ func ALLMethodIngredient(m string, url string, s TestIngredient, t *testing.T) *
 	defer resp.Body.Close()
 
 	return resp
-
 }
 
 func ALLMethodRecipe(m string, url string, s TestRecipe, t *testing.T) *http.Response {
@@ -263,5 +260,4 @@ func ALLMethodRecipe(m string, url string, s TestRecipe, t *testing.T) *http.Res
 	defer resp.Body.Close()
 
 	return resp
-
 }
