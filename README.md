@@ -4,7 +4,7 @@ NTNU Cloud Technologies project 2019
 # Food 
 To register you have to post the body in a json format 
 
-	# Register ingredient: cravings/food/ingredient
+## Register ingredient: cravings/food/ingredient
 	
 	Register Ingredient: 
 	{
@@ -22,7 +22,7 @@ Unit should be either "l" or "g", with exception of "teaspoon" and "tablespoon".
 		"unit":"g"
 	}
 
-	# Register recipe: cravings/food/recipe
+## Register recipe: cravings/food/recipe
 	
 	Register Recipe:
 	{
@@ -88,7 +88,7 @@ Each string will have its own line automatically. No linebreaks are needed in th
 		]
 	}
 
-# Delete
+## Delete ingredient or recipe
 	Send a DELETE request to either: 
 	cravings/food/ingredient
 	cravings/food/recipe
