@@ -68,6 +68,8 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		ingredientsList[i], err = CalcNutrition(ingredientsList[i], w)
 		if err != nil {
 			fmt.Println(err.Error())
+			// Prints to console which ingredient is queried, but is missing in the database.
+			// This will not cause a http error, and the result will just exclude this ingredient.
 		}
 	}
 
