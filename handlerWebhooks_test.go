@@ -9,6 +9,8 @@ import (
 	"testing"
 )
 
+// func TestHandlerWebhooks
+
 func TestHandlerWebhooksPost(t *testing.T) {
 	// Test Post method for endpoint /cravings/webhooks/ ******************'
 	webH := Webhook{Event: "testevent", URL: "www.testurl.com"} // create a webhook with event and url to send as body
@@ -139,3 +141,38 @@ func TestHandlerWebhooksDelete(t *testing.T) {
 
 	fmt.Println("testing webhooks DELETE method")
 }
+
+// func ALLMethodWebhook(m string, url string, s Webhook, t *testing.T) *http.Response {
+
+// 	r, err := http.NewRequest(m, url, nil) // creates request with body
+
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+
+// 	if len(s.Event) > 0 {
+
+// 		fmt.Println("len > 0")
+
+// 		test := s
+// 		req, _ := json.Marshal(test)
+// 		reqTest := bytes.NewReader(req) // convert struct to *Reader
+
+// 		r, err = http.NewRequest(m, url, reqTest) // creates request with body
+
+// 		if err != nil {
+// 			t.Error(err)
+// 		}
+// 	}
+
+// 	w := httptest.NewRecorder() // creates ResponsRecorder
+
+// 	handler := http.HandlerFunc(HandlerFood) // test handlerFood
+// 	handler.ServeHTTP(w, r)
+
+// 	resp := w.Result()
+// 	defer resp.Body.Close()
+
+// 	return resp
+
+// }
