@@ -124,7 +124,7 @@ func ALLMethodMeal(m string, url string, s []Ingredient, t *testing.T) *http.Res
 
 	w := httptest.NewRecorder() // creates ResponsRecorder
 
-	handler := http.HandlerFunc(HandlerFood) // test handlerFood
+	handler := http.HandlerFunc(HandlerMeal) // test handlerFood
 	handler.ServeHTTP(w, r)
 
 	resp := w.Result()
