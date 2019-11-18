@@ -144,7 +144,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
+					fmt.Fprintln(w, "Successfully deleted ingredient ", http.StatusOK)
 				} else {
 					fmt.Fprintln(w, "Can't delete ingredient in a recipe", http.StatusBadRequest)
 				}
@@ -160,7 +160,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 				rec, err = DBReadRecipeByName(rec.RecipeName, w) //  Get that recipe
 				if err != nil {
-					http.Error(w, "Couldn't retrieve rec ipe: "+err.Error(), http.StatusBadRequest)
+					http.Error(w, "Couldn't retrieve recipe: "+err.Error(), http.StatusBadRequest)
 					return
 				}
 
@@ -170,7 +170,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				fmt.Fprintln(w, "Successfully deleted recipe"+rec.RecipeName, http.StatusOK)
+				fmt.Fprintln(w, "Successfully deleted recipe "+rec.RecipeName, http.StatusOK)
 			}
 		} else {
 			fmt.Fprintln(w, "Not authorised to DELETE from DB:", http.StatusBadRequest)
