@@ -22,8 +22,28 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 			err := json.NewDecoder(r.Body).Decode(&ingredientsList)
 
 			if err != nil {
-				http.Error(w, "Failed to post meal "+err.Error(), http.StatusBadRequest)
+				http.Error(w, "Failed to decode body "+err.Error(), http.StatusBadRequest)
 				return
+			}
+
+			for _, i := range ingredientsList { //checks if unit is an allowed unit
+				allowed := false
+
+				for _, unit := range AllowedUnit {
+					if i.Unit == unit {
+						allowed = true
+					}
+				}
+
+				if !allowed {
+					http.Error(w, i.Unit+" is not an allowed unit.", http.StatusBadRequest)
+					return
+				}
+
+				if i.Quantity <= 0 {
+					http.Error(w, "Not a valid quantity.", http.StatusBadRequest)
+					return
+				}
 			}
 		}
 	case http.MethodGet:
