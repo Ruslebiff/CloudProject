@@ -70,11 +70,16 @@ The difference where ingredient has "name" and recipe has "recipeName" is to pre
 	mealHandler:
 		Get method:
 			URL: /cravings/meal
-			example: /cravings/meal/?ingredients=cheese|4|kg_milk|70|l_cardamom|500|g
-			{:} = optional
+			example for one ingredient: /cravings/meal/?ingredients=milk|2|l
+			example for multiple	  : /cravings/meal/?ingredients=milk|2|l_tomato|4|kg_cardamom|500|g
+
 			'_' splits up the different ingredients
 			'|' splits up the ingredient, quantity and unit (in this given order)
-			if quantity is not set or is not valid, it is put to a default value (but it is highly recomended to write in all the information)
+
+			example with sortBy and allowMissing: /cravings/meal/?ingredients=milk|2|l&sortBy=have&allowMissing=false
+			Default value = *
+			sortBy(Optional): missing*, have, remaining	
+			allowMissing(Optional): false*, true
 
 		Post method:
 	[	
@@ -88,15 +93,19 @@ The difference where ingredient has "name" and recipe has "recipeName" is to pre
 	Example:
 	[
 		{
+			"name": "milk",
+			"unit": "l",
+			"quantity": 2	
+		},
+		{
+			"name": "tomato",
+			"unit": "kg",
+			"quantity": 4
+		},
+		{
 			"name": "cardamom",
 			"unit": "g",
 			"quantity": 500
-			
-		},
-		{
-			"name": "milk",
-			"unit": "l",
-			"quantity": 70
 		}
 	]
 list as many ingredients with quantity and unit as you want
@@ -243,3 +252,5 @@ Wednesday 13/11-19 group work from 10:00 - 17:00
 Thursday 14/11 - 19 group work from 12:00 - 16:00
 
 Friday 15/11 - 19 group work from 11:00 - 16:30
+
+Monday 16/11 - 19 group work from 10:00 to 16:00
