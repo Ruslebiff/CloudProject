@@ -150,7 +150,7 @@ func DBReadIngredientByName(name string, w http.ResponseWriter) (Ingredient, err
 		}
 	}
 
-	err = errors.New("No ingredient named " + name + " in database")
+	err = errors.New("No ingredient named " + name + " in dtabaase")
 	fmt.Fprintln(w, ""+err.Error(), http.StatusBadRequest)
 
 	return temp, err
