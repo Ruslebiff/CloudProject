@@ -74,7 +74,7 @@ func CallURL(event string, s interface{}, w http.ResponseWriter) error {
 }
 
 // ReadIngredients splits up the ingredient name from the quantity from the URL
-func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
+func ReadIngredients(ingredients []string, w http.ResponseWriter) ([]Ingredient, error) {
 	IngredientList := []Ingredient{}
 	defVal := 1.0 //default value for quantity if not set
 
@@ -83,31 +83,36 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) []Ingredient {
 	for i := range ingredients {
 		ingredient := strings.Split(ingredients[i], "|") //splits up the string 'name|quantity|unit'
 		ingredientTemp := Ingredient{}
-		ingredientTemp.Quantity = defVal //sets to defVal
 
-		if len(ingredient) == 2 { //if quantity value is set
-			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
+		if len(ingredient) < 3 { //if quantity value is set
 
-			if err != nil { //if error set to defVal
-				ingredientTemp.Quantity = defVal
-			}
+			return IngredientList, errors.New(
+				"Failed to read ingredient list. ?ingredients={name|quantity|unit}_{...}")
 		}
-
-		if len(ingredient) == 3 { //if unit value is set
-			ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64)
-
-			if err != nil { //if error set to defVal
-				ingredientTemp.Quantity = defVal
-			}
-
-			ingredientTemp.Unit = ingredient[2]
-		}
-
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
+
+		allowed := false
+
+		for _, unit := range AllowedUnit {
+			if ingredient[2] == unit {
+				allowed = true
+			}
+		}
+
+		if !allowed {
+			return IngredientList, errors.New(ingredient[2] + " is not an allowed unit.")
+		}
+		ingredientTemp.Unit = ingredient[2]                                  //sets the unit
+		ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64) //sets the quantity
+
+		if err != nil { //if error: set quantity to defVal
+			ingredientTemp.Quantity = defVal
+		}
+
 		IngredientList = append(IngredientList, ingredientTemp)
 	}
 
-	return IngredientList
+	return IngredientList, nil
 }
 
 // CalcRemaining calculates the nutritional value from one ingredient to another.
@@ -127,6 +132,8 @@ func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
 	if subtract {
 		ing.Quantity -= rec.Quantity
 	}
+	ing.Nutrients = rec.Nutrients //sets all the labels and units for nutrients
+
 	//calculates the values for 1 ingredient, then multiplies by ingredients quantity
 	ing.Calories = (rec.Calories / rec.Quantity) * ing.Quantity
 	ing.Weight = (rec.Weight / rec.Quantity) * ing.Quantity
@@ -140,10 +147,10 @@ func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
 }
 
 // CalcNutrition calculates nutritional info for given ingredient
-func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient {
+func CalcNutrition(ing Ingredient, w http.ResponseWriter) (Ingredient, error) {
 	temping, err := DBReadIngredientByName(ing.Name, w) //gets the ingredient with the same name from firebase
 	if err != nil {
-		fmt.Fprintln(w, "Could not read ingredient by name "+err.Error(), http.StatusBadRequest)
+		return ing, errors.Wrap(err, "Could not read ingredient by name "+err.Error())
 	}
 
 	ing.ID = temping.ID               // add ID to ing since it's a copy
@@ -187,7 +194,7 @@ func CalcNutrition(ing Ingredient, w http.ResponseWriter) Ingredient {
 	ing.Nutrients.Protein.Quantity *= ing.Quantity
 	ing.Nutrients.Sugar.Quantity *= ing.Quantity
 
-	return ing
+	return ing, nil
 }
 
 // ConvertUnit converts units for ingredients, and changes their quantity respectively.

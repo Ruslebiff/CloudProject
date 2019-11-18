@@ -2,6 +2,7 @@ package cravings
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"sort"
 	"strconv"
@@ -13,6 +14,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	http.Header.Add(w.Header(), "Content-Type", "application/json")
 
 	ingredientsList := []Ingredient{}
+	var err error
 
 	switch r.Method { //sets the list of remaining ingredients from either a post or get request
 	case http.MethodPost:
@@ -26,7 +28,11 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 		}
 	case http.MethodGet:
 		{ //  Case get reads the ingredients which is in the URL query, each ingredient is separated by '_'
-			ingredientsList = ReadIngredients(strings.Split(QueryGet("ingredients", "", r), "_"), w)
+			ingredientsList, err = ReadIngredients(strings.Split(QueryGet("ingredients", "", r), "_"), w)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
 		}
 	}
 
@@ -38,7 +44,10 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for i := range ingredientsList {
-		ingredientsList[i] = CalcNutrition(ingredientsList[i], w)
+		ingredientsList[i], err = CalcNutrition(ingredientsList[i], w)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 	}
 
 	//  Contains all the recipes the user can make with ingredients at hand,, including the ones which the user
@@ -106,7 +115,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 							}
 						} else {
 							recipeTemp.Ingredients.Have = append(recipeTemp.Ingredients.Have, i)
-							j = CalcRemaining(j, i, true)
+							j = CalcRemaining(j, i, true) //removes i's quantity from j and calculates the new nutrition value
 							recipeTemp.Ingredients.Remaining[n] = j
 						}
 						break //break out after finding matching name
