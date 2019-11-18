@@ -20,7 +20,7 @@ Unit should be either "l" or "g", with exception of "teaspoon" and "tablespoon".
 	Register Recipe:
 	{
 		"token":"",
-		"recipeName":"Emils Kakoramarama2",
+		"recipeName":"",
 		"ingredients":[
 			{
 				"name":"cardamom",
@@ -32,18 +32,39 @@ Unit should be either "l" or "g", with exception of "teaspoon" and "tablespoon".
 				"quantity":69,
 				"unit":"l"
 			}
+		],
+		"description":[
+			{
+				"",
+				"",
+				"",
+				""
+			}
 		]
 	}
 
+Each string will have its own line automatically. No linebreaks are needed in the strings.
+
+
 # Delete
-	cravings/food/... 
+	Send a DELETE request to either: 
+	cravings/food/ingredient
+	cravings/food/recipe
 
 
-	Delete Ingredient/Recipe: 
+	Delete Ingredient: 
 	{
 		"token":"",
 		"name":""
 	}
+
+	Delete Recipe: 
+	{
+		"token":"",
+		"recipeName":""
+	}
+
+The difference where ingredient has "name" and recipe has "recipeName" is to prevent confusion and accidents.
 
 # HandlerMeal
 	mealHandler:
@@ -56,12 +77,13 @@ Unit should be either "l" or "g", with exception of "teaspoon" and "tablespoon".
 		Post method:
 	[	
 		{
-			"name": "[ingredient name]",
-			"unit": "[ingredient unit]",
-			"quantity": [ingredient quantity]
+			"name": "ingredient name",
+			"unit": "ingredient unit",
+			"quantity": ingredient quantity
 		}
 	]
-	ex:
+	
+	Example:
 	[
 		{
 			"name": "cardamom",
