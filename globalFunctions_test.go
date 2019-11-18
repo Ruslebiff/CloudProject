@@ -64,8 +64,8 @@ func TestReadIngredients(t *testing.T) {
 
 	var testIngredient []string
 
-	a1 := "cheese"
-	a2 := "milk|70"
+	a1 := "cheese|3|kg"
+	a2 := "milk|70|l"
 	a3 := "cardamom|500|g"
 
 	testIngredient = append(testIngredient, a1)
