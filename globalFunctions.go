@@ -58,7 +58,7 @@ func CallURL(event string, s interface{}, w http.ResponseWriter) error {
 				return err
 			}
 
-			fmt.Fprintln(w, "Attempting invocation of URL "+webhooks[i].URL+"...")
+			fmt.Println("Attempting invocation of URL " + webhooks[i].URL + "...")
 
 			resp, err := http.Post(webhooks[i].URL, "json", bytes.NewReader(requestBody)) // post webhook to webhooks.site
 			if err != nil {
