@@ -279,7 +279,7 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte,
 		if tempToken.AuthToken == DBToken.AuthToken {
 			return true, resp, err
 		}
-
 	}
+
 	return false, resp, errors.Wrap(err, "Failed to find valid token")
 }

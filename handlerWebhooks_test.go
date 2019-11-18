@@ -22,6 +22,7 @@ func TestHandlerWebhooks(t *testing.T) {
 	fmt.Println("testeing webhooks POST method")
 
 	resp := ALLMethodWebhook(Post, URL, webH, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -31,6 +32,7 @@ func TestHandlerWebhooks(t *testing.T) {
 	fmt.Println("testing webhooks GET method for all webhooks")
 
 	resp = ALLMethodWebhook(Get, URL, s, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -48,6 +50,7 @@ func TestHandlerWebhooks(t *testing.T) {
 	}
 
 	resp = ALLMethodWebhook(Get, URL+wh[1].ID, s, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -74,6 +77,7 @@ func TestHandlerWebhooks(t *testing.T) {
 	tempstruct := Webhook{ID: temp} // creates temp struct to send with request
 
 	resp = ALLMethodWebhook(Delete, URL, tempstruct, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -88,7 +92,6 @@ func ALLMethodWebhook(m string, url string, s Webhook, t *testing.T) *http.Respo
 	}
 
 	if len(s.Event) > 0 || len(s.ID) > 0 {
-
 		fmt.Println("len > 0")
 
 		test := s

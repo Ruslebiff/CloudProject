@@ -85,10 +85,10 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) ([]Ingredient,
 		ingredientTemp := Ingredient{}
 
 		if len(ingredient) < 3 { //if quantity value is set
-
 			return IngredientList, errors.New(
 				"Failed to read ingredient list. ?ingredients={name|quantity|unit}_{...}")
 		}
+
 		ingredientTemp.Name = ingredient[0] //name of the ingredient
 
 		allowed := false
@@ -102,6 +102,7 @@ func ReadIngredients(ingredients []string, w http.ResponseWriter) ([]Ingredient,
 		if !allowed {
 			return IngredientList, errors.New(ingredient[2] + " is not an allowed unit.")
 		}
+
 		ingredientTemp.Unit = ingredient[2]                                  //sets the unit
 		ingredientTemp.Quantity, err = strconv.ParseFloat(ingredient[1], 64) //sets the quantity
 
@@ -132,6 +133,7 @@ func CalcRemaining(ing Ingredient, rec Ingredient, subtract bool) Ingredient {
 	if subtract {
 		ing.Quantity -= rec.Quantity
 	}
+
 	ing.Nutrients = rec.Nutrients //sets all the labels and units for nutrients
 
 	//calculates the values for 1 ingredient, then multiplies by ingredients quantity

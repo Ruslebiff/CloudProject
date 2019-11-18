@@ -28,6 +28,7 @@ func TestHandelerMeal(t *testing.T) {
 	fmt.Println("testing handlerMeal POST method")
 
 	resp := ALLMethodMeal(Post, URL, tempstruct, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that everything is ok
 		t.Error(resp.StatusCode)
@@ -37,6 +38,7 @@ func TestHandelerMeal(t *testing.T) {
 	fmt.Println("testing handlerMeal GET method")
 
 	resp = ALLMethodMeal(Get, URL+"?ingredients=milk|2|l_olive oil|1|l", i, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that everything is ok
 		t.Error(resp.StatusCode)
@@ -51,7 +53,6 @@ func ALLMethodMeal(m string, url string, s []Ingredient, t *testing.T) *http.Res
 	}
 
 	if len(s) > 0 {
-
 		fmt.Println("len > 0")
 
 		test := s

@@ -71,6 +71,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood POST method ingredient")
 
 	resp := ALLMethodIngredient(Post, "/cravings/food/ingredient", in, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -80,6 +81,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood POST method recipe")
 
 	resp = ALLMethodRecipe(Post, "/cravings/food/recipe", re, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -89,6 +91,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood GET method for all ingredient")
 
 	resp = ALLMethodIngredient(Get, "/cravings/food/ingredient/", i, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -98,6 +101,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood GET method for one ingredient")
 
 	resp = ALLMethodIngredient(Get, "/cravings/food/ingredient/turmeric", i, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -107,6 +111,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood GET method for all recipe")
 
 	resp = ALLMethodRecipe(Get, "/cravings/food/recipe/", r, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -116,24 +121,27 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood GET method for one recipe")
 
 	resp = ALLMethodRecipe(Get, "/cravings/food/recipe/TestRecipePOST", r, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
 
-	// Test Geting somthing that dosent exists
+	// Test Getting somthing that dosent exists
 	fmt.Println("testing handlerFood GET method for error in recipe")
 
 	resp = ALLMethodRecipe(Get, "/cravings/food/recipe/Somthing", r, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
 		t.Error(resp.StatusCode)
 	}
 
-	// Test Geting somthing that dosent exists
+	// Test Getting somthing that dosent exists
 	fmt.Println("testing handlerFood GET method for error in ingredient")
 
 	resp = ALLMethodIngredient(Get, "/cravings/food/ingredient/Somthing", i, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusInternalServerError { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -143,6 +151,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood DELETE method ingredient")
 
 	resp = ALLMethodIngredient(Delete, "/cravings/food/ingredient", in, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -152,6 +161,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood DELETE method ingredient with only token")
 
 	resp = ALLMethodIngredient(Delete, "/cravings/food/ingredient", testIngred, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -161,6 +171,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood DELETE method ingredient with wrong name")
 
 	resp = ALLMethodIngredient(Delete, "/cravings/food/ingredient", testIngred2, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -170,6 +181,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood DELETE method recipe")
 
 	resp = ALLMethodRecipe(Delete, "/cravings/food/recipe", testRec, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -179,6 +191,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood DELETE method recipe only token")
 
 	resp = ALLMethodRecipe(Delete, "/cravings/food/recipe", testRec1, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -188,6 +201,7 @@ func TestHandlerFood(t *testing.T) {
 	fmt.Println("testing handlerFood DELETE method recipe with wrong name")
 
 	resp = ALLMethodRecipe(Delete, "/cravings/food/recipe", testRec2, t)
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusBadRequest { // check that test went ok
 		t.Error(resp.StatusCode)
@@ -195,7 +209,6 @@ func TestHandlerFood(t *testing.T) {
 }
 
 func ALLMethodIngredient(m string, url string, s TestIngredient, t *testing.T) *http.Response {
-
 	r, err := http.NewRequest(m, url, nil) // creates request with body
 
 	if err != nil {
@@ -203,7 +216,6 @@ func ALLMethodIngredient(m string, url string, s TestIngredient, t *testing.T) *
 	}
 
 	if len(s.Token) > 0 {
-
 		fmt.Println("token ok I")
 
 		test := s
@@ -229,7 +241,6 @@ func ALLMethodIngredient(m string, url string, s TestIngredient, t *testing.T) *
 }
 
 func ALLMethodRecipe(m string, url string, s TestRecipe, t *testing.T) *http.Response {
-
 	r, err := http.NewRequest(m, url, nil) // creates request with body
 
 	if err != nil {
@@ -237,7 +248,6 @@ func ALLMethodRecipe(m string, url string, s TestRecipe, t *testing.T) *http.Res
 	}
 
 	if len(s.Token) > 0 {
-
 		fmt.Println("token ok R")
 
 		test := s

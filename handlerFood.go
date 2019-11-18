@@ -89,6 +89,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 	// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
 		authorised, resp, err := DBCheckAuthorization(w, r) // Check for valid token
+
 		if err != nil {
 			http.Error(w, "Error: "+err.Error(), http.StatusBadRequest)
 		}
@@ -144,9 +145,7 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 					}
 
 					fmt.Fprintln(w, "Successfully deleted ingredient", http.StatusOK)
-
 				} else {
-
 					fmt.Fprintln(w, "Can't delete ingredient in a recipe", http.StatusBadRequest)
 				}
 
@@ -247,9 +246,11 @@ func RegisterIngredient(w http.ResponseWriter, respo []byte) {
 		if unitParam != "pc" {
 			ConvertUnit(&ing, unitParam) // convert unit to "g" or "l"
 		}
+
 		ing.Quantity = 1 // force quantity to 1
 
 		err = GetNutrients(&ing, w) // get nutrients for the ingredient
+
 		if err != nil {
 			http.Error(w, "Couldn't get nutritional values: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -457,15 +458,14 @@ func GetRecipeNutrients(rec *Recipe, w http.ResponseWriter) error {
 func inRecipe(ing *Ingredient, w http.ResponseWriter) (bool, error) {
 	//  Get all recipes
 	recipes, err := DBReadAllRecipes(w) // Else get all recipes
+
 	if err != nil {
 		http.Error(w, "Couldn't retrieve recipes: "+err.Error(), http.StatusBadRequest)
 		return false, err
 	}
 
 	for _, r := range recipes {
-
 		for _, i := range r.Ingredients {
-
 			if i.Name == ing.Name {
 				return true, err
 			}

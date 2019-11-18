@@ -14,6 +14,7 @@ func HandlerMeal(w http.ResponseWriter, r *http.Request) {
 	http.Header.Add(w.Header(), "Content-Type", "application/json")
 
 	ingredientsList := []Ingredient{}
+
 	var err error
 
 	switch r.Method { //sets the list of remaining ingredients from either a post or get request
