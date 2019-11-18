@@ -88,7 +88,10 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 
 	// Post either recipes or ingredients to firebase DB
 	case http.MethodPost:
-		authorised, resp := DBCheckAuthorization(w, r) // Check for valid token
+		authorised, resp, err := DBCheckAuthorization(w, r) // Check for valid token
+		if err != nil {
+			http.Error(w, "Error: "+err.Error(), http.StatusBadRequest)
+		}
 
 		//  To post either one, you have to post it with a POST request with a .json body i.e. Postman
 		//  and include the authorization token given by the developers through mail inside the body
@@ -102,11 +105,14 @@ func HandlerFood(w http.ResponseWriter, r *http.Request) {
 				RegisterRecipe(w, resp)
 			}
 		} else {
-			http.Error(w, "Not authorized to POST to DB: ", http.StatusBadRequest)
-			return
+			http.Error(w, "Error: Not authorized", http.StatusBadRequest)
 		}
+
 	case http.MethodDelete:
-		authorised, resp := DBCheckAuthorization(w, r)
+		authorised, resp, err := DBCheckAuthorization(w, r) // Check for valid token
+		if err != nil {
+			http.Error(w, "Not authorized to post to DB: ", http.StatusBadRequest)
+		}
 
 		if authorised {
 			switch endpoint {
