@@ -247,12 +247,12 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte,
 	resp, err := ioutil.ReadAll(r.Body) //  Read the body of the json posted with the authentication token
 
 	if err != nil {
-		fmt.Fprintln(w, "Couldn't read request: "+err.Error(), http.StatusBadRequest)
+		return false, resp, errors.Wrap(err, "Couldn't read request: "+err.Error())
 	}
 
 	err = json.Unmarshal(resp, &tempToken)
 	if err != nil {
-		fmt.Fprintln(w, "Unable to unmarshal request body: "+err.Error(), http.StatusBadRequest)
+		return false, resp, errors.Wrap(err, "Unable to unmarshal request body: "+err.Error())
 	}
 
 	//  Loop through the collection of documents containing approved tokens
@@ -267,20 +267,20 @@ func DBCheckAuthorization(w http.ResponseWriter, r *http.Request) (bool, []byte,
 		}
 
 		if err != nil {
-			errors.Wrap(err, "Couldn't iterate over document collection: "+err.Error())
+			return false, resp, errors.Wrap(err, "Couldn't iterate over document collection: "+err.Error())
 		}
 
 		err = doc.DataTo(&DBToken) // put data into temp struct
 		if err != nil {
-			errors.Wrap(err, "Couldn't retrieve document from collection: "+err.Error())
+			return false, resp, errors.Wrap(err, "Couldn't retrieve document from collection: "+err.Error())
 		}
 
 		//  If the token the user posted is in the collection, return true
 		if tempToken.AuthToken == DBToken.AuthToken {
 			return true, resp, err
 		}
-		fmt.Println("hhhhhhhhhhhhhhhhhhhhhhh")
+
 	}
-	errors.Wrap(err, "Failed to find token"+err.Error())
-	return false, resp, err
+
+	return false, resp, errors.Wrap(err, "Failed to find token")
 }
