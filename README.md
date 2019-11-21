@@ -109,6 +109,12 @@ Each string will have its own line automatically. No linebreaks are needed in th
 The difference where ingredient has "name" and recipe has "recipeName" is to prevent confusion and accidents.
 
 # HandlerMeal
+
+Description: 
+Handler meal is a handler which the user can write in whatever ingredients they have (further instructions below),
+and the program will return a list of recipes. Depending on the 'allowMissing' parameter, the recipes will suggest what the user
+could potentially make, or if it is set to false, the recipes will only appear if you have all the ingredients. 
+Furthermore, the user will be able to see what ingredients are remaining after posting. 
 	mealHandler:
 		Get method:
 			URL: /cravings/meal
@@ -261,11 +267,14 @@ We also do different queries to handlerMeal (look at #handlerMeal for more infor
 
 # Hard aspects of the project
 Recipes that has units in teaspoon or tablespoon values became a bigger problem fixing than expected, since ingredients are saved in grams or litres in the database. This would not have been a problem if we simply could calculate all ingredients by volume, but we don't know how many grams x volume of each ingredient is. We did not want to enforce recipes to use weight instead of spoons, so to go around this, the nutritional value for each spoon when registering a recipe is being checked against the external API.
-The solution we decided to go for in the meal-handler was calculating how many calories there was per spoon and from there get the quantity per unit. This lead to extra lines of code only for handling spoon units, but we still manage to only read from our own database every time a recipe is read, and we avoid storing duplicate ingredients with different units.
+The solution we decided to go for in the meal-handler was calculating how many calories there was per spoon and from there get the quantity per unit. This lead to extra lines of code only for handling spoon units, but we still managed to only read from our own database every time a recipe is read, and we avoid storing duplicate ingredients with different units.
 
 
 # What we learned
-We got a deeper insight in how it is to make an API with a database, that is meant to be used by other applications. We got a better understanding of everything we have learnt so far in this course. 
+We got a deeper insight in how it is to make an API with a database, that is meant to be used by other applications. After a considerable amount of work was done we found several bugs and inconsistencies that were problematic for the program to run as we pictured. As a consequence we spent many hours debugging and figuring out how to handle errors in a greater scale compared to the knowledge we had in the initial phases of this project. 
+
+From this project we were able to get a deeper understanding of how to use json and how the different methods of encoding and decoding the payload works. For instance, when we wanted to use json.NewDecoder to read a json body into a struct, we found out that it did not work because it reads from an empty file the second time. Therefore, we had to use unmarshal for our functions to work. 
+In conclusion we got a better understanding of everything we have learnt so far in this course. 
 
 
 # Work log
