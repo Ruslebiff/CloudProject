@@ -2,7 +2,8 @@
 NTNU Cloud Technologies project 2019
 
 # Food 
-To register you have to post the body in a json format 
+Description: 
+This handler lets you register and delete either an ingrededient or a recipe to the database. You have to post the body in a json format, and an access token is required.
 
 ## Register ingredient: cravings/food/ingredient
 	
@@ -231,7 +232,7 @@ User can read every ingredient/recipe in the database including its nutrients.
 Furthermore, user can get one recipe or ingredient by name
 
 Getting recipes:
-What ingredients you have is provided either via URL or preferrably using POST request with a JSON body. Recipes that can be made using the ingredients you already have will be returned. These will also include nutritional info for the recipe.
+What ingredients you have is provided either via URL or preferrably using POST request with a JSON body. Recipes that can be made using the ingredients you already have will be returned. These will also include nutritional info for the recipe. The user also get what he/she has left after using a recipe, and which recipes you also can make afterwards without having to buy new ingredients.
 
 Registration: 
 You will need an auth token provided by us to get access to register and delete recipes or ingredients to the database. Tokens are stored in our database in a separate collection. 
@@ -246,14 +247,15 @@ Webhooks for seeing what’s registered into the database through the /register/
 Statistics: 
 Statistics indicates the availability of the database used in the assignment, and the website of which the program retrieves information.  In addition, it indicates time elapsed since the start of the program. Last but not least, it indicates how many recipes and ingredients are stored in the database. 
 
+Potential expansions of this project:
+#1 Possibility to register several recipes in one single POST-request.
+We chose not to implement this as we don't feel it is important. It shouldn't be too hard though. We could make a small function which splits the recipes in the JSON body and send them individually with the code we already have. 
 
-Potential expansions of project:
-The user also get what he/she has left after using a recipe, and which recipes you also can make afterwards without having to buy new ingredients. The program will also calculate how many days these resources will last, considering an average male needs about 2200 kcal each day. 
+#2 Registration of recipes and ingredients could be done automatically via some external API or website. 
+We chose not to implement this since many recipe databases are copyrighted, and we want quality over quantity. We didn't need to spend much time to register some example recipes ourselves, which is enough to show how our program works. If this program were to be used in a real setting with users, we would want to fill our database with good recipes, and allow submission of recipes from users, maybe with some application form and moderation, thus needing an access token.
 
-Can register several recipes in one POST
-Registration of recipes and ingredients could be done automatically via some external API or website. 
-
-User requests a recipe, inserts what it has of ingredients. The system provides a “shopping list” 
+#3 User requests a recipe, inserts what it has of ingredients. The system provides a “shopping list”.
+A basic shopping list would be unnessecary since you could just print the recipe itself - that is basically the shopping list. We thought about making an option to fill your shopping cart at a web store automatically with the ingredients your need at for instance www.kolonial.no. This could actually be useful for Norwegian citizens. They have not made their API open yet since it is still under development.
 
 
 # What went well and wrong 
