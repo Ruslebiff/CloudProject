@@ -280,29 +280,32 @@ In conclusion we got a better understanding of everything we have learnt so far 
 
 
 # Work log
-total work hours dedicated to the project cumulatively by the group
+Total work hours dedicated to the project cumulatively by the group. We worked mostly together as a group.
 
-Tuesday 5/11-19 group work from 13.00 to 15.00 total time 8 hours (2 hours per person) 
-(12-13 was just idea discussion, not working)
+Tuesday 5/11-19 group work from 13.00 to 15.00 = 2h per person
 
-Wednesday 6/11-19 group work from 09:30 - 14:30 total time 20 hours (5 hours per person)
+Wednesday 6/11-19 group work from 09:30 - 14:30 - 1 hour break = 4h p.p.
 
-Thursday 7/11-19 group work from 12:15 - 14:00 total time 7 hours (1 hour and 45 min per person)
+Thursday 7/11-19 group work from 12:15 - 14:00  = 1h 45m p.p.
 
-Friday 8/11-19 group work from 10:00 - 17:00
+Friday 8/11-19 group work from 10:00 - 17:00 - 1 hour break = 6h. p. p.
 
-Saturday 9/11-19 group work from 12:00 — 18:00
+Saturday 9/11-19 group work from 12:00 — 18:00 - 1 hour break = 5h p.p
 
-Sunday 10/11-19 group work from 12:00 - 17:00
+Sunday 10/11-19 group work from 12:00 - 17:00 - 1 hour break = 4h p.p.
 
-Monday 11/11-19 group work from 10:00 - 16:00
+Monday 11/11-19 group work from 10:00 - 16:00 - 1 hour break = 5h p.p.
 
-Tuesday 12/11-19 group work from 10:30 - 17:30
+Tuesday 12/11-19 group work from 10:30 - 17:30  - 1 hour break = 6h p.p.
 
-Wednesday 13/11-19 group work from 10:00 - 17:00
+Wednesday 13/11-19 group work from 10:00 - 17:00 - 1 hour break = 6h p.p.
 
-Thursday 14/11 - 19 group work from 12:00 - 16:00
+Thursday 14/11 - 19 group work from 12:00 - 16:00 - 1 hour break = 3h p.p.
 
-Friday 15/11 - 19 group work from 11:00 - 16:30
+Friday 15/11 - 19 group work from 11:00 - 16:30 - 1 hour break = 4h 30m p.p.
 
-Monday 16/11 - 19 group work from 10:00 to 16:00
+Monday 16/11 - 19 group work from 10:00 to 16:00 - 1 hour break = 5h p.p.
+
+After this, some minor fixes and readme tweaking ~ 3 total hours total work
+
+TOTAL WORK TIME = 212 hours (53 hours per person)
