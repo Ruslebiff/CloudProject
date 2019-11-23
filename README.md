@@ -42,12 +42,10 @@ Unit should be either "l" or "g".
 			}
 		],
 		"description":[
-			{
 				"",
 				"",
 				"",
 				""
-			}
 		]
 	}
 
@@ -80,12 +78,10 @@ Each string will have its own line automatically. No linebreaks are needed in th
 			}
 		],
 		"description":[
-			{
 				"Mix it good.",
 				"Make it tight.",
 				"Bake the food.",
 				"Eat at night."
-			}
 		]
 	}
 
