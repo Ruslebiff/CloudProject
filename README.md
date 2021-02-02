@@ -1,11 +1,15 @@
 # CloudProject
 NTNU Cloud Technologies project 2019
 
-# Food 
+The full project task description can be found further below. 
+In short, the task was to make a service where you can get food recipes via a REST API, that is possible to make with the ingredients you already have. The nutritional facts for the recipes will also be automatically fetched. It is possible to add more or delete ingredients and recipes from the database (requires token). 
+
+# Handlers: 
+## Food 
 Description: 
 This handler lets you register and delete either an ingrededient or a recipe to the database. You have to post the body in a json format, and an access token is required.
 
-## Register ingredient: cravings/food/ingredient
+### Register ingredient: cravings/food/ingredient
 	
 	Register Ingredient: 
 	{
@@ -23,7 +27,7 @@ Unit should be either "l" or "g".
 		"unit":"g"
 	}
 
-## Register recipe: cravings/food/recipe
+### Register recipe: cravings/food/recipe
 	
 	Register Recipe:
 	{
@@ -85,7 +89,7 @@ Each string will have its own line automatically. No linebreaks are needed in th
 		]
 	}
 
-## Delete ingredient or recipe
+### Delete ingredient or recipe
 	Send a DELETE request to either: 
 	cravings/food/ingredient
 	cravings/food/recipe
@@ -105,7 +109,7 @@ Each string will have its own line automatically. No linebreaks are needed in th
 
 The difference where ingredient has "name" and recipe has "recipeName" is to prevent confusion and accidents.
 
-# HandlerMeal
+## HandlerMeal
 
 Description: 
 Handler meal is a handler which the user can write in whatever ingredients they have (further instructions below),
@@ -263,45 +267,13 @@ When the user 'uses' a recipe, there is a list of all ingredients he/she has for
 We also do different queries to handlerMeal (look at #handlerMeal for more information)
 
 
-# Hard aspects of the project
+## Hard aspects of the project
 Recipes that has units in teaspoon or tablespoon values became a bigger problem fixing than expected, since ingredients are saved in grams or litres in the database. This would not have been a problem if we simply could calculate all ingredients by volume, but we don't know how many grams x volume of each ingredient is. We did not want to enforce recipes to use weight instead of spoons, so to go around this, the nutritional value for each spoon when registering a recipe is being checked against the external API.
 The solution we decided to go for in the meal-handler was calculating how many calories there was per spoon and from there get the quantity per unit. This lead to extra lines of code only for handling spoon units, but we still managed to only read from our own database every time a recipe is read, and we avoid storing duplicate ingredients with different units.
 
 
-# What we learned
+## What we learned
 We got a deeper insight in how it is to make an API with a database, that is meant to be used by other applications. After a considerable amount of work was done we found several bugs and inconsistencies that were problematic for the program to run as we pictured. As a consequence we spent many hours debugging and figuring out how to handle errors in a greater scale compared to the knowledge we had in the initial phases of this project. 
 
 From this project we were able to get a deeper understanding of how to use json and how the different methods of encoding and decoding the payload works. For instance, when we wanted to use json.NewDecoder to read a json body into a struct, we found out that it did not work because it reads from an empty file the second time. Therefore, we had to use unmarshal for our functions to work. 
 In conclusion we got a better understanding of everything we have learnt so far in this course. 
-
-
-# Work log
-Total work hours dedicated to the project cumulatively by the group. We worked mostly together as a group.
-
-Tuesday 5/11-19 group work from 13.00 to 15.00 = 2h per person
-
-Wednesday 6/11-19 group work from 09:30 - 14:30 - 1 hour break = 4h p.p.
-
-Thursday 7/11-19 group work from 12:15 - 14:00  = 1h 45m p.p.
-
-Friday 8/11-19 group work from 10:00 - 17:00 - 1 hour break = 6h. p. p.
-
-Saturday 9/11-19 group work from 12:00 — 18:00 - 1 hour break = 5h p.p
-
-Sunday 10/11-19 group work from 12:00 - 17:00 - 1 hour break = 4h p.p.
-
-Monday 11/11-19 group work from 10:00 - 16:00 - 1 hour break = 5h p.p.
-
-Tuesday 12/11-19 group work from 10:30 - 17:30  - 1 hour break = 6h p.p.
-
-Wednesday 13/11-19 group work from 10:00 - 17:00 - 1 hour break = 6h p.p.
-
-Thursday 14/11 - 19 group work from 12:00 - 16:00 - 1 hour break = 3h p.p.
-
-Friday 15/11 - 19 group work from 11:00 - 16:30 - 1 hour break = 4h 30m p.p.
-
-Monday 16/11 - 19 group work from 10:00 to 16:00 - 1 hour break = 5h p.p.
-
-After this, some minor fixes and readme tweaking ~ 3 total hours total work
-
-TOTAL WORK TIME = 212 hours (53 hours per person)
