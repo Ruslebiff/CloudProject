@@ -2,7 +2,7 @@
 NTNU Cloud Technologies project 2019
 
 The full project task description can be found further below. 
-In short, the task was to make a service where you can get food recipes via a REST API, that is possible to make with the ingredients you already have. The nutritional facts for the recipes will also be automatically fetched. It is possible to add more or delete ingredients and recipes from the database (requires token). 
+In short, the task was to make a service where you can get food recipes via a REST API, using ingredients you already have at your disposal. The nutritional facts for the recipes will also be automatically fetched. It is possible to add more or delete ingredients and recipes from the database (requires token). 
 
 # Handlers: 
 ## Food 
